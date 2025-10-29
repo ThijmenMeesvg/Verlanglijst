@@ -5,13 +5,13 @@
       "price": 24.99,
       "link": "https://ap.lc/HURoy",
       "favorite": false,
-      "dateAdded": "2025-10-29"
+      "dateAdded": "2024-10-29"
     },
     {
       "title": "Boek: Rooted",
       "price": 15.99,
       "link": "https://ap.lc/bvgaK",
-      "favorite": true,
+      "favorite": false,
       "dateAdded": "2025-10-29"
     },
     {
@@ -43,8 +43,15 @@
       "title": "Bordspel: Ransom Notes",
       "price": 30,
       "link": "https://ap.lc/PWiCO",
-      "favorite": true,
-      "dateAdded": "2025-10-27"
+      "favorite": false,
+      "dateAdded": "2024-10-27"
+      }
+    {
+      "title": "Bordspel: Don't get got",
+      "price": 14.95,
+      "link": "https://ap.lc/kElrx",
+      "favorite": false,
+      "dateAdded": "2025-10-29"
       }
   ],
   
