@@ -8,7 +8,6 @@ on:
 jobs:
   update-wishlist:
     runs-on: ubuntu-latest
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -30,8 +29,8 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Wishlist automatisch bijgewerkt"
+          file_pattern: "wishlist.json"
           branch: main
-          file_pattern: wishlist.json
-          author_name: ThijmenBot
-          author_email: bot@example.com
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
+          github_token: ${{ secrets.GH_TOKEN }}
