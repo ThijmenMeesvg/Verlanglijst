@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Boek: De Nachtwaker",
+    "price": 18.99,
+    "link": "https://voorbeeld.nl/denachtwaker",
+    "category": "Boeken",
+    "favorite": true,
+    "dateAdded": "2025-10-20"
+  },
+  {
+    "title": "Muziekalbum: Aurora - The Gods We Can Touch",
+    "price": 12.50,
+    "link": "https://voorbeeld.nl/aurora",
+    "category": "Muziek",
+    "favorite": false,
+    "dateAdded": "2025-10-25"
+  },
+  {
+    "title": "Spel: Azul",
+    "price": 29.95,
+    "link": "https://voorbeeld.nl/azul",
+    "category": "Spelletjes",
+    "favorite": true,
+    "dateAdded": "2025-10-27"
+  }
+]
