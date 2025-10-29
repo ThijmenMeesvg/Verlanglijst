@@ -24,11 +24,20 @@
     "dateAdded": "2025-10-27"
   },
   {
-  "title": "Artisan Art Pocket Journals – Moomin Love (Flame Tree Journals)",
+  "title": "Notitieboek – Moomin Love",
+  "price": 10.34,
+  "link": "https://www.bol.com/nl/nl/p/artisan-art-pocket-journals-moomin-love-artisan-art-pocket-notebook/9300000223421053/",
+  "category": "Boeken",
+  "favorite": false,
+  "dateAdded": "2025-10-29"
+  },
+  {
+  "title": "Notitieboek – Moomin Love",
   "price": 10.34,
   "link": "https://www.bol.com/nl/nl/p/artisan-art-pocket-journals-moomin-love-artisan-art-pocket-notebook/9300000223421053/",
   "category": "Boeken",
   "favorite": false,
   "dateAdded": "2025-10-29"
   }
+  
 ]
