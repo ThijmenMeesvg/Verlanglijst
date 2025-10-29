@@ -7,34 +7,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const response = await fetch('data.json');
-      const itemsByCategory = await response.json();
-      let items = [];
+      const items = await response.json(); // array van alle items
+      let filteredItems = items;
 
       // Filter op categorie
       if (options.category) {
-        items = itemsByCategory.filter(i => i.category === options.category);
-      } else {
-        // Als geen categorie, toon alle items
-        items = itemsByCategory;
+        filteredItems = filteredItems.filter(i => i.category === options.category);
       }
 
       // Filter op prijs
-      if (options.minPrice != null) items = items.filter(i => i.price >= options.minPrice);
-      if (options.maxPrice != null) items = items.filter(i => i.price <= options.maxPrice);
+      if (options.minPrice != null) filteredItems = filteredItems.filter(i => i.price >= options.minPrice);
+      if (options.maxPrice != null) filteredItems = filteredItems.filter(i => i.price <= options.maxPrice);
 
       // Sorteer op datum toegevoegd (voor homepagina)
       if (options.sortBy === "dateAdded") {
-        items.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+        filteredItems.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
       }
 
       // Limit (bijv. homepagina)
-      if (options.limit) items = items.slice(0, options.limit);
+      if (options.limit) filteredItems = filteredItems.slice(0, options.limit);
 
       // Toon items
-      if (items.length === 0) {
+      if (filteredItems.length === 0) {
         container.innerHTML = "<p>Geen items gevonden.</p>";
       } else {
-        container.innerHTML = items.map(i => `
+        container.innerHTML = filteredItems.map(i => `
           <div class="item${i.favorite ? " favorite" : ""}">
             <a href="${i.link}" target="_blank">${i.title}</a>
             <p>€${i.price.toFixed(2)}</p>
@@ -77,5 +74,3 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
-
-
