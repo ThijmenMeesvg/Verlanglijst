@@ -3,12 +3,12 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import os
-import re
 
+# Bestanden
 JSON_FILE = "wishlist.json"
 URLS_FILE = "new_urls.txt"
 
-# --- JSON aanmaken als het niet bestaat ---
+# Maak JSON bestand aan als het niet bestaat
 if not os.path.exists(JSON_FILE):
     with open(JSON_FILE, 'w', encoding='utf-8') as f:
         json.dump({
@@ -21,91 +21,56 @@ if not os.path.exists(JSON_FILE):
             "Overig": []
         }, f, indent=2, ensure_ascii=False)
 
-
-# --- Functies ---
-def shorten_url(url: str) -> str:
-    """Probeer een korte bol.com-link te maken via ap.lc (fallback naar originele)"""
-    if "bol.com" in url:
-        try:
-            r = requests.post("https://ap.lc/api/shorten", json={"url": url}, timeout=10)
-            if r.ok:
-                data = r.json()
-                if "shortlink" in data:
-                    return data["shortlink"]
-        except Exception:
-            pass
+# Shorten URL functie (optioneel)
+def shorten_url(url):
+    # Hier kan een URL shortener API toegevoegd worden
     return url
 
+# Duplicate check
+def is_duplicate(wishlist, category, link):
+    return any(item["link"] == link for item in wishlist.get(category, []))
 
-def clean_price(text: str) -> float:
-    """Converteer tekst naar een float-waarde"""
-    text = text.replace("€", "").replace(",", ".").strip()
-    match = re.search(r"\d+(\.\d+)?", text)
-    return float(match.group(0)) if match else 0.0
-
-
-def get_product_info(url: str) -> dict:
-    """Haal titel en prijs op van bekende winkels"""
-    title = "Onbekend product"
+# Functie per site
+def get_product_info(url):
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+    title = "placeholder"
     price = 0.0
 
     try:
-        headers = {"User-Agent": "Mozilla/5.0"}
-        r = requests.get(url, timeout=15, headers=headers)
-        soup = BeautifulSoup(r.text, "html.parser")
+        r = requests.get(url, headers=headers, timeout=15)
+        soup = BeautifulSoup(r.text, 'html.parser')
 
-        # --- bol.com ---
+        # Bol.com
         if "bol.com" in url:
-            t = soup.find("span", {"data-test": "title"}) or soup.find("h1")
-            p = soup.find("meta", {"itemprop": "price"}) or soup.find(class_="promo-price")
-            if t:
-                title = t.get_text(strip=True)
-            if p and p.get("content"):
-                price = float(p["content"])
-            elif p:
-                price = clean_price(p.get_text())
+            json_ld = soup.find('script', type='application/ld+json')
+            if json_ld:
+                data = json.loads(json_ld.string)
+                title = data.get('name', 'placeholder')
+                price = float(data.get('offers', {}).get('price', 0.0))
 
-        # --- amazon.nl / amazon.com ---
+        # Amazon
         elif "amazon." in url:
-            t = soup.find(id="productTitle")
-            p = soup.find(class_="a-price-whole")
-            if t:
-                title = t.get_text(strip=True)
-            if p:
-                price = clean_price(p.get_text())
+            title_tag = soup.find(id="productTitle")
+            title = title_tag.text.strip() if title_tag else "placeholder"
+            price_tag = soup.find(id="priceblock_ourprice") or soup.find(id="priceblock_dealprice")
+            if price_tag:
+                price_text = price_tag.text.strip().replace('€', '').replace(',', '.')
+                try:
+                    price = float(price_text)
+                except:
+                    price = 0.0
 
-        # --- ditverzinjeniet.nl ---
-        elif "ditverzinjeniet.nl" in url:
-            t = soup.find("h1", class_="product_title")
-            p = soup.find("span", class_="woocommerce-Price-amount")
-            if t:
-                title = t.get_text(strip=True)
-            if p:
-                price = clean_price(p.get_text())
-
-        # --- radbag.nl ---
-        elif "radbag.nl" in url:
-            t = soup.find("h1", class_="product-title")
-            p = soup.find("span", class_="price-item")
-            if t:
-                title = t.get_text(strip=True)
-            if p:
-                price = clean_price(p.get_text())
-
-        # --- platenzaak.nl ---
-        elif "platenzaak.nl" in url:
-            t = soup.find("h1", class_="product_title")
-            p = soup.find("span", class_="woocommerce-Price-amount")
-            if t:
-                title = t.get_text(strip=True)
-            if p:
-                price = clean_price(p.get_text())
-
-        # --- fallback ---
+        # Radbag.nl, ditverzinjeniet.nl, platenzaak.nl
         else:
-            t = soup.find("title")
-            if t:
-                title = t.get_text(strip=True).split("|")[0].strip()
+            title_tag = soup.find('title')
+            title = title_tag.text.strip() if title_tag else "placeholder"
+            price_tag = soup.find(class_='promo-price') or soup.find(class_='sales-price')
+            if price_tag:
+                price_text = price_tag.text.strip().replace('€','').replace(',','.')
+                try:
+                    price = float(price_text)
+                except:
+                    price = 0.0
 
     except Exception as e:
         print(f"Fout bij ophalen {url}: {e}")
@@ -115,47 +80,37 @@ def get_product_info(url: str) -> dict:
         "price": price,
         "link": shorten_url(url),
         "favorite": False,
-        "dateAdded": datetime.today().strftime("%Y-%m-%d")
+        "dateAdded": datetime.today().strftime('%Y-%m-%d')
     }
 
+# Lees URL's
+with open(URLS_FILE, 'r', encoding='utf-8') as f:
+    lines = f.readlines()
 
-# --- Verwerk URLs ---
-if not os.path.exists(URLS_FILE):
-    print("Geen new_urls.txt gevonden.")
-    exit()
-
-with open(URLS_FILE, "r", encoding="utf-8") as f:
-    lines = [line.strip() for line in f.readlines() if line.strip()]
-
-with open(JSON_FILE, "r", encoding="utf-8") as f:
+# Laad JSON
+with open(JSON_FILE, 'r', encoding='utf-8') as f:
     wishlist = json.load(f)
 
-added = 0
+# Voeg items toe
 for line in lines:
-    if "," not in line:
+    line = line.strip()
+    if not line or ',' not in line:
         continue
-    category, url = [x.strip() for x in line.split(",", 1)]
-    item = get_product_info(url)
-
+    category, url = line.split(',', 1)
     if category not in wishlist:
         wishlist[category] = []
 
-    # Duplicaten voorkomen
-    if any(existing["link"] == item["link"] for existing in wishlist[category]):
-        print(f"Overgeslagen (duplicaat): {item['title']}")
-        continue
+    if not is_duplicate(wishlist, category, url):
+        item = get_product_info(url)
+        wishlist[category].append(item)
+        print(f"Toegevoegd: {item['title']} in categorie {category}")
+    else:
+        print(f"Duplicaat overgeslagen: {url}")
 
-    wishlist[category].append(item)
-    print(f"Toegevoegd: {item['title']} in categorie {category}")
-    added += 1
-
-# Opslaan
-with open(JSON_FILE, "w", encoding="utf-8") as f:
+# Sla JSON op
+with open(JSON_FILE, 'w', encoding='utf-8') as f:
     json.dump(wishlist, f, indent=2, ensure_ascii=False)
 
-# Leegmaken van new_urls.txt
-open(URLS_FILE, "w").close()
-
-print(f"Wishlist bijgewerkt! ({added} nieuw item{'s' if added != 1 else ''})")
+print("Wishlist bijgewerkt!")
 
 
