@@ -1,21 +1,15 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Home – Mijn Verlanglijst</title>
-  <link rel="stylesheet" href="style.css" />
-
-  <!-- Confetti-bibliotheek -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verlanglijst – Home</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Header met menu -->
   <header>
-    <h1>Mijn Verlanglijst</h1>
     <nav>
       <a href="index.html">Home</a>
-      <a href="favorieten.html">Favorieten</a>
       <a href="boeken.html">Boeken</a>
       <a href="spelletjes.html">Spelletjes</a>
       <a href="muziek.html">Muziek</a>
@@ -23,62 +17,47 @@
       <a href="uitzet.html">Uitzet</a>
       <a href="sport.html">Sport & Buiten</a>
       <a href="overig.html">Overig</a>
+      <a href="favorieten.html">Favorieten</a>
     </nav>
   </header>
 
   <main>
-  <!-- Introductie -->
-  <section>
-    <h2>Welkom!</h2>
-    <p>
-      Heyhoi, wat gezellig dat je cadeau-inspiratie op komt doen. 
-      Ik houd mijn verlanglijstje al een aantal jaar lang het hele jaar door bij, 
-      en dus is het ellenlang geworden. 
-      Je kunt de lijst bekijken per categorie, mijn favorieten zien, of cadeaus filteren op prijs. 
-    </p>
-    <p><em>Klik op een item om de prijs en een link naar het product te zien.</em></p>
-    <p><em>Items die ik extra leuk vind, zijn gemarkeerd als favoriet.</em></p>
-  </section>
-    
+    <!-- Introductie -->
+    <section>
+      <h2>Welkom!</h2>
+      <p>
+        Heyhoi, wat gezellig dat je cadeau-inspiratie op komt doen. 
+        Ik houd mijn verlanglijstje al een aantal jaar lang het hele jaar door bij, 
+        en dus is het ellenlang geworden. 
+        Je kunt de lijst bekijken per categorie, mijn favorieten zien, of cadeaus filteren op prijs. 
+      </p>
+      <p><em>Klik op een item om de prijs en een link naar het product te zien.</em></p>
+      <p><em>Items die ik extra leuk vind, zijn gemarkeerd als favoriet.</em></p>
+    </section>
+
     <!-- Laatst toegevoegd -->
     <section>
       <h2>Laatst toegevoegd</h2>
-      <div id="item-container" class="grid"></div>
+      <div id="item-container"></div>
     </section>
   </main>
 
-  <!-- Script -->
-  <script src="script.js"></script>
+  <!-- Confetti library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+  <!-- Scripts onderaan voor correcte volgorde -->
   <script>
-    // Homepagina: toon de 12 laatst toegevoegde items
-    loadItems({ sortBy: "dateAdded", limit: 5 });
+    const homePage = true;
 
-    // Confetti alleen op homepagina
-    if (window.location.pathname.endsWith("index.html") || window.location.pathname === "/") {
-      const duration = 3000; // 3 seconden
-      const end = Date.now() + duration;
-      const colors = ['#ff6ec7', '#ffca3a', '#00ffcc', '#66b3ff'];
-
-      (function frame() {
-        confetti({
-          particleCount: 5,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0 },
-          colors: colors
-        });
-        confetti({
-          particleCount: 5,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1 },
-          colors: colors
-        });
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      })();
-    }
+    // Confetti effect bij openen
+    document.addEventListener("DOMContentLoaded", () => {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    });
   </script>
+  <script src="script.js"></script>
 </body>
 </html>
