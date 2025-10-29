@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import os
 
-# Bestanden
 JSON_FILE = "wishlist.json"
 URLS_FILE = "new_urls.txt"
 
@@ -22,14 +21,13 @@ if not os.path.exists(JSON_FILE):
         }, f, indent=2, ensure_ascii=False)
 
 def shorten_url(url):
-    """Verkort de URL via TinyURL API"""
+    """Verkort de URL via TinyURL"""
     try:
         api_url = f"http://tinyurl.com/api-create.php?url={url}"
         r = requests.get(api_url, timeout=10)
         if r.status_code == 200:
             return r.text.strip()
-        else:
-            return url
+        return url
     except Exception as e:
         print(f"Kan URL niet verkorten: {e}")
         return url
@@ -40,7 +38,7 @@ def get_product_info(url):
         r = requests.get(url, timeout=15)
         soup = BeautifulSoup(r.text, 'html.parser')
         title = soup.find('title').text.strip() if soup.find('title') else "Onbekend product"
-        
+
         price = 0.0
         price_tag = soup.find(class_='promo-price') or soup.find(class_='sales-price')
         if price_tag:
@@ -76,7 +74,6 @@ for line in lines:
     if not line or ',' not in line:
         continue
     category, url = line.split(',', 1)
-    # check of URL al bestaat
     if any(item['link'] == url or item['link'] == shorten_url(url) for item in wishlist.get(category, [])):
         print(f"URL al aanwezig in categorie {category}, wordt overgeslagen: {url}")
         continue
@@ -91,6 +88,5 @@ with open(JSON_FILE, 'w', encoding='utf-8') as f:
     json.dump(wishlist, f, indent=2, ensure_ascii=False)
 
 print("Wishlist bijgewerkt!")
-
 
 
