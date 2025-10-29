@@ -22,8 +22,17 @@ if not os.path.exists(JSON_FILE):
         }, f, indent=2, ensure_ascii=False)
 
 def shorten_url(url):
-    """Placeholder voor eventueel later korte link"""
-    return url
+    """Verkort de URL via TinyURL API"""
+    try:
+        api_url = f"http://tinyurl.com/api-create.php?url={url}"
+        r = requests.get(api_url, timeout=10)
+        if r.status_code == 200:
+            return r.text.strip()
+        else:
+            return url
+    except Exception as e:
+        print(f"Kan URL niet verkorten: {e}")
+        return url
 
 def get_product_info(url):
     """Haal titel en prijs op van een productpagina"""
