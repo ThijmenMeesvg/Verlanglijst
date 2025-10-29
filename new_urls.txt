@@ -12,6 +12,7 @@ Kleding & Accesoires,
 
 # Uitzet
 Uitzet,https://www.ditverzinjeniet.nl/monkey-business-sinkfin-gootsteenzeef?utm_source=tradetracker&utm_medium=cpc
+Uitzet,https://www.bol.com/nl/nl/p/vijzel-o-7-7-cm-porselein-gefu-grino/9300000026380257/?Referrer=ADVNLPPcef51800cdbf92970065bba51d1a0013340&utm_source=13340&utm_medium=Affiliates&utm_campaign=CPS&utm_content=api
 
 # Sport & Buiten
 Sport & Buiten,
