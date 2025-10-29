@@ -1,9 +1,25 @@
 {
   "Boeken": [],
   "Muziek": [],
-  "Spelletjes": [],
+  "Spelletjes": [
+    {
+      "title": "bol",
+      "price": 0.0,
+      "link": "https://tinyurl.com/24yp9fje",
+      "favorite": false,
+      "dateAdded": "2025-10-29"
+    }
+  ],
   "Kleding & Accesoires": [],
-  "Uitzet": [],
+  "Uitzet": [
+    {
+      "title": "bol",
+      "price": 0.0,
+      "link": "https://tinyurl.com/2d5ekxzh",
+      "favorite": false,
+      "dateAdded": "2025-10-29"
+    }
+  ],
   "Sport & Buiten": [],
   "Overig": []
 }
