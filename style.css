@@ -2,36 +2,37 @@
 body {
   margin: 0;
   font-family: 'Arial', sans-serif;
-  background: url('2fb086c0-24d9-4f3f-a740-d1332dc4fd63.png') no-repeat center center fixed;
-  background-size: cover;
-  color: #333;
+  background-color: #e0f7f9; /* zachte aqua tint als achtergrond */
+  color: #333333;
 }
 
 /* Header */
 header {
-  background-color: rgba(255, 200, 0, 0.85); /* vrolijk geel */
-  padding: 15px 30px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  background-color: #f8e27a; /* vrolijk maar chique geel */
+  padding: 20px 30px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
   position: sticky;
   top: 0;
   z-index: 100;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 header nav a {
-  margin-right: 15px;
+  margin-right: 20px;
   text-decoration: none;
   font-weight: bold;
-  color: #1a1a1a;
+  color: #1f4e5f;
   transition: color 0.3s;
 }
 
 header nav a:hover {
-  color: #ff3d00; /* opvallende kleur bij hover */
+  color: #4bc5c2;
 }
 
 /* Koppen */
 h1, h2 {
-  color: #007acc; /* frisse blauwe tint */
+  color: #1f4e5f; /* diepe blauwe tint */
   text-align: center;
 }
 
@@ -42,100 +43,123 @@ h2 {
 
 /* Secties */
 section {
-  margin: 20px auto;
+  margin: 30px auto;
   max-width: 1000px;
-  background-color: rgba(255,255,255,0.85);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  background-color: #fffdf7; /* lichte crème tint */
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 /* Introductie tekst */
 section p {
   font-size: 1rem;
   line-height: 1.6;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
-/* Emphasis tekst */
 section p em {
   font-style: italic;
-  color: #d63384; /* opvallend maar niet te fel */
+  color: #ff9a5a; /* warm accent */
 }
 
 /* Item grid */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  gap: 25px;
 }
 
 /* Items */
 .item {
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 10px;
-  padding: 15px;
+  background-color: #fffdf7;
+  border-radius: 16px;
+  padding: 20px;
   text-align: center;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: transform 0.25s, box-shadow 0.25s;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.12);
 }
 
 .item a {
   text-decoration: none;
-  color: #007acc;
+  color: #1f4e5f;
   font-weight: bold;
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  transition: color 0.3s;
+}
+
+.item a:hover {
+  color: #4bc5c2;
+  text-decoration: underline;
 }
 
 .item p {
   margin: 0;
-  color: #333;
+  color: #333333;
   font-size: 0.95rem;
 }
 
 /* Hover effect */
 .item:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.2);
 }
 
 /* Favorieten */
 .item.favorite {
-  border: 2px solid #ff3d00; /* fel accent voor favoriet */
-  background-color: rgba(255, 245, 230, 0.95);
+  border: 2px solid #ff9a5a;
+  background-color: #fff3eb;
+  box-shadow: 0 12px 25px rgba(255,154,90,0.35);
+}
+
+.item.favorite::before {
+  content: "★";
+  color: #ff9a5a;
+  display: block;
+  font-size: 1.4rem;
+  margin-bottom: 5px;
 }
 
 /* Filter sectie */
 #filters {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
 }
 
 #filters label {
-  margin: 0 10px;
+  margin: 0 12px;
   font-weight: bold;
+  color: #1f4e5f;
 }
 
 #filters input {
   width: 70px;
-  padding: 5px;
-  border-radius: 5px;
+  padding: 6px;
+  border-radius: 8px;
   border: 1px solid #ccc;
 }
 
+#filters input:focus {
+  border-color: #4bc5c2;
+  outline: none;
+  box-shadow: 0 0 8px rgba(75,197,194,0.5);
+}
+
 #applyPriceFilter {
-  background-color: #ffcc00;
+  background-color: #4bc5c2;
   border: none;
-  padding: 8px 15px;
-  border-radius: 6px;
+  padding: 10px 18px;
+  border-radius: 10px;
   font-weight: bold;
+  color: #fff;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
 #applyPriceFilter:hover {
-  background-color: #ff9900;
+  background-color: #1f9fa0;
+  transform: translateY(-2px);
 }
 
 /* Responsive */
@@ -144,5 +168,10 @@ section p em {
     display: block;
     margin: 5px 0;
   }
+  
+  .grid {
+    gap: 15px;
+  }
 }
+
 
