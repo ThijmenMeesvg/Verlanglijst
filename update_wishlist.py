@@ -22,7 +22,7 @@ if not os.path.exists(JSON_FILE):
         }, f, indent=2, ensure_ascii=False)
 
 def shorten_url(url):
-    """Placeholder: eventueel later een shortener API koppelen"""
+    """Placeholder voor eventueel later korte link"""
     return url
 
 def get_product_info(url):
@@ -40,7 +40,6 @@ def get_product_info(url):
                 price = float(price_text)
             except:
                 price = 0.0
-
     except Exception as e:
         print(f"Fout bij ophalen {url}: {e}")
         title = "Onbekend product"
@@ -62,12 +61,15 @@ with open(URLS_FILE, 'r', encoding='utf-8') as f:
 with open(JSON_FILE, 'r', encoding='utf-8') as f:
     wishlist = json.load(f)
 
-# Voeg items toe
+# Voeg items toe, voorkom duplicaten
 for line in lines:
     line = line.strip()
     if not line or ',' not in line:
         continue
     category, url = line.split(',', 1)
+    if any(item['link'] == url for item in wishlist.get(category, [])):
+        print(f"URL al aanwezig in categorie {category}, wordt overgeslagen: {url}")
+        continue
     item = get_product_info(url)
     if category not in wishlist:
         wishlist[category] = []
