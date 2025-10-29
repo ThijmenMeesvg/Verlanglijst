@@ -12,10 +12,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Filter op categorie
       if (options.category) {
-        items = itemsByCategory[options.category] || [];
+        items = itemsByCategory.filter(i => i.category === options.category);
       } else {
-        // Als geen categorie, combineer alle categorieën
-        items = Object.values(itemsByCategory).flat();
+        // Als geen categorie, toon alle items
+        items = itemsByCategory;
       }
 
       // Filter op prijs
@@ -35,9 +35,9 @@ document.addEventListener("DOMContentLoaded", () => {
         container.innerHTML = "<p>Geen items gevonden.</p>";
       } else {
         container.innerHTML = items.map(i => `
-          <div class="item">
+          <div class="item${i.favorite ? " favorite" : ""}">
             <a href="${i.link}" target="_blank">${i.title}</a>
-            <p>€${i.price}</p>
+            <p>€${i.price.toFixed(2)}</p>
           </div>
         `).join("");
       }
@@ -65,17 +65,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Als categoriepagina
+  // Categoriepagina
   if (typeof currentCategory !== "undefined") {
     loadItems({ category: currentCategory });
     setupPriceFilter(currentCategory);
   }
 
-  // Als homepage
+  // Homepage
   if (typeof homePage !== "undefined") {
     loadItems({ sortBy: "dateAdded", limit: 12 });
   }
 
-}); // einde DOMContentLoaded
+});
 
 
