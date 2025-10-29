@@ -118,7 +118,15 @@
     }
   ],
   "Kleding & Accesoires": [],
-  "Uitzet": [],
+  "Uitzet": [
+    {
+      "title": "Gootsteenzeef Sinkfin",
+      "price": 11.99,
+      "link": "https://ap.lc/ARtpD",
+      "favorite": false,
+      "dateAdded": "2001-01-01"
+    },
+  ],
   "Sport & Buiten": [],
   "Overig": []
 }
