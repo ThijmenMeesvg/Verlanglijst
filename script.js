@@ -47,9 +47,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
     } catch (error) {
-      console.error(error);
-      container.innerHTML = "<p>Fout bij het laden van de items.</p>";
-    }
+  console.error(error);
+  container.innerHTML = `
+    <p>Fout bij het laden van de items.</p>
+    <img src="https://static.vecteezy.com/system/resources/previews/048/790/049/non_2x/oops-retro-error-message-in-purple-color-with-gradient-vector.jpg" 
+         alt="Foutafbeelding" 
+         style="max-width:300px; display:block; margin-top:10px;">
+  `;
+}
   }
 
   // Setup prijsfilterknop
