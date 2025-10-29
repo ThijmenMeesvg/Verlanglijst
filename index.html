@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Home – Mijn Verlanglijst</title>
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Confetti-bibliotheek -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
+  <!-- Header met menu -->
   <header>
     <h1>Mijn Verlanglijst</h1>
     <nav>
@@ -24,6 +28,7 @@
   </header>
 
   <main>
+    <!-- Introductietekst -->
     <section>
       <h2>Welkom!</h2>
       <p>
@@ -36,16 +41,45 @@
       </p>
     </section>
 
+    <!-- Laatst toegevoegd -->
     <section>
       <h2>Laatst toegevoegd</h2>
       <div id="item-container" class="grid"></div>
     </section>
   </main>
 
+  <!-- Script voor items -->
   <script src="script.js"></script>
   <script>
     // Laat de meest recent toegevoegde items zien
     loadItems({ sortBy: "dateAdded", limit: 12 });
+
+    // Confetti alleen op deze homepagina
+    if (window.location.pathname.endsWith("index.html") || window.location.pathname === "/") {
+      const duration = 3000; // 3 seconden
+      const end = Date.now() + duration;
+      const colors = ['#ff6ec7', '#ffca3a', '#00ffcc', '#66b3ff'];
+
+      (function frame() {
+        confetti({
+          particleCount: 5,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: colors
+        });
+        confetti({
+          particleCount: 5,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: colors
+        });
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      })();
+    }
   </script>
 </body>
 </html>
