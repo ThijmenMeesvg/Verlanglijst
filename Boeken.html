@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boeken – Verlanglijst</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Boeken</h1>
+    <nav>
+      <a href="index.html">Laatst toegevoegd</a>
+      <a href="favorieten.html">Favorieten</a>
+      <a href="onder15.html">Onder €15</a>
+      <a href="boeken.html">Boeken</a>
+      <a href="spelletjes.html">Spelletjes</a>
+      <a href="muziek.html">Muziek</a>
+      <a href="kleding.html">Kleding & Accessoires</a>
+      <a href="uitzet.html">Uitzet</a>
+      <a href="sport.html">Sport & Buiten</a>
+      <a href="overig.html">Overig</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Boeken</h2>
+    <div id="item-container" class="grid"></div>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    loadItems({ category: "Boeken" });
+  </script>
+</body>
+</html>
