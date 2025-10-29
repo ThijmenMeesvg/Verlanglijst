@@ -1,3 +1,4 @@
+
 /* Algemene stijl */
 body {
   margin: 0;
@@ -9,19 +10,36 @@ body {
 
 /* Header */
 header {
-  background-color: #2C2C2C;
-  padding: 15px 30px;
+  background: linear-gradient(to bottom, #333 0%, #1E1E1E 100%);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
   position: sticky;
   top: 0;
   z-index: 100;
+  padding: 15px 0 20px 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
+}
+
+/* Titel bovenaan */
+header h1 {
+  color: #FFD369;
+  font-size: 2.2rem;
+  margin: 5px 0 15px 0;
+  text-align: center;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+/* Navigatie */
+header nav {
+  display: flex;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
 header nav a {
-  margin: 0 15px;
   text-decoration: none;
   font-weight: 600;
   color: #FFD369;
@@ -34,13 +52,10 @@ header nav a:hover {
 }
 
 /* Koppen */
-h1, h2 {
+h2 {
   color: #FFD369;
   text-align: center;
   letter-spacing: 0.5px;
-}
-
-h2 {
   margin-top: 40px;
   margin-bottom: 20px;
   font-weight: 500;
@@ -153,4 +168,29 @@ section p {
 /* Footer gradient */
 footer {
   margin-top: 60px;
-  background: linear-gradie
+  background: linear-gradient(to bottom, #2C2C2C, #1E1E1E);
+  color: #EDEDED;
+  text-align: center;
+  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.9rem;
+}
+
+/* Responsief */
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 1.6rem;
+  }
+
+  header nav {
+    gap: 12px;
+  }
+
+  section {
+    padding: 15px;
+  }
+
+  .item {
+    padding: 15px;
+  }
+}
