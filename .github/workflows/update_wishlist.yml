@@ -21,12 +21,12 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests beautifulsoup4 tinyurl
+          pip install requests beautifulsoup4
 
       - name: Run update script
         run: python update_wishlist.py
 
-           - name: Auto commit JSON
+      - name: Auto commit JSON
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           file_pattern: wishlist.json
@@ -36,3 +36,4 @@ jobs:
           branch: main
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
