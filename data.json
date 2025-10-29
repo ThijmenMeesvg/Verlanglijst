@@ -31,7 +31,16 @@
       "dateAdded": "2025-10-27"
     }
   ],
-  "Spelletjes": [],
+  "Spelletjes": [
+    {
+      "title": "Bordspel: Ransom Notes",
+      "price": 30,
+      "link": "https://ap.lc/PWiCO",
+      "favorite": true,
+      "dateAdded": "2025-10-27"
+      }
+  ],
+  
   "Kleding & Accesoires": [],
   "Uitzet": [],
   "Sport & Buiten": [],
