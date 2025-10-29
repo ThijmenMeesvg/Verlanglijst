@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Muziek – Verlanglijst</title>
+  <title>Muziek – Mijn Verlanglijst</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <h1>Muziek</h1>
+    <h1>Mijn Verlanglijst</h1>
     <nav>
-      <a href="index.html">Laatst toegevoegd</a>
+      <a href="index.html">Home</a>
       <a href="favorieten.html">Favorieten</a>
       <a href="onder15.html">Onder €15</a>
       <a href="boeken.html">Boeken</a>
@@ -24,13 +24,22 @@
   </header>
 
   <main>
-    <h2>Muziek</h2>
-    <div id="item-container" class="grid"></div>
+    <section id="filters">
+      <h2>Filter op prijs</h2>
+      <label>Min: €<input type="number" id="minPrice" placeholder="0" min="0"></label>
+      <label>Max: €<input type="number" id="maxPrice" placeholder="1000" min="0"></label>
+      <button id="applyPriceFilter">Toepassen</button>
+    </section>
+
+    <section>
+      <div id="item-container" class="grid"></div>
+    </section>
   </main>
 
   <script src="script.js"></script>
   <script>
-    loadItems({ category: "Muziek" });
+    const currentCategory = "Muziek";
+    loadItems({ category: currentCategory });
   </script>
 </body>
 </html>
