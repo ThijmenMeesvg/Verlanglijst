@@ -1,3 +1,4 @@
+/* Algemene body */
 body {
   background-color: #121212;
   color: #f2f2f2;
@@ -6,59 +7,122 @@ body {
   padding: 0;
 }
 
+/* Header */
 header {
-  background: #1f1f1f;
+  background: linear-gradient(90deg, #ff6ec7, #ffca3a);
   padding: 1rem;
   text-align: center;
+  border-bottom: 2px solid #ffca3a;
 }
 
+header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #121212;
+  text-shadow: 1px 1px 2px #fff;
+}
+
+/* Navigatie */
 nav {
-  margin-top: 0.5rem;
+  margin-top: 0.6rem;
 }
 
 nav a {
-  color: #bbb;
+  color: #121212;
   text-decoration: none;
-  margin: 0 8px;
-  transition: color 0.2s;
+  margin: 0 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: color 0.3s, transform 0.2s;
 }
 
 nav a:hover {
-  color: #fff;
+  color: #ffffff;
+  transform: scale(1.1);
 }
 
+/* Main content */
 main {
   padding: 1.5rem;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
+/* Secties en titels */
+main section {
+  margin-bottom: 2rem;
+}
+
+main section h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  color: #ffca3a;
+  text-shadow: 1px 1px 2px #ff6ec7;
+}
+
+main section p {
+  line-height: 1.6;
+  color: #ddd;
+}
+
+/* Grid voor items */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 1rem;
 }
 
+/* Item-kaarten */
 .item {
-  background: #1e1e1e;
+  background: linear-gradient(135deg, #1e1e1e, #2b2b2b);
   border-radius: 10px;
   padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
+.item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(255, 202, 58, 0.7);
+}
+
+/* Favorieten */
 .item.favorite {
-  border: 1px solid gold;
+  border: 2px solid #ff6ec7;
+  box-shadow: 0 4px 10px rgba(255, 110, 199, 0.7);
 }
 
+/* Titels en tekst in items */
 .item h3 {
   margin-top: 0;
+  font-size: 1.2rem;
+  color: #ffffff;
 }
 
+.item p {
+  margin: 0.4rem 0;
+  color: #ccc;
+}
+
+/* Links in items */
 .item a {
   display: inline-block;
   margin-top: 8px;
-  color: #66b3ff;
+  color: #ffca3a;
+  font-weight: bold;
   text-decoration: none;
+  transition: color 0.2s;
 }
 
 .item a:hover {
+  color: #ff6ec7;
   text-decoration: underline;
+}
+
+/* Responsive voor kleinere schermen */
+@media (max-width: 600px) {
+  nav a {
+    display: block;
+    margin: 5px 0;
+  }
 }
