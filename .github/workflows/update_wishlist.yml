@@ -40,7 +40,3 @@ jobs:
           else
             echo "Geen wijzigingen, commit overgeslagen"
           fi
-
-            echo "Geen wijzigingen, commit overgeslagen"
-          fi
-
