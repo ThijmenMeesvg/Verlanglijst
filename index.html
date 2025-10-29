@@ -51,10 +51,19 @@
 
     // Confetti effect bij openen
     document.addEventListener("DOMContentLoaded", () => {
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
+  // Van links
+  confetti({
+    particleCount: 70,
+    angle: 60,
+    spread: 60,
+    origin: { x: 0, y: 0.6 }
+  });
+  // Van rechts
+  confetti({
+    particleCount: 70,
+    angle: 120,
+    spread: 60,
+    origin: { x: 1, y: 0.6 }
       });
     });
   </script>
