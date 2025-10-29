@@ -1,4 +1,3 @@
-
 /* Algemene stijl */
 body {
   margin: 0;
@@ -49,6 +48,41 @@ header nav a {
 header nav a:hover {
   color: #FF8C42;
   transform: translateY(-2px);
+}
+
+/* Hero / Welkom-sectie */
+.hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh; /* zorgt dat het groter wordt en meer centraal staat */
+  margin: 40px auto;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 1s ease forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero h2 {
+  font-size: 2.4rem;
+  margin-bottom: 15px;
+  color: #FFD369;
+  letter-spacing: 1px;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  color: #EDEDED;
+  max-width: 700px;
+  line-height: 1.8;
 }
 
 /* Koppen */
@@ -192,5 +226,13 @@ footer {
 
   .item {
     padding: 15px;
+  }
+
+  .hero h2 {
+    font-size: 1.8rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
   }
 }
