@@ -2,15 +2,15 @@
 body {
   margin: 0;
   font-family: 'Arial', sans-serif;
-  background-color: #e0f7f9; /* zachte aqua tint als achtergrond */
-  color: #333333;
+  background-color: #F5F5F5;
+  color: #2B2B23;
 }
 
 /* Header */
 header {
-  background-color: #f8e27a; /* vrolijk maar chique geel */
+  background-color: #D85603; /* warme accentkleur */
   padding: 20px 30px;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -22,17 +22,17 @@ header nav a {
   margin-right: 20px;
   text-decoration: none;
   font-weight: bold;
-  color: #1f4e5f;
+  color: #FFF;
   transition: color 0.3s;
 }
 
 header nav a:hover {
-  color: #4bc5c2;
+  color: #CBD183; /* subtiel pop accent */
 }
 
 /* Koppen */
 h1, h2 {
-  color: #1f4e5f; /* diepe blauwe tint */
+  color: #2B2B23;
   text-align: center;
 }
 
@@ -45,7 +45,7 @@ h2 {
 section {
   margin: 30px auto;
   max-width: 1000px;
-  background-color: #fffdf7; /* lichte crème tint */
+  background-color: #D3C2CD; /* zachte pastel achtergrond voor cards */
   padding: 25px;
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.15);
@@ -60,7 +60,7 @@ section p {
 
 section p em {
   font-style: italic;
-  color: #ff9a5a; /* warm accent */
+  color: #D85603; /* accentkleur */
 }
 
 /* Item grid */
@@ -72,7 +72,7 @@ section p em {
 
 /* Items */
 .item {
-  background-color: #fffdf7;
+  background-color: #FFF;
   border-radius: 16px;
   padding: 20px;
   text-align: center;
@@ -82,7 +82,7 @@ section p em {
 
 .item a {
   text-decoration: none;
-  color: #1f4e5f;
+  color: #D85603;
   font-weight: bold;
   display: block;
   margin-bottom: 10px;
@@ -90,13 +90,13 @@ section p em {
 }
 
 .item a:hover {
-  color: #4bc5c2;
+  color: #CBD183;
   text-decoration: underline;
 }
 
 .item p {
   margin: 0;
-  color: #333333;
+  color: #2B2B23;
   font-size: 0.95rem;
 }
 
@@ -108,14 +108,14 @@ section p em {
 
 /* Favorieten */
 .item.favorite {
-  border: 2px solid #ff9a5a;
-  background-color: #fff3eb;
-  box-shadow: 0 12px 25px rgba(255,154,90,0.35);
+  border: 3px solid #CBD183;
+  background-color: #FFF9E6;
+  box-shadow: 0 12px 25px rgba(203,209,131,0.35);
 }
 
 .item.favorite::before {
   content: "★";
-  color: #ff9a5a;
+  color: #CBD183;
   display: block;
   font-size: 1.4rem;
   margin-bottom: 5px;
@@ -130,35 +130,35 @@ section p em {
 #filters label {
   margin: 0 12px;
   font-weight: bold;
-  color: #1f4e5f;
+  color: #2B2B23;
 }
 
 #filters input {
   width: 70px;
   padding: 6px;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #67777B;
 }
 
 #filters input:focus {
-  border-color: #4bc5c2;
+  border-color: #D85603;
   outline: none;
-  box-shadow: 0 0 8px rgba(75,197,194,0.5);
+  box-shadow: 0 0 8px rgba(216,86,3,0.4);
 }
 
 #applyPriceFilter {
-  background-color: #4bc5c2;
+  background-color: #D85603;
   border: none;
   padding: 10px 18px;
   border-radius: 10px;
   font-weight: bold;
-  color: #fff;
+  color: #FFF;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
 }
 
 #applyPriceFilter:hover {
-  background-color: #1f9fa0;
+  background-color: #CBD183;
   transform: translateY(-2px);
 }
 
@@ -173,5 +173,4 @@ section p em {
     gap: 15px;
   }
 }
-
 
