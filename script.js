@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Limit (bijv. homepagina)
-      if (options.limit) filteredItems = filteredItems.slice(0, options.limit);
+      if (options.limit) filteredItems = filteredItems.slice(0, 3);
 
       // Toon items
       if (filteredItems.length === 0) {
