@@ -7,11 +7,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const response = await fetch('data.json');
-      let items = await response.json();
+      const itemsByCategory = await response.json();
+      let items = [];
 
       // Filter op categorie
       if (options.category) {
-        items = items.filter(i => i.category === options.category);
+        items = itemsByCategory[options.category] || [];
+      } else {
+        // Als geen categorie, combineer alle categorieën
+        items = Object.values(itemsByCategory).flat();
       }
 
       // Filter op prijs
@@ -74,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-// Voor homepagina: laatste toegevoegd, limiet bijv. 12
 if (typeof homePage !== "undefined") {
   loadItems({ sortBy: "dateAdded", limit: 12 });
 }
