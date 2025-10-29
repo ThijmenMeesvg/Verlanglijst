@@ -1,43 +1,40 @@
-[
-  {
-    "title": "Boek: Films die nergens draaien",
-    "price": 24.99,
-    "link": "https://ap.lc/HURoy",
-    "category": "Boeken",
-    "favorite": false,
-    "dateAdded": "2025-10-29"
-  },
-  {
-    "title": "LP: K3 - De Grootste Hits!",
-    "price": 36.99,
-    "link": "https://ap.lc/rdwvA",
-    "category": "Muziek",
-    "favorite": true,
-    "dateAdded": "2025-10-25"
-  },
-  {
-    "title": "LP: R.E.M. - Automatic for the people",
-    "price": 32.99,
-    "link": "https://ap.lc/SQPll",
-    "category": "Muziek",
-    "favorite": true,
-    "dateAdded": "2025-10-27"
-  },
-  {
-  "title": "Notitieboek – Moomin Love",
-  "price": 10.34,
-  "link": "https://www.bol.com/nl/nl/p/artisan-art-pocket-journals-moomin-love-artisan-art-pocket-notebook/9300000223421053/",
-  "category": "Boeken",
-  "favorite": false,
-  "dateAdded": "2025-10-29"
-  },
-  {
-  "title": "Notitieboek – Moomin Love",
-  "price": 10.34,
-  "link": "https://www.bol.com/nl/nl/p/artisan-art-pocket-journals-moomin-love-artisan-art-pocket-notebook/9300000223421053/",
-  "category": "Boeken",
-  "favorite": false,
-  "dateAdded": "2025-10-29"
-  }
-  
-]
+{
+  "Boeken": [
+    {
+      "title": "Boek: Films die nergens draaien",
+      "price": 24.99,
+      "link": "https://ap.lc/HURoy",
+      "favorite": false,
+      "dateAdded": "2025-10-29"
+    },
+    {
+      "title": "Notitieboek – Moomin Love",
+      "price": 10.34,
+      "link": "https://www.bol.com/nl/nl/p/artisan-art-pocket-journals-moomin-love-artisan-art-pocket-notebook/9300000223421053/",
+      "favorite": false,
+      "dateAdded": "2025-10-29"
+    }
+  ],
+  "Muziek": [
+    {
+      "title": "LP: K3 - De Grootste Hits!",
+      "price": 36.99,
+      "link": "https://ap.lc/rdwvA",
+      "favorite": true,
+      "dateAdded": "2025-10-25"
+    },
+    {
+      "title": "LP: R.E.M. - Automatic for the people",
+      "price": 32.99,
+      "link": "https://ap.lc/SQPll",
+      "favorite": true,
+      "dateAdded": "2025-10-27"
+    }
+  ],
+  "Spelletjes": [],
+  "Kleding & Accesoires": [],
+  "Uitzet": [],
+  "Sport & Buiten": [],
+  "Overig": []
+}
+
