@@ -76,7 +76,8 @@ for line in lines:
     if not line or ',' not in line:
         continue
     category, url = line.split(',', 1)
-    if any(item['link'] == url for item in wishlist.get(category, [])):
+    # check of URL al bestaat
+    if any(item['link'] == url or item['link'] == shorten_url(url) for item in wishlist.get(category, [])):
         print(f"URL al aanwezig in categorie {category}, wordt overgeslagen: {url}")
         continue
     item = get_product_info(url)
@@ -90,5 +91,6 @@ with open(JSON_FILE, 'w', encoding='utf-8') as f:
     json.dump(wishlist, f, indent=2, ensure_ascii=False)
 
 print("Wishlist bijgewerkt!")
+
 
 
