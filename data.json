@@ -22,5 +22,13 @@
     "category": "Spelletjes",
     "favorite": true,
     "dateAdded": "2025-10-27"
+  },
+  {
+    "title": "T-shirt: Zwarte basic",
+    "price": 14.99,
+    "link": "https://voorbeeld.nl/tshirt",
+    "category": "Kleding & Accessoires",
+    "favorite": false,
+    "dateAdded": "2025-10-28"
   }
 ]
