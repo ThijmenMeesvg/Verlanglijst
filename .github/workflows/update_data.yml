@@ -1,1 +1,39 @@
+name: Update new_data.jnas
+
+on:
+  workflow_dispatch:  # Hierdoor kun je de workflow handmatig starten
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Stap 1: Haal de repository op
+      - uses: actions/checkout@v3
+
+      # Stap 2: Installeer Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      # Stap 3: Installeer dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4
+
+      # Stap 4: Run het script
+      - name: Run website-to-data-jnas
+        run: |
+          python website-to-data-jnas.py https://example.com --append --outfile new_folder/new_data.jnas
+
+      # Stap 5: Commit wijzigingen terug naar de repository
+      - name: Commit changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add new_folder/new_data.jnas
+          git commit -m "Update new_data.jnas via GitHub Actions" || echo "No changes to commit"
+          git push
 
