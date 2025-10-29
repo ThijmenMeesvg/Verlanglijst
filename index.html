@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Verlanglijst – Laatst toegevoegd</title>
+  <title>Home – Mijn Verlanglijst</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
     <h1>Mijn Verlanglijst</h1>
     <nav>
-      <a href="index.html">Laatst toegevoegd</a>
+      <a href="index.html">Home</a>
       <a href="favorieten.html">Favorieten</a>
       <a href="onder15.html">Onder €15</a>
       <a href="boeken.html">Boeken</a>
@@ -22,12 +22,29 @@
       <a href="overig.html">Overig</a>
     </nav>
   </header>
+
   <main>
-    <h2>Laatst toegevoegd</h2>
-    <div id="item-container" class="grid"></div>
+    <section>
+      <h2>Welkom!</h2>
+      <p>
+        Hallo, ik ben Thijmen! Dit is mijn persoonlijke verlanglijst-website. 
+        Hier houd ik bij welke cadeaus en items ik graag zou willen hebben. 
+        Je kunt de lijst bekijken per categorie, mijn favorieten zien, of cadeaus ontdekken onder €15. 
+      </p>
+      <p>
+        Klik op een item om de prijs en een link naar het product te zien. Items die ik extra leuk vind, zijn gemarkeerd als favoriet.
+      </p>
+    </section>
+
+    <section>
+      <h2>Laatst toegevoegd</h2>
+      <div id="item-container" class="grid"></div>
+    </section>
   </main>
+
   <script src="script.js"></script>
   <script>
+    // Laat de meest recent toegevoegde items zien
     loadItems({ sortBy: "dateAdded", limit: 12 });
   </script>
 </body>
