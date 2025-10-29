@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Boeken – Mijn Verlanglijst</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boeken – Verlanglijst</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Header met menu -->
   <header>
-    <h1>Mijn Verlanglijst</h1>
     <nav>
       <a href="index.html">Home</a>
-      <a href="favorieten.html">Favorieten</a>
       <a href="boeken.html">Boeken</a>
       <a href="spelletjes.html">Spelletjes</a>
       <a href="muziek.html">Muziek</a>
@@ -20,31 +17,29 @@
       <a href="uitzet.html">Uitzet</a>
       <a href="sport.html">Sport & Buiten</a>
       <a href="overig.html">Overig</a>
+      <a href="favorieten.html">Favorieten</a>
     </nav>
   </header>
 
   <main>
-    <!-- Filterbalk -->
-    <section id="filters">
-      <h2>Filter op prijs</h2>
-      <label>Min: €<input type="number" id="minPrice" placeholder="0" min="0"></label>
-      <label>Max: €<input type="number" id="maxPrice" placeholder="1000" min="0"></label>
-      <button id="applyPriceFilter">Toepassen</button>
-    </section>
+    <h1>Boeken</h1>
 
-    <!-- Items-grid -->
-    <section>
-      <div id="item-container" class="grid"></div>
-    </section>
+    <!-- Prijsfilter -->
+    <div class="filter">
+      <label>Min prijs: <input type="number" id="minPrice" placeholder="€0"></label>
+      <label>Max prijs: <input type="number" id="maxPrice" placeholder="€100"></label>
+      <button id="applyPriceFilter">Filter</button>
+    </div>
+
+    <!-- Container voor items -->
+    <div id="item-container"></div>
   </main>
 
   <!-- Script -->
-  <script src="script.js"></script>
   <script>
-    // Specificeer categorie voor deze pagina
-    const currentCategory = "Boeken";
-    loadItems({ category: currentCategory });
+    const currentCategory = "Boeken"; // exact zoals in data.json
   </script>
+  <script src="script.js"></script>
 </body>
 </html>
 
