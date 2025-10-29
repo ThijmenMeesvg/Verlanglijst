@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Header met menu -->
   <header>
     <h1>Mijn Verlanglijst</h1>
     <nav>
@@ -24,7 +23,6 @@
   </header>
 
   <main>
-    <!-- Filterbalk -->
     <section id="filters">
       <h2>Filter op prijs</h2>
       <label>Min: €<input type="number" id="minPrice" placeholder="0" min="0"></label>
@@ -32,19 +30,16 @@
       <button id="applyPriceFilter">Toepassen</button>
     </section>
 
-    <!-- Items-grid -->
     <section>
       <div id="item-container" class="grid"></div>
     </section>
   </main>
 
-  <!-- Script -->
-  <script src="script.js"></script>
   <script>
-    // Specificeer categorie voor deze pagina
     const currentCategory = "Spelletjes";
-    loadItems({ category: currentCategory });
   </script>
+  <script src="script.js"></script>
 </body>
 </html>
+
 
