@@ -62,9 +62,9 @@
     },
     {
       "title": "Bordspel: All Screwed up",
-      "Price": 33,
+      "price": 33,
       "link": "https://ap.lc/EhucY",
-      "favorite": "true",
+      "favorite": true,
       "dateAdded": "2025-10-29"
     }
   ],
