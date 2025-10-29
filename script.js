@@ -6,28 +6,24 @@ async function loadItems(options = {}) {
     const res = await fetch("data.json");
     let items = await res.json();
 
-    // Sorteer of filter op basis van wat de pagina vraagt
+    // Filteren op categorie, favoriet, prijs of volgorde
     if (options.category) {
       items = items.filter(i => i.category === options.category);
     }
-
     if (options.favoritesOnly) {
       items = items.filter(i => i.favorite);
     }
-
     if (options.priceBelow) {
       items = items.filter(i => i.price < options.priceBelow);
     }
-
     if (options.sortBy === "dateAdded") {
       items.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
     }
-
     if (options.limit) {
       items = items.slice(0, options.limit);
     }
 
-    // Toon items
+    // Weergave
     container.innerHTML = "";
     if (items.length === 0) {
       container.innerHTML = "<p>Geen items gevonden.</p>";
@@ -42,9 +38,7 @@ async function loadItems(options = {}) {
         <p>€${item.price.toFixed(2)}</p>
         <a href="${item.link}" target="_blank">Bekijk product</a>
       `;
-      if (item.favorite) {
-        div.classList.add("favorite");
-      }
+      if (item.favorite) div.classList.add("favorite");
       container.appendChild(div);
     });
   } catch (err) {
