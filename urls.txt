@@ -1,20 +1,20 @@
 # Boeken
-Boeken | 
+Boeken,
 
 # Muziek
-Muziek | 
+Muziek,
 
 # Spelletjes
-Spelletjes | 
+Spelletjes, 
 
 # Kleding & Accesoires
-Kleding & Accesoires | 
+Kleding & Accesoires,
 
 # Uitzet
-Uitzet | https://www.ditverzinjeniet.nl/monkey-business-sinkfin-gootsteenzeef?utm_source=tradetracker&utm_medium=cpc
+Uitzet,https://www.ditverzinjeniet.nl/monkey-business-sinkfin-gootsteenzeef?utm_source=tradetracker&utm_medium=cpc
 
 # Sport & Buiten
-Sport & Buiten | 
+Sport & Buiten,
 
 # Overig
-Overig | 
+Overig,
