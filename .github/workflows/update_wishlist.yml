@@ -33,7 +33,7 @@ jobs:
           # Alleen committen als er echte veranderingen zijn
           if ! git diff --cached --quiet; then
             git commit -m "Wishlist automatisch bijgewerkt"
-            git push origin main
+            git push
           else
             echo "Geen wijzigingen, commit overgeslagen"
           fi
