@@ -56,5 +56,14 @@
     }
   ],
   "Sport & Buiten": [],
-  "Overig": []
+  "Overig": [],
+  "spelletjes": [
+    {
+      "title": "IP address 20.109.92.208 is blocked",
+      "price": 0.0,
+      "link": "https://www.bol.com/nl/nl/p/lego-architecture-notre-dame-van-parijs-21061/9300000173010318/?cid=1761767286928-1314091077018&bltgh=fa8b588b-21e0-43ae-837b-8dd3b240c26e.ProductList_Middle.4.ProductImage",
+      "favorite": false,
+      "dateAdded": "2025-10-29"
+    }
+  ]
 }
