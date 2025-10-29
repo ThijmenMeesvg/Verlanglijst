@@ -1,77 +1,73 @@
-// Globale functie om items te tonen
-function displayItems(items) {
+async function loadItems(options = {}) {
   const container = document.getElementById("item-container");
-  container.innerHTML = "";
+  if (!container) return;
+  container.innerHTML = "Even laden...";
 
-  items.forEach(item => {
-    const div = document.createElement("div");
-    div.classList.add("item");
-    if (item.favorite) div.classList.add("favorite");
+  try {
+    const response = await fetch('data.json');
+    let items = await response.json();
 
-    div.innerHTML = `
-      <h3>${item.title}</h3>
-      <p>€${item.price.toFixed(2)}</p>
-      ${item.link ? `<a href="${item.link}" target="_blank">Bekijk product</a>` : ""}
-    `;
+    // Filter op categorie
+    if (options.category) {
+      items = items.filter(i => i.category === options.category);
+    }
 
-    container.appendChild(div);
-  });
+    // Filter op prijs
+    if (options.minPrice != null) items = items.filter(i => i.price >= options.minPrice);
+    if (options.maxPrice != null) items = items.filter(i => i.price <= options.maxPrice);
+
+    // Sorteer op datum toegevoegd (homepagina)
+    if (options.sortBy === "dateAdded") {
+      items.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+    }
+
+    // Limit (bijv. homepagina)
+    if (options.limit) items = items.slice(0, options.limit);
+
+    // Toon items
+    if (items.length === 0) {
+      container.innerHTML = "<p>Geen items gevonden.</p>";
+    } else {
+      container.innerHTML = items.map(i => `
+        <div class="item">
+          <a href="${i.link}" target="_blank">${i.title}</a>
+          <p>€${i.price}</p>
+        </div>
+      `).join("");
+    }
+  } catch (error) {
+    console.error(error);
+    container.innerHTML = "<p>Fout bij het laden van de items.</p>";
+  }
 }
 
-// Functie om items te laden en te filteren
-function loadItems(options = {}) {
-  fetch('data.json')
-    .then(response => response.json())
-    .then(data => {
-      let items = data;
+// Filterfunctie voor prijsfilter
+function setupPriceFilter(currentCategory) {
+  const btn = document.getElementById("applyPriceFilter");
+  if (!btn) return;
 
-      // Filter op categorie
-      if (options.category) {
-        items = items.filter(i => i.category === options.category);
-      }
+  btn.addEventListener("click", () => {
+    const minInput = document.getElementById("minPrice");
+    const maxInput = document.getElementById("maxPrice");
+    const min = parseFloat(minInput.value);
+    const max = parseFloat(maxInput.value);
 
-      // Filter op favorites
-      if (options.favoritesOnly) {
-        items = items.filter(i => i.favorite);
-      }
-
-      // Filter op prijsrange
-      if (options.priceRange) {
-        if (options.priceRange.min !== undefined) {
-          items = items.filter(i => i.price >= options.priceRange.min);
-        }
-        if (options.priceRange.max !== undefined) {
-          items = items.filter(i => i.price <= options.priceRange.max);
-        }
-      }
-
-      // Filter op prijsBelow (voor Onder €15)
-      if (options.priceBelow !== undefined) {
-        items = items.filter(i => i.price <= options.priceBelow);
-      }
-
-      displayItems(items);
-    });
-}
-
-// Filterbalk functionaliteit
-document.addEventListener("DOMContentLoaded", () => {
-  const applyButton = document.getElementById("applyPriceFilter");
-  if (!applyButton) return; // Alleen uitvoeren als filterbalk aanwezig is
-
-  applyButton.addEventListener("click", () => {
-    const min = parseFloat(document.getElementById("minPrice").value);
-    const max = parseFloat(document.getElementById("maxPrice").value);
-
-    const priceFilter = {};
-    if (!isNaN(min)) priceFilter.min = min;
-    if (!isNaN(max)) priceFilter.max = max;
-
-    // currentCategory moet op elke pagina als variabele aanwezig zijn
     loadItems({
-      category: window.currentCategory,
-      priceRange: priceFilter
+      category: currentCategory,
+      minPrice: isNaN(min) ? null : min,
+      maxPrice: isNaN(max) ? null : max
     });
   });
-});
+}
+
+// Voor categoriepagina’s
+if (typeof currentCategory !== "undefined") {
+  loadItems({ category: currentCategory });
+  setupPriceFilter(currentCategory);
+}
+
+// Voor homepagina: laatste toegevoegd, limiet bijv. 12
+if (typeof homePage !== "undefined") {
+  loadItems({ sortBy: "dateAdded", limit: 12 });
+}
 
