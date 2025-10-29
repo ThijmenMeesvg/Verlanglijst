@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Onder €15 – Verlanglijst</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Cadeaus onder €15</h1>
+    <nav>
+      <a href="index.html">Laatst toegevoegd</a>
+      <a href="favorieten.html">Favorieten</a>
+      <a href="onder15.html">Onder €15</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Onder €15</h2>
+    <div id="item-container" class="grid"></div>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    loadItems({ priceBelow: 15 });
+  </script>
+</body>
+</html>
