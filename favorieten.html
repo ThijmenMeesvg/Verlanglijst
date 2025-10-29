@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Favorieten – Mijn Verlanglijst</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>Mijn Verlanglijst</h1>
     <nav>
       <a href="index.html">Home</a>
-      <a href="favorieten.html">Favorieten</a>
       <a href="boeken.html">Boeken</a>
       <a href="spelletjes.html">Spelletjes</a>
       <a href="muziek.html">Muziek</a>
@@ -19,22 +17,41 @@
       <a href="uitzet.html">Uitzet</a>
       <a href="sport.html">Sport & Buiten</a>
       <a href="overig.html">Overig</a>
+      <a href="favorieten.html">Favorieten</a>
     </nav>
   </header>
 
   <main>
     <section>
-      <h2>Mijn favorieten</h2>
-      <div id="item-container" class="grid"></div>
+      <h2>Mijn Favorieten & Persoonlijke Info</h2>
+      <p>
+        Hier kun je wat meer over mij vinden! Bijvoorbeeld mijn maten, kleuren die ik leuk vind, 
+        favoriete chocola of snoepjes, en andere kleine tips voor cadeaus.
+      </p>
+      
+      <h3>Kleding & Sokken</h3>
+      <ul>
+        <li>T-shirt maat: M</li>
+        <li>Sokken maat: 42</li>
+        <li>Kleur voorkeur: blauw, groen</li>
+      </ul>
+      
+      <h3>Chocola & Snoep</h3>
+      <ul>
+        <li>Favoriete chocola: melkchocolade met nootjes</li>
+        <li>Favoriete snoepjes: winegums, zuurtjes</li>
+      </ul>
+      
+      <h3>Overige voorkeuren</h3>
+      <p>Leuke kleuren: pastelkleuren, aardetinten. Houd van kleine verrassingen en creatieve cadeaus.</p>
+
+      <h3>Inspiratieplaatjes</h3>
+      <div class="favorieten-images">
+        <img src="images/kleurvoorbeeld.png" alt="Kleurvoorbeeld" />
+        <img src="images/chocola.png" alt="Favoriete chocola" />
+      </div>
     </section>
   </main>
-
-  <script>
-    const currentCategory = null; // combineer alle categorieën
-    const showFavorites = true;
-  </script>
-  <script src="script.js"></script>
 </body>
 </html>
-
 
