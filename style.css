@@ -1,57 +1,71 @@
-/* Algemeen */
+/* ALGEMEEN */
 body {
   margin: 0;
   font-family: 'Arial', sans-serif;
-  background-color: #F5F5F5;
+  background-color: #d3c2cd;
   color: #2B2B23;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-/* Header */
+/* HEADER */
 header {
-  background-color: #D85603; /* warme accentkleur */
-  padding: 20px 30px;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+  background-color: #92A2A6;
+  padding: 20px 40px;
+  box-shadow: 0 4px 10px rgba(216,86,3,0.2);
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
 }
 
 header nav a {
   margin-right: 20px;
   text-decoration: none;
   font-weight: bold;
-  color: #FFF;
-  transition: color 0.3s;
+  color: #efce7b;
+  transition: color 0.3s ease;
 }
 
 header nav a:hover {
-  color: #CBD183; /* subtiel pop accent */
+  color: #f8caba;
 }
 
-/* Koppen */
-h1, h2 {
-  color: #2B2B23;
+/* KOPTEKSTEN */
+h1, h2, h3 {
+  color: #6777b6;
   text-align: center;
 }
 
-h2 {
+h1 {
   margin-top: 40px;
-  margin-bottom: 20px;
+  font-size: 2rem;
 }
 
-/* Secties */
+h2 {
+  margin-top: 30px;
+  font-size: 1.4rem;
+}
+
+/* SECTIES */
 section {
   margin: 30px auto;
   max-width: 1000px;
-  background-color: #D3C2CD; /* zachte pastel achtergrond voor cards */
-  padding: 25px;
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(216,86,3,0.15);
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
-/* Introductie tekst */
+section:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(216,86,3,0.25);
+}
+
+/* TEKST */
 section p {
   font-size: 1rem;
   line-height: 1.6;
@@ -60,29 +74,35 @@ section p {
 
 section p em {
   font-style: italic;
-  color: #D85603; /* accentkleur */
+  color: #d85603;
 }
 
-/* Item grid */
+/* GRID */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 25px;
+  margin-top: 20px;
 }
 
-/* Items */
+/* ITEM BOXEN */
 .item {
-  background-color: #FFF;
+  background: #fff;
   border-radius: 16px;
   padding: 20px;
   text-align: center;
-  transition: transform 0.25s, box-shadow 0.25s;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+  box-shadow: 0 6px 15px rgba(216,86,3,0.15);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(216,86,3,0.3);
 }
 
 .item a {
   text-decoration: none;
-  color: #D85603;
+  color: #6777b6;
   font-weight: bold;
   display: block;
   margin-bottom: 10px;
@@ -90,87 +110,89 @@ section p em {
 }
 
 .item a:hover {
-  color: #CBD183;
-  text-decoration: underline;
+  color: #d85603;
 }
 
 .item p {
   margin: 0;
-  color: #2B2B23;
   font-size: 0.95rem;
 }
 
-/* Hover effect */
-.item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 25px rgba(0,0,0,0.2);
-}
-
-/* Favorieten */
+/* FAVORIETEN */
 .item.favorite {
-  border: 3px solid #CBD183;
-  background-color: #FFF9E6;
-  box-shadow: 0 12px 25px rgba(203,209,131,0.35);
+  border: 2px solid #d85603;
+  background: linear-gradient(135deg, #fff, #fdf3eb);
+  box-shadow: 0 8px 25px rgba(216,86,3,0.35);
 }
 
 .item.favorite::before {
   content: "★";
-  color: #CBD183;
+  color: #d85603;
+  font-size: 1.5rem;
   display: block;
-  font-size: 1.4rem;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 
-/* Filter sectie */
+/* FILTERS */
 #filters {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
 #filters label {
-  margin: 0 12px;
+  margin: 0 10px;
   font-weight: bold;
-  color: #2B2B23;
 }
 
 #filters input {
-  width: 70px;
+  width: 80px;
   padding: 6px;
   border-radius: 8px;
-  border: 1px solid #67777B;
+  border: 1px solid #92A2A6;
 }
 
 #filters input:focus {
-  border-color: #D85603;
   outline: none;
+  border-color: #d85603;
   box-shadow: 0 0 8px rgba(216,86,3,0.4);
 }
 
 #applyPriceFilter {
-  background-color: #D85603;
+  background: #d85603;
+  color: #fff;
   border: none;
   padding: 10px 18px;
-  border-radius: 10px;
+  border-radius: 8px;
   font-weight: bold;
-  color: #FFF;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
 }
 
 #applyPriceFilter:hover {
-  background-color: #CBD183;
+  background: #efce7b;
+  color: #2B2B23;
   transform: translateY(-2px);
 }
 
-/* Responsive */
+/* FOOTER */
+footer {
+  margin-top: auto;
+  background: linear-gradient(180deg, transparent, rgba(216,86,3,0.15));
+  text-align: center;
+  padding: 20px 0;
+  color: #2B2B23;
+  font-size: 0.9rem;
+}
+
+/* RESPONSIVE */
 @media (max-width: 600px) {
   header nav a {
     display: block;
-    margin: 5px 0;
+    margin: 8px 0;
   }
-  
-  .grid {
-    gap: 15px;
+
+  section {
+    padding: 20px;
   }
 }
 
