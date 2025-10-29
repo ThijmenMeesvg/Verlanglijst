@@ -6,9 +6,16 @@ document.addEventListener("DOMContentLoaded", () => {
     container.innerHTML = "Even laden...";
 
     try {
+      // Haal JSON op
       const response = await fetch('data.json');
-      const items = await response.json(); // array van alle items
-      let filteredItems = items;
+      const itemsByCategory = await response.json();
+
+      // Alle items in 1 array (voor homepagina en algemene filter)
+      let allItems = Object.entries(itemsByCategory).flatMap(([category, items]) =>
+        items.map(i => ({ ...i, category }))
+      );
+
+      let filteredItems = allItems;
 
       // Filter op categorie
       if (options.category) {
@@ -45,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Setup filterknop
+  // Setup prijsfilterknop
   function setupPriceFilter(category) {
     const btn = document.getElementById("applyPriceFilter");
     if (!btn) return;
@@ -74,3 +81,4 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
+
