@@ -76,9 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loadItems({ sortBy: "dateAdded", limit: 12 });
   }
 
-});
+}); // einde DOMContentLoaded
 
-if (typeof homePage !== "undefined") {
-  loadItems({ sortBy: "dateAdded", limit: 12 });
-}
 
