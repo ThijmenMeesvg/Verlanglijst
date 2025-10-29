@@ -5,21 +5,21 @@
       "price": 24.99,
       "link": "https://ap.lc/HURoy",
       "favorite": false,
-      "dateAdded": "2024-10-29"
+      "dateAdded": "2000-01-01"
     },
     {
       "title": "Boek: Rooted",
       "price": 15.99,
       "link": "https://ap.lc/bvgaK",
       "favorite": false,
-      "dateAdded": "2025-10-29"
+      "dateAdded": "2000-01-01"
     },
     {
       "title": "Notitieboek – Moomin Love",
       "price": 10.34,
       "link": "https://www.bol.com/nl/nl/p/artisan-art-pocket-journals-moomin-love-artisan-art-pocket-notebook/9300000223421053/",
       "favorite": false,
-      "dateAdded": "2025-10-29"
+      "dateAdded": "2000-01-01"
     }
   ],
   "Muziek": [
@@ -28,14 +28,42 @@
       "price": 36.99,
       "link": "https://ap.lc/rdwvA",
       "favorite": true,
-      "dateAdded": "2025-10-25"
+      "dateAdded": "2001-01-01"
     },
     {
       "title": "LP: R.E.M. - Automatic for the people",
       "price": 32.99,
       "link": "https://ap.lc/SQPll",
       "favorite": true,
-      "dateAdded": "2025-10-27"
+      "dateAdded": "2000-01-01"
+    },
+    {
+     "title": "LP: Renee Rapp - Bite me",
+      "price": 29.99,
+      "link": "https://ap.lc/iljlB",
+      "favorite": false,
+      "dateAdded": "2000-01-01"
+    },
+    {
+      "title": "LP: Finneas - For cryin out loud",
+      "price": 34.99,
+      "link": "https://ap.lc/nOTIo",
+      "favorite": false,
+      "dateAdded": "2000-01-01"
+    },
+    {
+      "title": "LP: Dodie - Build a problem",
+      "price": 25.95,
+      "link": "https://ap.lc/pymTl",
+      "favorite": true,
+      "dateAdded": "2000-01-01"
+    },
+     {
+      "title": "LP: Troye Sivan - Blue Neighbourhood",
+      "price": 49.99,
+      "link": "https://ap.lc/FBVwN",
+      "favorite": false,
+      "dateAdded": "2000-01-01"
     }
   ],
   "Spelletjes": [
@@ -44,28 +72,28 @@
       "price": 30,
       "link": "https://ap.lc/PWiCO",
       "favorite": false,
-      "dateAdded": "2024-10-27"
+      "dateAdded": "2000-01-01"
     },
     {
       "title": "Bordspel: Don't get got",
       "price": 14.95,
       "link": "https://ap.lc/kElrx",
       "favorite": false,
-      "dateAdded": "2025-10-29"
+      "dateAdded": "2000-01-01"
     },
     {
       "title": "Spel: Boulderbal",
       "price": 45.90,
       "link": "https://ap.lc/IUofY",
       "favorite": false,
-      "dateAdded": "2024-10-27"
+      "dateAdded": "2000-01-01"
     },
     {
       "title": "Bordspel: All Screwed up",
       "price": 33,
       "link": "https://ap.lc/EhucY",
       "favorite": true,
-      "dateAdded": "2025-10-29"
+      "dateAdded": "2000-01-01"
     }
   ],
   "Kleding & Accesoires": [],
