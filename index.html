@@ -28,13 +28,13 @@
   </header>
 
   <main>
-    <!-- Introductietekst -->
+    <!-- Introductie -->
     <section>
       <h2>Welkom!</h2>
       <p>
         Hallo, ik ben Thijmen! Dit is mijn persoonlijke verlanglijst-website. 
         Hier houd ik bij welke cadeaus en items ik graag zou willen hebben. 
-        Je kunt de lijst bekijken per categorie, mijn favorieten zien, of cadeaus ontdekken onder €15. 
+        Je kunt de lijst bekijken per categorie, mijn favorieten zien, of cadeaus ontdekken onder €15.
       </p>
       <p>
         Klik op een item om de prijs en een link naar het product te zien. Items die ik extra leuk vind, zijn gemarkeerd als favoriet.
@@ -48,13 +48,13 @@
     </section>
   </main>
 
-  <!-- Script voor items -->
+  <!-- Script -->
   <script src="script.js"></script>
   <script>
-    // Laat de meest recent toegevoegde items zien
+    // Homepagina: toon de 12 laatst toegevoegde items
     loadItems({ sortBy: "dateAdded", limit: 12 });
 
-    // Confetti alleen op deze homepagina
+    // Confetti alleen op homepagina
     if (window.location.pathname.endsWith("index.html") || window.location.pathname === "/") {
       const duration = 3000; // 3 seconden
       const end = Date.now() + duration;
