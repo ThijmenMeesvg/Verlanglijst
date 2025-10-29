@@ -1,11 +1,11 @@
 [
   {
-    "title": "Boek: De Nachtwaker",
-    "price": 18.99,
-    "link": "https://voorbeeld.nl/denachtwaker",
+    "title": "Boek: Films die nergens draaien",
+    "price": 24.99,
+    "link": "https://ap.lc/HURoy",
     "category": "Boeken",
-    "favorite": true,
-    "dateAdded": "2025-10-20"
+    "favorite": false,
+    "dateAdded": "2025-10-29"
   },
   {
     "title": "Muziekalbum: Aurora - The Gods We Can Touch",
