@@ -71,6 +71,20 @@
     .preview-card p {
       margin: 0;
     }
+    .loading {
+      margin-top: 10px;
+      color: #2563eb;
+      font-weight: bold;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0.3; }
+    }
+    .errors {
+      margin-top: 10px;
+      color: #ff4d4d;
+    }
   </style>
 </head>
 <body>
@@ -129,10 +143,11 @@
   <div id="output" class="result" style="display:none;">
     <h2>Gegenereerd JSON-item:</h2>
     <textarea id="jsonResult"></textarea>
+    <div id="loading" class="loading" style="display:none;">Laden...</div>
+    <div id="errorMessages" class="errors"></div>
   </div>
 
   <script>
-    // -------------------- Toegangscode --------------------
     const accessCode = "verlanglijst"; 
     const enteredCode = prompt("Voer toegangscode in om deze adminpagina te openen:");
     if (enteredCode !== accessCode) {
@@ -140,94 +155,112 @@
       window.location.href = "index.html";
     }
 
-    // -------------------- Genereren JSON --------------------
     document.getElementById("generate").addEventListener("click", async () => {
       const url = document.getElementById("url").value.trim();
       const category = document.getElementById("category").value;
-      if (!url) return alert("Voer een geldige URL in.");
+      const outputDiv = document.getElementById("output");
+      const resultBox = document.getElementById("jsonResult");
+      const loadingDiv = document.getElementById("loading");
+      const errorDiv = document.getElementById("errorMessages");
+
+      errorDiv.innerHTML = "";
+      resultBox.value = "";
+      outputDiv.style.display = "block";
+      loadingDiv.style.display = "block";
+
+      if (!url) {
+        loadingDiv.style.display = "none";
+        return alert("Voer een geldige URL in.");
+      }
 
       const today = new Date().toISOString().split("T")[0];
-      let resolvedUrl;
+      let resolvedUrl = url;
       let html = "";
+      let title = "Onbekend product";
+      let price = 0;
+      let image = "";
 
+      const errors = [];
+
+      // Probeer URL op te halen
       try {
-        resolvedUrl = await fetch(url, { redirect: "follow" }).then(r => r.url).catch(() => url);
-        html = await fetch(resolvedUrl, { headers: { "User-Agent": "Mozilla/5.0" } }).then(r => r.text());
-      } catch (err) {
-        alert("⚠️ Actie geblokkeerd door website of pagina niet bereikbaar.");
-        console.error(err);
-        return;
+        const res = await fetch(url, { redirect: "follow" });
+        resolvedUrl = res.url;
+        try {
+          html = await fetch(resolvedUrl, { headers: { "User-Agent": "Mozilla/5.0" } }).then(r => r.text());
+        } catch {
+          errors.push("📷 Foto kon niet worden opgehaald.");
+        }
+      } catch {
+        errors.push("🚫 Actie geblokkeerd door website.");
       }
 
-      let titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/);
-      let priceMatch = html.match(/"price":\s*"([\d.,]+)"/) || html.match(/€\s?([\d.,]+)/);
-      let imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/);
+      // Probeer gegevens uit HTML te halen
+      if (html) {
+        const titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/);
+        const priceMatch = html.match(/"price":\s*"([\d.,]+)"/) || html.match(/€\s?([\d.,]+)/);
+        const imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/);
+        if (titleMatch) title = titleMatch[1].replace(/["']/g, '').trim();
+        if (priceMatch) price = parseFloat(priceMatch[1].replace(",", "."));
+        if (imageMatch) image = imageMatch[1];
+        if (!titleMatch && !priceMatch && !imageMatch) errors.push("❓ Foutmelding onduidelijk, gegevens niet opgehaald.");
+      } else {
+        errors.push("❓ Foutmelding onduidelijk, gegevens niet opgehaald.");
+      }
 
-      const title = titleMatch ? titleMatch[1].replace(/["']/g, '').trim() : "Onbekend product";
-      const price = priceMatch ? parseFloat(priceMatch[1].replace(",", ".")) : 0;
-      let image = imageMatch ? imageMatch[1] : null;
-
-      if (!image) alert("⚠️ Afbeelding kon niet worden opgehaald van deze pagina.");
-
+      // Verkort de URL altijd, zelfs als fetch faalt
+      let shortUrl = resolvedUrl;
       try {
         const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(resolvedUrl)}`);
-        resolvedUrl = await res.text();
+        shortUrl = await res.text();
       } catch {
-        console.warn("URL kon niet verkort worden, gebruik originele link.");
+        errors.push("⚠️ TinyURL kon niet worden aangemaakt.");
       }
 
-      const item = { title, price, link: resolvedUrl, favorite: false, dateAdded: today, image: image || "" };
+      const item = { title, price, link: shortUrl, favorite: false, dateAdded: today, image };
+      resultBox.value = JSON.stringify(item, null, 2);
 
-      try {
-        const jsonResult = JSON.stringify(item, null, 2);
-        const outputDiv = document.getElementById("output");
-        const resultBox = document.getElementById("jsonResult");
-        outputDiv.style.display = "block";
-        resultBox.value = jsonResult; // nu bewerkbaar
+      loadingDiv.style.display = "none";
+      if (errors.length > 0) errorDiv.innerHTML = errors.join("<br>");
 
-        let btn = document.getElementById("copyButton");
-        if (!btn) {
-          btn = document.createElement("button");
-          btn.id = "copyButton";
-          btn.textContent = "Kopieer JSON naar klembord";
-          btn.onclick = async () => {
-            await navigator.clipboard.writeText(resultBox.value); 
-            btn.textContent = "✅ Gekopieerd!";
-            setTimeout(() => (btn.textContent = "Kopieer JSON naar klembord"), 2500);
-          };
-          outputDiv.appendChild(btn);
-        }
-
-        const oldPreview = document.getElementById("previewCard");
-        if (oldPreview) oldPreview.remove();
-
-        const preview = document.createElement("div");
-        preview.id = "previewCard";
-        preview.className = "preview-card";
-
-        if (image) {
-          const img = document.createElement("img");
-          img.src = image;
-          img.alt = title;
-          preview.appendChild(img);
-        }
-
-        const info = document.createElement("div");
-        info.innerHTML = `
-          <h3>${title}</h3>
-          <p>💶 €${price.toFixed(2)}</p>
-          <a href="${resolvedUrl}" target="_blank" style="color:#2563eb;">Bekijk product</a>
-          <p style="font-size:0.9rem;color:#555;margin-top:.4rem;">Categorie: ${category}</p>
-        `;
-        preview.appendChild(info);
-        outputDiv.appendChild(preview);
-
-      } catch (err) {
-        alert("⚠️ Onbekende fout bij het genereren van JSON.");
-        console.error(err);
+      // Kopieerknop
+      let btn = document.getElementById("copyButton");
+      if (!btn) {
+        btn = document.createElement("button");
+        btn.id = "copyButton";
+        btn.textContent = "Kopieer JSON naar klembord";
+        btn.onclick = async () => {
+          await navigator.clipboard.writeText(resultBox.value);
+          btn.textContent = "✅ Gekopieerd!";
+          setTimeout(() => (btn.textContent = "Kopieer JSON naar klembord"), 2500);
+        };
+        outputDiv.appendChild(btn);
       }
+
+      // Preview
+      const oldPreview = document.getElementById("previewCard");
+      if (oldPreview) oldPreview.remove();
+      const preview = document.createElement("div");
+      preview.id = "previewCard";
+      preview.className = "preview-card";
+
+      if (image) {
+        const img = document.createElement("img");
+        img.src = image;
+        img.alt = title;
+        preview.appendChild(img);
+      }
+
+      const info = document.createElement("div");
+      info.innerHTML = `
+        <h3>${title}</h3>
+        <p>💶 €${price.toFixed(2)}</p>
+        <a href="${resolvedUrl}" target="_blank" style="color:#2563eb;">Bekijk product</a>
+        <p style="font-size:0.9rem;color:#555;margin-top:.4rem;">Categorie: ${category}</p>
+      `;
+      preview.appendChild(info);
+      outputDiv.appendChild(preview);
     });
   </script>
 </body>
 </html>
-
