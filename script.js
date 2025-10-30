@@ -32,29 +32,34 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Limit (bijv. homepagina)
-      if (options.limit) filteredItems = filteredItems.slice(0, 3);
+      if (options.limit) filteredItems = filteredItems.slice(0, options.limit);
 
-      // Toon items
+      // Toon items in preview-stijl
       if (filteredItems.length === 0) {
         container.innerHTML = "<p>Geen items gevonden.</p>";
       } else {
         container.innerHTML = filteredItems.map(i => `
-          <div class="item${i.favorite ? " favorite" : ""}">
-            <a href="${i.link}" target="_blank">${i.title}</a>
-            <p>€${i.price.toFixed(2)}</p>
+          <div class="preview-card${i.favorite ? " favorite" : ""}">
+            ${i.image ? `<img src="${i.image}" alt="${i.title}">` : ""}
+            <div>
+              <h3>${i.title}</h3>
+              <p>💶 €${i.price.toFixed(2)}</p>
+              <a href="${i.link}" target="_blank" style="color:#2563eb;">Bekijk product</a>
+              ${i.category ? `<p style="font-size:0.9rem;color:#555;margin-top:.4rem;">Categorie: ${i.category}</p>` : ""}
+            </div>
           </div>
         `).join("");
       }
 
     } catch (error) {
-  console.error(error);
-  container.innerHTML = `
-    <p>Fout bij het laden van de items.</p>
-    <img src="https://static.vecteezy.com/system/resources/previews/048/790/049/non_2x/oops-retro-error-message-in-purple-color-with-gradient-vector.jpg" 
-         alt="Foutafbeelding" 
-         style="max-width:300px; display:block; margin-top:10px;">
-  `;
-}
+      console.error(error);
+      container.innerHTML = `
+        <p>Fout bij het laden van de items.</p>
+        <img src="https://static.vecteezy.com/system/resources/previews/048/790/049/non_2x/oops-retro-error-message-in-purple-color-with-gradient-vector.jpg" 
+             alt="Foutafbeelding" 
+             style="max-width:300px; display:block; margin-top:10px;">
+      `;
+    }
   }
 
   // Setup prijsfilterknop
