@@ -147,14 +147,17 @@
       if (!url) return alert("Voer een geldige URL in.");
 
       const today = new Date().toISOString().split("T")[0];
+      let resolvedUrl;
+      let html = "";
 
-      const resolvedUrl = await fetch(url, { redirect: "follow" })
-        .then(r => r.url)
-        .catch(() => url);
-
-      const html = await fetch(resolvedUrl, { headers: { "User-Agent": "Mozilla/5.0" } })
-        .then(r => r.text())
-        .catch(() => "");
+      try {
+        resolvedUrl = await fetch(url, { redirect: "follow" }).then(r => r.url).catch(() => url);
+        html = await fetch(resolvedUrl, { headers: { "User-Agent": "Mozilla/5.0" } }).then(r => r.text());
+      } catch (err) {
+        alert("⚠️ Actie geblokkeerd door website of pagina niet bereikbaar.");
+        console.error(err);
+        return;
+      }
 
       let titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/);
       let priceMatch = html.match(/"price":\s*"([\d.,]+)"/) || html.match(/€\s?([\d.,]+)/);
@@ -162,69 +165,67 @@
 
       const title = titleMatch ? titleMatch[1].replace(/["']/g, '').trim() : "Onbekend product";
       const price = priceMatch ? parseFloat(priceMatch[1].replace(",", ".")) : 0;
-      const image = imageMatch ? imageMatch[1] : "";
+      let image = imageMatch ? imageMatch[1] : null;
 
-      let shortUrl = resolvedUrl;
+      if (!image) alert("⚠️ Afbeelding kon niet worden opgehaald van deze pagina.");
+
       try {
         const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(resolvedUrl)}`);
-        shortUrl = await res.text();
+        resolvedUrl = await res.text();
       } catch {
         console.warn("URL kon niet verkort worden, gebruik originele link.");
       }
 
-      const item = {
-        title,
-        price,
-        link: shortUrl,
-        favorite: false,
-        dateAdded: today,
-        image: image
-      };
+      const item = { title, price, link: resolvedUrl, favorite: false, dateAdded: today, image: image || "" };
 
-      const jsonResult = JSON.stringify(item, null, 2);
+      try {
+        const jsonResult = JSON.stringify(item, null, 2);
+        const outputDiv = document.getElementById("output");
+        const resultBox = document.getElementById("jsonResult");
+        outputDiv.style.display = "block";
+        resultBox.value = jsonResult; // nu bewerkbaar
 
-      const outputDiv = document.getElementById("output");
-      const resultBox = document.getElementById("jsonResult");
-      outputDiv.style.display = "block";
-      resultBox.value = jsonResult; // nu bewerkbaar
+        let btn = document.getElementById("copyButton");
+        if (!btn) {
+          btn = document.createElement("button");
+          btn.id = "copyButton";
+          btn.textContent = "Kopieer JSON naar klembord";
+          btn.onclick = async () => {
+            await navigator.clipboard.writeText(resultBox.value); 
+            btn.textContent = "✅ Gekopieerd!";
+            setTimeout(() => (btn.textContent = "Kopieer JSON naar klembord"), 2500);
+          };
+          outputDiv.appendChild(btn);
+        }
 
-      let btn = document.getElementById("copyButton");
-      if (!btn) {
-        btn = document.createElement("button");
-        btn.id = "copyButton";
-        btn.textContent = "Kopieer JSON naar klembord";
-        btn.onclick = async () => {
-          await navigator.clipboard.writeText(resultBox.value); // leest actuele textarea waarde
-          btn.textContent = "✅ Gekopieerd!";
-          setTimeout(() => (btn.textContent = "Kopieer JSON naar klembord"), 2500);
-        };
-        outputDiv.appendChild(btn);
+        const oldPreview = document.getElementById("previewCard");
+        if (oldPreview) oldPreview.remove();
+
+        const preview = document.createElement("div");
+        preview.id = "previewCard";
+        preview.className = "preview-card";
+
+        if (image) {
+          const img = document.createElement("img");
+          img.src = image;
+          img.alt = title;
+          preview.appendChild(img);
+        }
+
+        const info = document.createElement("div");
+        info.innerHTML = `
+          <h3>${title}</h3>
+          <p>💶 €${price.toFixed(2)}</p>
+          <a href="${resolvedUrl}" target="_blank" style="color:#2563eb;">Bekijk product</a>
+          <p style="font-size:0.9rem;color:#555;margin-top:.4rem;">Categorie: ${category}</p>
+        `;
+        preview.appendChild(info);
+        outputDiv.appendChild(preview);
+
+      } catch (err) {
+        alert("⚠️ Onbekende fout bij het genereren van JSON.");
+        console.error(err);
       }
-
-      const oldPreview = document.getElementById("previewCard");
-      if (oldPreview) oldPreview.remove();
-
-      const preview = document.createElement("div");
-      preview.id = "previewCard";
-      preview.className = "preview-card";
-
-      if (image) {
-        const img = document.createElement("img");
-        img.src = image;
-        img.alt = title;
-        preview.appendChild(img);
-      }
-
-      const info = document.createElement("div");
-      info.innerHTML = `
-        <h3>${title}</h3>
-        <p>💶 €${price.toFixed(2)}</p>
-        <a href="${resolvedUrl}" target="_blank" style="color:#2563eb;">Bekijk product</a>
-        <p style="font-size:0.9rem;color:#555;margin-top:.4rem;">Categorie: ${category}</p>
-      `;
-      preview.appendChild(info);
-
-      outputDiv.appendChild(preview);
     });
   </script>
 </body>
