@@ -5,6 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Boeken – Mijn Verlanglijst</title>
   <link rel="stylesheet" href="style.css" />
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verlanglijst – Alle items</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Extra styling voor de preview-kaarten */
+    .preview-card {
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #262626;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    .preview-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 20px rgba(255, 140, 66, 0.3);
+    }
+
+    .preview-card img {
+      width: 100px;
+      border-radius: 8px;
+    }
+
+    .preview-card h3 {
+      margin: 0 0 .3rem 0;
+      color: #FFD369;
+    }
+
+    .preview-card p {
+      margin: 0;
+      color: #EDEDED;
+    }
+
+    .preview-card.favorite {
+      border: 2px solid #FF8C42;
+      box-shadow: 0 0 20px rgba(255, 140, 66, 0.4);
+      background-color: #2E2A25;
+    }
 </head>
 <body>
 <header>
