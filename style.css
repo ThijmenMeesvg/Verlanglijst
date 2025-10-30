@@ -287,3 +287,16 @@ footer {
   box-shadow: 0 0 20px rgba(255, 140, 66, 0.4);
   background-color: #2E2A25; /* past bij je huidige favorieten-items */
 }
+/* Zorg dat elke preview-card een eigen box krijgt op de homepage */
+#item-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;           /* ruimte tussen de items */
+  justify-content: center; /* centreert de items */
+}
+
+.preview-card {
+  flex: 1 1 250px; /* minimale breedte van 250px per kaart */
+  max-width: 300px; /* maximale breedte */
+}
+
