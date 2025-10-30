@@ -81,7 +81,15 @@
       "favorite": false,
       "dateAdded": "2025-10-30",
       "image": "https://media.s-bol.com/3KnAAZ482xMr/y5RPnW/550x550.jpg"
-    }  
+    },
+    {
+      "title": "LP- K3 - De Grootste Hits!",
+      "price": 29.95,
+      "link": "https://tinyurl.com/29nkbpxv",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "http://recordsonvinyl.nl/cdn/shop/files/5051083223676-0600px-001.jpg?v=1755076508"
+    }
   ],
   "Spelletjes": [
     {
@@ -146,7 +154,24 @@
       "image": "http://eu.leatherman.com/cdn/shop/files/akeneo_7_5_c_9_75c9af83eea6e9b35a83f7e63f78053c8f591382_Heritage_Leather_Sheath_shopify.jpg?crop=center&height=1200&v=1761805299&width=1200"
      }  
   ],
-  "Overig": []
+  "Overig": [
+    {
+      "title": "Soldeerbout",
+      "price": 14.95,
+      "link": "https://tinyurl.com/2baxz4rh",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://cdn1.soldeerbout-shop.nl/16990-large_default/soldeerbout-shop-zd-303-complete-soldeerset.jpg"
+    },
+    {
+      "title": "Simon Says soldeerkit",
+      "price": 8.95,
+      "link": "https://tinyurl.com/25mh3btw",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://cdn3.soldeerbout-shop.nl/2323-large_default/digibytez-dbmk103-simon-says-soldeerkit.jpg"
+    }
+  ]
 }
 
 
