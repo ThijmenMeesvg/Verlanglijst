@@ -281,3 +281,9 @@ footer {
     font-size: 1rem;
   }
 }
+  /* Favorieten variant voor preview-card */
+.preview-card.favorite {
+  border: 2px solid #FF8C42;
+  box-shadow: 0 0 20px rgba(255, 140, 66, 0.4);
+  background-color: #2E2A25; /* past bij je huidige favorieten-items */
+}
