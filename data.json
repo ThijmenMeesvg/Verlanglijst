@@ -5,7 +5,7 @@
   ],
   "Spelletjes": [
     {
-      "title": "What Do You Meme? All Screwed Up",
+      "title": "Spel - What Do You Meme? All Screwed Up",
       "price": 16,
       "link": "https://tinyurl.com/26pb4axv",
       "favorite": false,
@@ -13,7 +13,7 @@
       "image": "https://m.media-amazon.com/images/I/71+ZikTWZwL._AC_SL1500_.jpg"
     },
     {
-  "title": "Boulderball - Spel",
+  "title": "Spel - Boulderball",
   "price": 45,90,
   "link": "https://tinyurl.com/25pldupw",
   "favorite": false,
@@ -21,12 +21,20 @@
   "image": "https://media.s-bol.com/gjXEJqKrqPgZ/5yplxvX/550x620.jpg"
     },
     {
-  "title": "Don't Get Got Travel",
+  "title": "Spel - Don't Get Got Travel",
   "price": 14.95,
   "link": "https://tinyurl.com/247zysfe",
   "favorite": false,
   "dateAdded": "2025-10-30",
   "image": "https://www.spelspul.nl/58023-thickbox_default/don-t-get-got-travel.jpg"
+    },
+    {
+  "title": "Bordspel - Ransom Notes",
+  "price": 28,60,
+  "link": "https://tinyurl.com/26bafr7b",
+  "favorite": false,
+  "dateAdded": "2025-10-30",
+  "image": "https://img.joomcdn.net/99de4bb2b49c1fc080fbe019b7e7226644093f04_original.jpeg"
     }
   ],
   "Kleding & Accesoires": [],
