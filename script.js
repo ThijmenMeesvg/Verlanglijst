@@ -26,13 +26,27 @@ document.addEventListener("DOMContentLoaded", () => {
       if (options.minPrice != null) filteredItems = filteredItems.filter(i => i.price >= options.minPrice);
       if (options.maxPrice != null) filteredItems = filteredItems.filter(i => i.price <= options.maxPrice);
 
-      // Sorteer op datum toegevoegd (voor homepagina)
-      if (options.sortBy === "dateAdded") {
+      // === NIEUW: als homepagina, kies 3 willekeurige favorieten ===
+      if (typeof homePage !== "undefined") {
+        const favorites = allItems.filter(i => i.favorite === true);
+        if (favorites.length > 0) {
+          filteredItems = favorites
+            .sort(() => 0.5 - Math.random()) // shuffle array
+            .slice(0, 3); // pak 3 willekeurige
+        } else {
+          filteredItems = allItems.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)).slice(0, 3);
+        }
+      }
+
+      // Sorteer op datum toegevoegd (voor categoriepagina's)
+      if (options.sortBy === "dateAdded" && typeof homePage === "undefined") {
         filteredItems.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
       }
 
-      // Limit (bijv. homepagina)
-      if (options.limit) filteredItems = filteredItems.slice(0, options.limit);
+      // Limit (voor categoriepagina’s)
+      if (options.limit && typeof homePage === "undefined") {
+        filteredItems = filteredItems.slice(0, options.limit);
+      }
 
       // Toon items in preview-stijl
       if (filteredItems.length === 0) {
@@ -85,10 +99,9 @@ document.addEventListener("DOMContentLoaded", () => {
     setupPriceFilter(currentCategory);
   }
 
-  // Homepage
+  // Homepage (nu met random favorieten)
   if (typeof homePage !== "undefined") {
-    loadItems({ sortBy: "dateAdded", limit: 3 });
+    loadItems();
   }
 
 });
-
