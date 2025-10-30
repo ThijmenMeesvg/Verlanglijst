@@ -54,7 +54,7 @@
       "title": "Dodie - Build a Problem (LP)",
       "price": 25.95,
       "link": "https://tinyurl.com/26mtlqzt",
-      "favorite": false,
+      "favorite": true,
       "dateAdded": "2025-10-30",
       "image": "http://recordsonvinyl.nl/cdn/shop/files/0195497404827-0600px-001.jpg?v=1730565015"
     },
@@ -86,7 +86,7 @@
       "title": "LP- K3 - De Grootste Hits!",
       "price": 29.95,
       "link": "https://tinyurl.com/29nkbpxv",
-      "favorite": false,
+      "favorite": true,
       "dateAdded": "2025-10-30",
       "image": "http://recordsonvinyl.nl/cdn/shop/files/5051083223676-0600px-001.jpg?v=1755076508"
     }
@@ -141,7 +141,7 @@
       "title": "Rebar Multi-Tool | Leatherman",
       "price": 109,
       "link": "https://tinyurl.com/267nlpod",
-      "favorite": false,
+      "favorite": true,
       "dateAdded": "2025-10-30",
       "image": "https://eu.leatherman.com/cdn/shop/files/akeneo_f_2_a_0_f2a0367d281f1629c8a67c87c889093d31f1a738_Rebar_Burnt_Sienna_Fanned_Front_shopify.jpg?v=1761805394&width=1214"
     },
