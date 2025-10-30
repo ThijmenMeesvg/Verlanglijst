@@ -125,7 +125,16 @@
       "image": "https://img.joomcdn.net/99de4bb2b49c1fc080fbe019b7e7226644093f04_original.jpeg"
     }
   ],
-  "Kleding & Accesoires": [],
+  "Kleding & Accesoires": [
+    {
+      "title": "Scoutlife Sweater",
+      "price": 39.95,
+      "link": "https://tinyurl.com/2b7d2ro3",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://www.scoutshop.nl/media/catalog/product/cache/14b9b6aafd2c5d680be77d5c9a4d94c6/v/i/visual-gebartentaal-darknavy-eenkleur.png"
+    }
+  ],
   "Uitzet": [
     {
       "title": "Gootsteenzeef",
@@ -134,7 +143,55 @@
       "favorite": false,
       "dateAdded": "2025-10-30",
       "image": "https://www.ditverzinjeniet.nl/wp-content/uploads/2019/01/products-web-monkey_business_sinkfin_gootsteenzeef_sfeer.jpg"
-   }
+    },
+    {
+      "title": "Vijzel",
+      "price": 14.95,
+      "link": "https://tinyurl.com/2d5ekxzh",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://media.s-bol.com/AOjXLjLoL6zO/7nqq4B/550x579.jpg"
+    },
+    {
+      "title": "Gracula knoflookpers",
+      "price": 19.99,
+      "link": "https://tinyurl.com/2c4796f2",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://www.radbag.nl/media/catalog/product/cache/f47a9295ad87af8e3a00c829c5ecfb0b/g/r/gracula-knoblachschneider-1.jpg"
+    },
+    {
+      "title": "Scheermeshouder",
+      "price": 12.99,
+      "link": "https://tinyurl.com/27uugrds",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://www.radbag.nl/media/catalog/product/cache/f47a9295ad87af8e3a00c829c5ecfb0b/m/r/mr_razor_1.jpg"
+    },
+    {
+      "title": "Monstrainer vergiet",
+      "price": 15.99,
+      "link": "https://tinyurl.com/2cjxucjr",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://www.ditverzinjeniet.nl/wp-content/uploads/2022/07/504302-Monstrainer-1.jpg.webp"
+    },
+    {
+      "title": "Afwashulp",
+      "price": 16.99,
+      "link": "https://tinyurl.com/2yayoql4",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://www.ditverzinjeniet.nl/wp-content/uploads/2020/02/products-pelix-2.png.webp"
+    },
+    {
+      "title": "Olieschenker",
+      "price": 14.99,
+      "link": "https://tinyurl.com/28goqvvf",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://www.ditverzinjeniet.nl/wp-content/uploads/2019/01/products-peleg-design-oiladdin-olieschenker-en-stopper-hoofd.jpg"
+    }
   ],
   "Sport & Buiten": [
     {
