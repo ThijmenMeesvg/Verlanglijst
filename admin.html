@@ -13,9 +13,7 @@
       background: #f9fafb;
       color: #111;
     }
-    h1 {
-      text-align: center;
-    }
+    h1 { text-align: center; }
     label {
       font-weight: bold;
       display: block;
@@ -41,9 +39,7 @@
       border: none;
       cursor: pointer;
     }
-    button:hover {
-      background-color: #1d4ed8;
-    }
+    button:hover { background-color: #1d4ed8; }
     .result {
       background: white;
       border-radius: 8px;
@@ -65,26 +61,38 @@
       width: 100px;
       border-radius: 8px;
     }
-    .preview-card h3 {
-      margin: 0 0 .3rem 0;
-    }
-    .preview-card p {
-      margin: 0;
-    }
+    .preview-card h3 { margin: 0 0 .3rem 0; }
+    .preview-card p { margin: 0; }
+
     .loading {
-      margin-top: 10px;
-      color: #2563eb;
-      font-weight: bold;
-      animation: blink 1s infinite;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-top: 1rem;
     }
-    @keyframes blink {
-      0%, 50%, 100% { opacity: 1; }
-      25%, 75% { opacity: 0.3; }
+    .spinner {
+      border: 4px solid #ddd;
+      border-top: 4px solid #2563eb;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
     }
-    .errors {
-      margin-top: 10px;
-      color: #ff4d4d;
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
+    .error-messages {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      border-radius: 8px;
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+      display: none;
+    }
+    .error-messages p { margin: 0.2rem 0; }
   </style>
 </head>
 <body>
@@ -97,10 +105,9 @@
         border-radius: 8px;
         font-weight: bold;
         text-decoration: none;
-        transition: background-color 0.2s;
-    "
-    onmouseover="this.style.backgroundColor='#059669';" 
-    onmouseout="this.style.backgroundColor='#10b981';">
+        transition: background-color 0.2s;"
+      onmouseover="this.style.backgroundColor='#059669';"
+      onmouseout="this.style.backgroundColor='#10b981';">
       Open GitHub Repo
     </a>
   </section>
@@ -114,10 +121,9 @@
         border-radius: 8px;
         font-weight: bold;
         text-decoration: none;
-        transition: background-color 0.2s;
-    "
-    onmouseover="this.style.backgroundColor='#FFD369';" 
-    onmouseout="this.style.backgroundColor='#FF8C42';">
+        transition: background-color 0.2s;"
+      onmouseover="this.style.backgroundColor='#FFD369';"
+      onmouseout="this.style.backgroundColor='#FF8C42';">
       Terug naar Home
     </a>
   </section>
@@ -138,14 +144,23 @@
   <label for="url">Product-URL:</label>
   <input id="url" type="url" placeholder="Plak hier de link van bol.com of ap.lc">
 
+  <label for="favorite">
+    <input type="checkbox" id="favorite"> Markeer als favoriet
+  </label>
+
   <button id="generate">Genereer JSON-item</button>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <span>Laden...</span>
+  </div>
 
   <div id="output" class="result" style="display:none;">
     <h2>Gegenereerd JSON-item:</h2>
     <textarea id="jsonResult"></textarea>
-    <div id="loading" class="loading" style="display:none;">Laden...</div>
-    <div id="errorMessages" class="errors"></div>
   </div>
+
+  <div id="errorBox" class="error-messages"></div>
 
   <script>
     const accessCode = "verlanglijst"; 
@@ -158,72 +173,75 @@
     document.getElementById("generate").addEventListener("click", async () => {
       const url = document.getElementById("url").value.trim();
       const category = document.getElementById("category").value;
+      const isFavorite = document.getElementById("favorite").checked;
       const outputDiv = document.getElementById("output");
       const resultBox = document.getElementById("jsonResult");
-      const loadingDiv = document.getElementById("loading");
-      const errorDiv = document.getElementById("errorMessages");
+      const loading = document.getElementById("loading");
+      const errorBox = document.getElementById("errorBox");
 
-      errorDiv.innerHTML = "";
-      resultBox.value = "";
-      outputDiv.style.display = "block";
-      loadingDiv.style.display = "block";
+      if (!url) return alert("Voer een geldige URL in.");
 
-      if (!url) {
-        loadingDiv.style.display = "none";
-        return alert("Voer een geldige URL in.");
-      }
+      outputDiv.style.display = "none";
+      errorBox.style.display = "none";
+      errorBox.innerHTML = "";
+      loading.style.display = "flex";
 
       const today = new Date().toISOString().split("T")[0];
-      let resolvedUrl = url;
-      let html = "";
-      let title = "Onbekend product";
-      let price = 0;
-      let image = "";
-
       const errors = [];
 
-      // Probeer URL op te halen
+      let resolvedUrl = url;
       try {
-        const res = await fetch(url, { redirect: "follow" });
-        resolvedUrl = res.url;
-        try {
-          html = await fetch(resolvedUrl, { headers: { "User-Agent": "Mozilla/5.0" } }).then(r => r.text());
-        } catch {
-          errors.push("📷 Foto kon niet worden opgehaald.");
-        }
+        const r = await fetch(url, { redirect: "follow" });
+        resolvedUrl = r.url || url;
       } catch {
-        errors.push("🚫 Actie geblokkeerd door website.");
+        errors.push("Kon URL niet volgen — mogelijk geblokkeerd door website.");
       }
 
-      // Probeer gegevens uit HTML te halen
-      if (html) {
-        const titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/);
-        const priceMatch = html.match(/"price":\s*"([\d.,]+)"/) || html.match(/€\s?([\d.,]+)/);
-        const imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/);
-        if (titleMatch) title = titleMatch[1].replace(/["']/g, '').trim();
-        if (priceMatch) price = parseFloat(priceMatch[1].replace(",", "."));
-        if (imageMatch) image = imageMatch[1];
-        if (!titleMatch && !priceMatch && !imageMatch) errors.push("❓ Foutmelding onduidelijk, gegevens niet opgehaald.");
-      } else {
-        errors.push("❓ Foutmelding onduidelijk, gegevens niet opgehaald.");
+      let html = "";
+      try {
+        const r = await fetch(resolvedUrl, { headers: { "User-Agent": "Mozilla/5.0" } });
+        html = await r.text();
+      } catch {
+        errors.push("Pagina kon niet worden opgehaald (website blokkeerde toegang).");
       }
 
-      // Verkort de URL altijd, zelfs als fetch faalt
+      // Slimmere fallback voor geblokkeerde sites
+      let titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/);
+      let priceMatch = html.match(/"price":\s*"([\d.,]+)"/) || html.match(/€\s?([\d.,]+)/);
+      let imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/);
+
+      let title = titleMatch ? titleMatch[1].trim() : "";
+      if (!title && resolvedUrl.includes("bol.com")) {
+        title = decodeURIComponent(resolvedUrl.split("/").pop().replace(/-/g, " ")).split("?")[0];
+      }
+      if (!title) errors.push("Titel kon niet worden opgehaald.");
+      const price = priceMatch ? parseFloat(priceMatch[1].replace(",", ".")) : 0;
+      if (!price) errors.push("Prijs kon niet worden opgehaald.");
+      const image = imageMatch ? imageMatch[1] : "";
+      if (!image) errors.push("Afbeelding kon niet worden opgehaald.");
+
       let shortUrl = resolvedUrl;
       try {
         const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(resolvedUrl)}`);
         shortUrl = await res.text();
       } catch {
-        errors.push("⚠️ TinyURL kon niet worden aangemaakt.");
+        errors.push("Kon TinyURL niet genereren — originele link gebruikt.");
       }
 
-      const item = { title, price, link: shortUrl, favorite: false, dateAdded: today, image };
-      resultBox.value = JSON.stringify(item, null, 2);
+      const item = {
+        title: title || "Onbekend product",
+        price,
+        link: shortUrl,
+        favorite: isFavorite,
+        dateAdded: today,
+        image
+      };
 
-      loadingDiv.style.display = "none";
-      if (errors.length > 0) errorDiv.innerHTML = errors.join("<br>");
+      const jsonResult = JSON.stringify(item, null, 2);
+      resultBox.value = jsonResult;
+      outputDiv.style.display = "block";
+      loading.style.display = "none";
 
-      // Kopieerknop
       let btn = document.getElementById("copyButton");
       if (!btn) {
         btn = document.createElement("button");
@@ -237,9 +255,9 @@
         outputDiv.appendChild(btn);
       }
 
-      // Preview
       const oldPreview = document.getElementById("previewCard");
       if (oldPreview) oldPreview.remove();
+
       const preview = document.createElement("div");
       preview.id = "previewCard";
       preview.className = "preview-card";
@@ -253,13 +271,21 @@
 
       const info = document.createElement("div");
       info.innerHTML = `
-        <h3>${title}</h3>
-        <p>💶 €${price.toFixed(2)}</p>
+        <h3>${title || "Onbekend product"}</h3>
+        <p>💶 €${price ? price.toFixed(2) : "?"}</p>
         <a href="${resolvedUrl}" target="_blank" style="color:#2563eb;">Bekijk product</a>
         <p style="font-size:0.9rem;color:#555;margin-top:.4rem;">Categorie: ${category}</p>
+        <p style="font-size:0.9rem;color:${isFavorite ? '#dc2626' : '#555'};">
+          ${isFavorite ? "❤️ Favoriet" : "🤍 Niet favoriet"}
+        </p>
       `;
       preview.appendChild(info);
       outputDiv.appendChild(preview);
+
+      if (errors.length > 0) {
+        errorBox.innerHTML = errors.map(e => `<p>⚠️ ${e}</p>`).join("");
+        errorBox.style.display = "block";
+      }
     });
   </script>
 </body>
