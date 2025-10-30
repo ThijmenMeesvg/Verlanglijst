@@ -2,6 +2,30 @@
   "Boeken": [
       ],
   "Muziek": [
+    {
+      "title": "LP - Divinely Uninspired To A Hellish Extent",
+      "price": 34.99,
+      "link": "https://tinyurl.com/26zmvfrx",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "http://www.platenzaak.nl/cdn/shop/files/LCcopy_1200x1200.webp?v=1714049348"
+    },
+    {
+      "title": "LP - Blue Neighbourhood",
+      "price": 49.99,
+      "link": "https://tinyurl.com/25q4pelo",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://www.sounds.nl/covers/large300/352/3525384.jpg"
+    },
+    {
+      "title": "Dodie - Build a Problem (LP)",
+      "price": 25.95,
+      "link": "https://tinyurl.com/26mtlqzt",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "http://recordsonvinyl.nl/cdn/shop/files/0195497404827-0600px-001.jpg?v=1730565015"
+    }
   ],
   "Spelletjes": [
     {
