@@ -40,6 +40,24 @@
       <h2>Laatst toegevoegd</h2>
       <div id="item-container"></div>
     </section>
+
+    <!-- Admin knop onderaan -->
+    <section style="margin-top: 3rem; text-align: center;">
+      <a href="admin.html" style="
+          display: inline-block;
+          padding: 0.8rem 1.5rem;
+          background-color: #2563eb;
+          color: white;
+          border-radius: 8px;
+          font-weight: bold;
+          text-decoration: none;
+          transition: background-color 0.2s;
+      "
+      onmouseover="this.style.backgroundColor='#1d4ed8';" 
+      onmouseout="this.style.backgroundColor='#2563eb';">
+        Adminpagina
+      </a>
+    </section>
   </main>
 
   <!-- Confetti library -->
@@ -51,22 +69,23 @@
 
     // Confetti effect bij openen
     document.addEventListener("DOMContentLoaded", () => {
-  // Van links
-  confetti({
-    particleCount: 70,
-    angle: 60,
-    spread: 60,
-    origin: { x: 0, y: 0.6 }
-  });
-  // Van rechts
-  confetti({
-    particleCount: 70,
-    angle: 120,
-    spread: 60,
-    origin: { x: 1, y: 0.6 }
+      // Van links
+      confetti({
+        particleCount: 70,
+        angle: 60,
+        spread: 60,
+        origin: { x: 0, y: 0.6 }
+      });
+      // Van rechts
+      confetti({
+        particleCount: 70,
+        angle: 120,
+        spread: 60,
+        origin: { x: 1, y: 0.6 }
       });
     });
   </script>
+
   <script src="script.js"></script>
 </body>
 </html>
