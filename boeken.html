@@ -1,10 +1,89 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boeken – Mijn Verlanglijst</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Zelfde styling als Alle-items pagina */
+    .preview-card {
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #262626;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    .preview-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 20px rgba(255, 140, 66, 0.3);
+    }
+
+    .preview-card img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .preview-card h3 {
+      margin: 0 0 .3rem 0;
+      color: #FFD369;
+    }
+
+    .preview-card p {
+      margin: 0;
+      color: #EDEDED;
+    }
+
+    .preview-card.favorite {
+      border: 2px solid #FF8C42;
+      box-shadow: 0 0 20px rgba(255, 140, 66, 0.4);
+      background-color: #2E2A25;
+    }
+
+    #filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #filters label, #filters input, #filters button {
+      font-size: 0.95rem;
+    }
+
+    #filters input {
+      padding: 5px;
+      border-radius: 6px;
+      border: 1px solid #555;
+      background-color: #1E1E1E;
+      color: #FFD369;
+    }
+
+    #filters button {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      background-color: #FF8C42;
+      color: #1E1E1E;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    #filters button:hover {
+      background-color: #FFD369;
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
 <header>
@@ -26,55 +105,46 @@
 <main>
   <h2>Boeken</h2>
 
-  <section id="filters">
+  <div id="filters">
     <label for="minPrice">Min prijs (€):</label>
     <input id="minPrice" type="number" min="0" step="0.01">
     <label for="maxPrice">Max prijs (€):</label>
     <input id="maxPrice" type="number" min="0" step="0.01">
     <button id="applyPriceFilter">Filter toepassen</button>
-  </section>
+  </div>
 
-  <section>
-    <div id="item-container" class="grid"></div>
-  </section>
+  <div id="item-container" class="grid"></div>
 </main>
 
 <script>
   const currentCategory = "Boeken";
 
-  async function loadCategoryItems() {
+  async function loadItems() {
     const container = document.getElementById("item-container");
     container.innerHTML = "Even laden...";
-
     try {
       const response = await fetch("data.json");
       const data = await response.json();
       let items = data[currentCategory] || [];
 
-      // Filters toepassen
       const minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
       const maxPrice = parseFloat(document.getElementById("maxPrice").value) || Infinity;
       items = items.filter(i => i.price >= minPrice && i.price <= maxPrice);
 
-      // Sorteer op datum (nieuwste eerst)
-      items.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+      items.sort((a,b) => new Date(b.dateAdded) - new Date(a.dateAdded));
 
-      // Render items
       container.innerHTML = "";
-      if (items.length === 0) {
+      if(items.length === 0) {
         container.innerHTML = "<p>Geen items gevonden.</p>";
       } else {
         items.forEach(i => {
           const card = document.createElement("div");
           card.className = "preview-card" + (i.favorite ? " favorite" : "");
 
-          if (i.image) {
+          if(i.image) {
             const img = document.createElement("img");
             img.src = i.image;
             img.alt = i.title;
-            img.style.objectFit = "cover";
-            img.style.height = "100px";
-            img.style.width = "100px";
             card.appendChild(img);
           }
 
@@ -89,17 +159,19 @@
           container.appendChild(card);
         });
       }
-    } catch (err) {
+
+    } catch(err) {
       console.error(err);
       container.innerHTML = "<p>Fout bij het laden van de items.</p>";
     }
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    loadCategoryItems();
-    document.getElementById("applyPriceFilter").addEventListener("click", loadCategoryItems);
+    loadItems();
+    document.getElementById("applyPriceFilter").addEventListener("click", loadItems);
   });
 </script>
 </body>
 </html>
+
 
