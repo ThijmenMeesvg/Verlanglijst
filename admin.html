@@ -174,15 +174,16 @@
     } catch {
       console.warn("URL kon niet verkort worden, gebruik originele link.");
     }
-
-    // Bouw JSON-item
+   // Bouw JSON-item met image-veld
     const item = {
-      title,
-      price,
-      link: shortUrl,
-      favorite: false,
-      dateAdded: today
-    };
+    title,
+    price,
+    link: shortUrl,
+    favorite: false,
+    dateAdded: today,
+    image: image || "" // lege string als er geen afbeelding gevonden is
+};
+
 
     const jsonResult = JSON.stringify(item, null, 2);
 
