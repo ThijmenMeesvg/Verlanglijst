@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verlanglijst – Alle items</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="alle-items.html">Alle items</a>
+  </nav>
+</header>
+
+<main>
+  <h2>Alle items</h2>
+
+  <div id="filters">
+    <label for="categoryFilter">Categorie:</label>
+    <select id="categoryFilter">
+      <option value="">Alles</option>
+      <option>Boeken</option>
+      <option>Muziek</option>
+      <option>Spelletjes</option>
+      <option>Kleding & Accesoires</option>
+      <option>Uitzet</option>
+      <option>Sport & Buiten</option>
+      <option>Overig</option>
+    </select>
+
+    <label for="minPrice">Min prijs (€):</label>
+    <input id="minPrice" type="number" min="0" step="0.01">
+
+    <label for="maxPrice">Max prijs (€):</label>
+    <input id="maxPrice" type="number" min="0" step="0.01">
+
+    <button id="applyFilters">Filter toepassen</button>
+  </div>
+
+  <div id="item-container" class="grid"></div>
+</main>
+
+<script src="script.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const categorySelect = document.getElementById("categoryFilter");
+    const minPriceInput = document.getElementById("minPrice");
+    const maxPriceInput = document.getElementById("maxPrice");
+    const applyBtn = document.getElementById("applyFilters");
+
+    function applyFilters() {
+      const category = categorySelect.value || null;
+      const minPrice = minPriceInput.value ? parseFloat(minPriceInput.value) : null;
+      const maxPrice = maxPriceInput.value ? parseFloat(maxPriceInput.value) : null;
+
+      loadItems({ category, minPrice, maxPrice });
+    }
+
+    applyBtn.addEventListener("click", applyFilters);
+
+    // Laad alle items bij het openen
+    loadItems({ sortBy: "dateAdded" });
+  });
+</script>
+
+</body>
+</html>
