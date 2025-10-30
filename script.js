@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Homepage
   if (typeof homePage !== "undefined") {
-    loadItems({ sortBy: "dateAdded", limit: 12 });
+    loadItems({ sortBy: "dateAdded", limit: 3 });
   }
 
 });
