@@ -5,6 +5,65 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Verlanglijst – Home</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Preview-kaarten voor homepagina */
+    #item-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      justify-items: center;
+      margin-top: 1rem;
+    }
+
+    .preview-card {
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #fff;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    .preview-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 20px rgba(255, 140, 66, 0.3);
+    }
+
+    .preview-card img {
+      width: 100px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .preview-card h3 {
+      margin: 0 0 .3rem 0;
+      color: #FFD369;
+    }
+
+    .preview-card p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: #333;
+    }
+
+    .preview-card a {
+      color: #2563eb;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .preview-card a:hover {
+      color: #FFD369;
+    }
+
+    .preview-card.favorite {
+      border: 2px solid #FF8C42;
+      box-shadow: 0 0 20px rgba(255, 140, 66, 0.4);
+      background-color: #fef8f2;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -85,6 +144,59 @@
         origin: { x: 1, y: 0.6 }
       });
     });
+  </script>
+
+  <!-- Laad laatste 3 items als preview-cards -->
+  <script>
+    if (homePage) {
+      async function loadHomeItems() {
+        const container = document.getElementById("item-container");
+        container.innerHTML = "Even laden...";
+
+        try {
+          const response = await fetch("data.json");
+          const itemsByCategory = await response.json();
+
+          let allItems = Object.entries(itemsByCategory).flatMap(([category, items]) =>
+            items.map(i => ({ ...i, category }))
+          );
+
+          allItems.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+          const lastItems = allItems.slice(0, 3);
+
+          container.innerHTML = "";
+
+          lastItems.forEach(i => {
+            const card = document.createElement("div");
+            card.className = "preview-card" + (i.favorite ? " favorite" : "");
+
+            if (i.image) {
+              const img = document.createElement("img");
+              img.src = i.image;
+              img.alt = i.title;
+              card.appendChild(img);
+            }
+
+            const info = document.createElement("div");
+            info.innerHTML = `
+              <h3>${i.title}</h3>
+              <p>💶 €${i.price.toFixed(2)}</p>
+              <a href="${i.link}" target="_blank" style="color:#2563eb;">Bekijk product</a>
+              <p style="font-size:0.85rem;color:#AAA;margin-top:.3rem;">Categorie: ${i.category}</p>
+            `;
+            card.appendChild(info);
+
+            container.appendChild(card);
+          });
+
+        } catch (error) {
+          console.error(error);
+          container.innerHTML = "<p>Fout bij het laden van de items.</p>";
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", loadHomeItems);
+    }
   </script>
 
   <script src="script.js"></script>
