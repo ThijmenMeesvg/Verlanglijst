@@ -127,7 +127,24 @@
       "dateAdded": "2001-01-01"
     }
   ],
-  "Sport & Buiten": [],
+  "Sport & Buiten": [
+    {
+      "title": "Rebar Multi-Tool | Leatherman",
+      "price": 109,
+      "link": "https://tinyurl.com/267nlpod",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://eu.leatherman.com/cdn/shop/files/akeneo_f_2_a_0_f2a0367d281f1629c8a67c87c889093d31f1a738_Rebar_Burnt_Sienna_Fanned_Front_shopify.jpg?v=1761805394&width=1214"
+    },
+    {
+  "title": "Hoes Leatherman - Maat S",
+  "price": 28,
+  "link": "https://tinyurl.com/27uw2se6",
+  "favorite": false,
+  "dateAdded": "2025-10-30",
+  "image": "http://eu.leatherman.com/cdn/shop/files/akeneo_7_5_c_9_75c9af83eea6e9b35a83f7e63f78053c8f591382_Heritage_Leather_Sheath_shopify.jpg?crop=center&height=1200&v=1761805299&width=1200"
+    }  
+  ],
   "Overig": []
 }
 
