@@ -24,19 +24,25 @@
   </header>
 
   <main>
+    <h2>Boeken</h2>
+
+    <!-- Filter op prijs -->
     <section id="filters">
-      <h2>Filter op prijs</h2>
-      <label>Min: €<input type="number" id="minPrice" placeholder="0" min="0"></label>
-      <label>Max: €<input type="number" id="maxPrice" placeholder="1000" min="0"></label>
-      <button id="applyPriceFilter">Toepassen</button>
+      <label for="minPrice">Min prijs (€):</label>
+      <input id="minPrice" type="number" min="0" step="0.01">
+      <label for="maxPrice">Max prijs (€):</label>
+      <input id="maxPrice" type="number" min="0" step="0.01">
+      <button id="applyPriceFilter">Filter toepassen</button>
     </section>
 
+    <!-- Container voor items -->
     <section>
       <div id="item-container" class="grid"></div>
     </section>
   </main>
 
   <script>
+    // Geeft aan welke categorie geladen moet worden
     const currentCategory = "Boeken";
   </script>
   <script src="script.js"></script>
