@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sport & Buiten – Mijn Verlanglijst</title>
+  <title>Spelletjes – Mijn Verlanglijst</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Layout van de Alle-items pagina */
+    /* Zelfde styling als Alle-items pagina */
     .preview-card {
       margin-top: 1rem;
       padding: 1rem;
@@ -127,12 +127,10 @@
       const data = await response.json();
       let items = data[currentCategory] || [];
 
-      // Filter op prijs
       const minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
       const maxPrice = parseFloat(document.getElementById("maxPrice").value) || Infinity;
       items = items.filter(i => i.price >= minPrice && i.price <= maxPrice);
 
-      // Sorteer op datum
       items.sort((a,b) => new Date(b.dateAdded) - new Date(a.dateAdded));
 
       container.innerHTML = "";
@@ -175,3 +173,5 @@
 </script>
 </body>
 </html>
+
+
