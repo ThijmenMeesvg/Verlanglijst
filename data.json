@@ -1,5 +1,37 @@
 {
   "Boeken": [
+    {
+      "title": "Boek - Princesses Behaving Badly",
+      "price": 14.50,
+      "link": "https://tinyurl.com/29yxlkbp",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://www.bol.com/nl/nl/f/princesses-behaving-badly/9200000022365023/?Referrer=ADVNLPPcef51800cdbf92970065bba51d1a0013340&utm_source=13340&utm_medium=Affiliates&utm_campaign=CPS&utm_content=api"
+    },
+    {
+      "title": "Boek- How Not to Make a Human",
+      "price": 24.75,
+      "link": "https://tinyurl.com/28r3w7rf",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://m.media-amazon.com/images/I/71gWDZ23sXL._SY425_.jpg"
+    },
+    {
+      "title": "Notities - Moomin",
+      "price": 10.25,
+      "link": "https://tinyurl.com/2comnj9a",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://media.s-bol.com/NgOAzNB1L6r8/Dkl5Qqx/550x660.jpg"
+    },
+    {
+      "title": "Boek - Rooted",
+      "price": 15.99,
+      "link": "https://tinyurl.com/2cxarwbr",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://media.s-bol.com/qoBPqXDXp9Dy/kNWnJE/550x831.jpg"
+    }
       ],
   "Muziek": [
     {
@@ -25,7 +57,31 @@
       "favorite": false,
       "dateAdded": "2025-10-30",
       "image": "http://recordsonvinyl.nl/cdn/shop/files/0195497404827-0600px-001.jpg?v=1730565015"
-    }
+    },
+    {
+      "title": "LP - For Cryin' Out Loud",
+      "price": 34.99,
+      "link": "https://tinyurl.com/22ujmvtz",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "http://www.platenzaak.nl/cdn/shop/files/finneasgoldvinyl_1200x1200.webp?v=1723123088"
+    },
+    {
+      "title": "LP - BITE ME",
+      "price": 29.99,
+      "link": "https://tinyurl.com/22ybjwmw",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "http://www.platenzaak.nl/cdn/shop/files/0602478178429-1200px-003_1200x1200.jpg?v=1747745445"
+    },
+    {
+      "title": "LP - Automatic For The People",
+      "price": 32.99,
+      "link": "https://tinyurl.com/27klyfad",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://media.s-bol.com/3KnAAZ482xMr/y5RPnW/550x550.jpg"
+    }  
   ],
   "Spelletjes": [
     {
@@ -37,32 +93,40 @@
       "image": "https://m.media-amazon.com/images/I/71+ZikTWZwL._AC_SL1500_.jpg"
     },
     {
-  "title": "Spel - Boulderball",
-  "price": 45.90,
-  "link": "https://tinyurl.com/25pldupw",
-  "favorite": false,
-  "dateAdded": "2025-10-30",
-  "image": "https://media.s-bol.com/gjXEJqKrqPgZ/5yplxvX/550x620.jpg"
+      "title": "Spel - Boulderball",
+      "price": 45.90,
+      "link": "https://tinyurl.com/25pldupw",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://media.s-bol.com/gjXEJqKrqPgZ/5yplxvX/550x620.jpg"
     },
     {
-  "title": "Spel - Don't Get Got Travel",
-  "price": 14.95,
-  "link": "https://tinyurl.com/247zysfe",
-  "favorite": false,
-  "dateAdded": "2025-10-30",
-  "image": "https://www.spelspul.nl/58023-thickbox_default/don-t-get-got-travel.jpg"
+      "title": "Spel - Don't Get Got Travel",
+      "price": 14.95,
+      "link": "https://tinyurl.com/247zysfe",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://www.spelspul.nl/58023-thickbox_default/don-t-get-got-travel.jpg"
     },
     {
-  "title": "Bordspel - Ransom Notes",
-  "price": 28.60,
-  "link": "https://tinyurl.com/26bafr7b",
-  "favorite": false,
-  "dateAdded": "2025-10-30",
-  "image": "https://img.joomcdn.net/99de4bb2b49c1fc080fbe019b7e7226644093f04_original.jpeg"
+      "title": "Bordspel - Ransom Notes",
+      "price": 28.60,
+      "link": "https://tinyurl.com/26bafr7b",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://img.joomcdn.net/99de4bb2b49c1fc080fbe019b7e7226644093f04_original.jpeg"
     }
   ],
   "Kleding & Accesoires": [],
   "Uitzet": [
+    {
+      "title": "Gootsteenzeef",
+      "price": 11.99,
+      "link": "https://tinyurl.com/25c9kdp3",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://www.ditverzinjeniet.nl/wp-content/uploads/2019/01/products-web-monkey_business_sinkfin_gootsteenzeef_sfeer.jpg"
+   }
   ],
   "Sport & Buiten": [
     {
@@ -74,13 +138,13 @@
       "image": "https://eu.leatherman.com/cdn/shop/files/akeneo_f_2_a_0_f2a0367d281f1629c8a67c87c889093d31f1a738_Rebar_Burnt_Sienna_Fanned_Front_shopify.jpg?v=1761805394&width=1214"
     },
     {
-  "title": "Hoes Leatherman - Maat S",
-  "price": 28,
-  "link": "https://tinyurl.com/27uw2se6",
-  "favorite": false,
-  "dateAdded": "2025-10-30",
-  "image": "http://eu.leatherman.com/cdn/shop/files/akeneo_7_5_c_9_75c9af83eea6e9b35a83f7e63f78053c8f591382_Heritage_Leather_Sheath_shopify.jpg?crop=center&height=1200&v=1761805299&width=1200"
-    }  
+      "title": "Hoes Leatherman - Maat S",
+      "price": 28,
+      "link": "https://tinyurl.com/27uw2se6",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "http://eu.leatherman.com/cdn/shop/files/akeneo_7_5_c_9_75c9af83eea6e9b35a83f7e63f78053c8f591382_Heritage_Leather_Sheath_shopify.jpg?crop=center&height=1200&v=1761805299&width=1200"
+     }  
   ],
   "Overig": []
 }
