@@ -191,6 +191,22 @@
       "favorite": false,
       "dateAdded": "2025-10-30",
       "image": "https://www.ditverzinjeniet.nl/wp-content/uploads/2019/01/products-peleg-design-oiladdin-olieschenker-en-stopper-hoofd.jpg"
+    },
+    {
+      "title": "Deegroller",
+      "price": 3.99,
+      "link": "https://tinyurl.com/2l8g8okl",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://www.ikea.com/nl/nl/images/products/magasin-deegroller__0711093_pe727978_s5.jpg"
+    },
+    {
+      "title": "Kruidenrek Organizer",
+      "price": 34.15,
+      "link": "https://tinyurl.com/22x9ac8e",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://media.s-bol.com/YNonK8ZD0plA/xkGPoXr/550x545.jpg"
     }
   ],
   "Sport & Buiten": [
@@ -209,7 +225,15 @@
       "favorite": false,
       "dateAdded": "2025-10-30",
       "image": "http://eu.leatherman.com/cdn/shop/files/akeneo_7_5_c_9_75c9af83eea6e9b35a83f7e63f78053c8f591382_Heritage_Leather_Sheath_shopify.jpg?crop=center&height=1200&v=1761805299&width=1200"
-     }  
+     },  
+    {
+      "title": "Ropetooth - Mes",
+      "price": 19.95,
+      "link": "https://tinyurl.com/25tq7ogc",
+      "favorite": false,
+      "dateAdded": "2025-10-30",
+      "image": "https://www.bfgcdn.com/600_600_90/549-0000-0111/edelrid-ropetooth-mes.jpg"
+    }
   ],
   "Overig": [
     {
