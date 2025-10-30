@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verlanglijst Admin</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 700px;
+      margin: 3rem auto;
+      padding: 2rem;
+      background: #f9fafb;
+      color: #111;
+    }
+    h1 {
+      text-align: center;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 1.5rem;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 0.6rem;
+      font-size: 1rem;
+      margin-top: 0.3rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    textarea {
+      height: 120px;
+      font-family: monospace;
+    }
+    button {
+      margin-top: 1rem;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1d4ed8;
+    }
+    .result {
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <h1>🛠️ Verlanglijst Admin</h1>
+  
+  <label for="category">Categorie:</label>
+  <select id="category">
+    <option>Boeken</option>
+    <option>Muziek</option>
+    <option>Spelletjes</option>
+    <option>Kleding & Accesoires</option>
+    <option>Uitzet</option>
+    <option>Sport & Buiten</option>
+    <option>Overig</option>
+  </select>
+  
+  <label for="url">Product-URL:</label>
+  <input id="url" type="url" placeholder="Plak hier de link van bol.com of ap.lc">
+
+  <button id="generate">Genereer JSON-item</button>
+
+  <div id="output" class="result" style="display:none;">
+    <h2>Gegenereerd JSON-item:</h2>
+    <textarea id="jsonResult" readonly></textarea>
+    <p><small>Kopieer dit blokje en plak het in je <code>data.json</code> onder de juiste categorie.</small></p>
+  </div>
+
+  <script>
+    document.getElementById("generate").addEventListener("click", async () => {
+      const url = document.getElementById("url").value.trim();
+      const category = document.getElementById("category").value;
+      if (!url) return alert("Voer een geldige URL in.");
+
+      // Huidige datum (YYYY-MM-DD)
+      const today = new Date().toISOString().split("T")[0];
+
+      // Haal HTML op (met omleiding)
+      const resolvedUrl = await fetch(url, { redirect: "follow" })
+        .then(r => r.url)
+        .catch(() => url);
+
+      const html = await fetch(resolvedUrl, { headers: { "User-Agent": "Mozilla/5.0" } })
+        .then(r => r.text())
+        .catch(() => "");
+
+      // Titel en prijs zoeken
+      let titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/);
+      let priceMatch = html.match(/"price":\s*"([\d.,]+)"/) || html.match(/€\s?([\d.,]+)/);
+
+      const title = titleMatch ? titleMatch[1] : "Onbekend product";
+      const price = priceMatch ? parseFloat(priceMatch[1].replace(",", ".")) : 0;
+
+      const item = {
+        title,
+        price,
+        link: resolvedUrl,
+        favorite: false,
+        dateAdded: today
+      };
+
+      document.getElementById("output").style.display = "block";
+      document.getElementById("jsonResult").value = JSON.stringify(item, null, 2);
+    });
+  </script>
+</body>
+</html>
