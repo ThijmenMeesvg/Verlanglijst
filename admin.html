@@ -75,163 +75,158 @@
 </head>
 <body>
   <section style="margin-top: 2rem; text-align: center;">
-  <a href="https://github.com/thijmenmeesvg/Verlanglijst/blob/main/data.json" target="_blank" style="
-      display: inline-block;
-      padding: 0.6rem 1.2rem;
-      background-color: #10b981;
-      color: white;
-      border-radius: 8px;
-      font-weight: bold;
-      text-decoration: none;
-      transition: background-color 0.2s;
-  "
-  onmouseover="this.style.backgroundColor='#059669';" 
-  onmouseout="this.style.backgroundColor='#10b981';">
-    Open GitHub Repo
-  </a>
-</section>
+    <a href="https://github.com/thijmenmeesvg/Verlanglijst/blob/main/data.json" target="_blank" style="
+        display: inline-block;
+        padding: 0.6rem 1.2rem;
+        background-color: #10b981;
+        color: white;
+        border-radius: 8px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: background-color 0.2s;
+    "
+    onmouseover="this.style.backgroundColor='#059669';" 
+    onmouseout="this.style.backgroundColor='#10b981';">
+      Open GitHub Repo
+    </a>
+  </section>
+
   <section style="margin-top: 2rem; text-align: center;">
-  <a href="index.html" style="
-      display: inline-block;
-      padding: 0.6rem 1.2rem;
-      background-color: #FF8C42;
-      color: white;
-      border-radius: 8px;
-      font-weight: bold;
-      text-decoration: none;
-      transition: background-color 0.2s;
-  "
-  onmouseover="this.style.backgroundColor='#FFD369';" 
-  onmouseout="this.style.backgroundColor='#FF8C42';">
-    Terug naar Home
-  </a>
-</section>
+    <a href="index.html" style="
+        display: inline-block;
+        padding: 0.6rem 1.2rem;
+        background-color: #FF8C42;
+        color: white;
+        border-radius: 8px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: background-color 0.2s;
+    "
+    onmouseover="this.style.backgroundColor='#FFD369';" 
+    onmouseout="this.style.backgroundColor='#FF8C42';">
+      Terug naar Home
+    </a>
+  </section>
 
-<h1>🛠️ Verlanglijst Admin</h1>
+  <h1>🛠️ Verlanglijst Admin</h1>
 
-<label for="category">Categorie:</label>
-<select id="category">
-  <option>Boeken</option>
-  <option>Muziek</option>
-  <option>Spelletjes</option>
-  <option>Kleding & Accesoires</option>
-  <option>Uitzet</option>
-  <option>Sport & Buiten</option>
-  <option>Overig</option>
-</select>
+  <label for="category">Categorie:</label>
+  <select id="category">
+    <option>Boeken</option>
+    <option>Muziek</option>
+    <option>Spelletjes</option>
+    <option>Kleding & Accesoires</option>
+    <option>Uitzet</option>
+    <option>Sport & Buiten</option>
+    <option>Overig</option>
+  </select>
 
-<label for="url">Product-URL:</label>
-<input id="url" type="url" placeholder="Plak hier de link van bol.com of ap.lc">
+  <label for="url">Product-URL:</label>
+  <input id="url" type="url" placeholder="Plak hier de link van bol.com of ap.lc">
 
-<button id="generate">Genereer JSON-item</button>
+  <button id="generate">Genereer JSON-item</button>
 
-<div id="output" class="result" style="display:none;">
-  <h2>Gegenereerd JSON-item:</h2>
-  <textarea id="jsonResult" readonly></textarea>
-</div>
+  <div id="output" class="result" style="display:none;">
+    <h2>Gegenereerd JSON-item:</h2>
+    <textarea id="jsonResult"></textarea>
+  </div>
 
-<script>
-  // -------------------- Toegangscode --------------------
-  const accessCode = "verlanglijst"; // verander dit naar jouw code
-  const enteredCode = prompt("Voer toegangscode in om deze adminpagina te openen:");
-  if (enteredCode !== accessCode) {
-    alert("Onjuiste code. Je wordt teruggestuurd naar de hoofdpagina.");
-    window.location.href = "index.html";
-  }
-
-  // -------------------- Genereren JSON --------------------
-  document.getElementById("generate").addEventListener("click", async () => {
-    const url = document.getElementById("url").value.trim();
-    const category = document.getElementById("category").value;
-    if (!url) return alert("Voer een geldige URL in.");
-
-    const today = new Date().toISOString().split("T")[0];
-
-    // Volg verkorte links
-    const resolvedUrl = await fetch(url, { redirect: "follow" })
-      .then(r => r.url)
-      .catch(() => url);
-
-    // HTML ophalen
-    const html = await fetch(resolvedUrl, { headers: { "User-Agent": "Mozilla/5.0" } })
-      .then(r => r.text())
-      .catch(() => "");
-
-    // Titel, prijs, afbeelding extraheren
-    let titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/);
-    let priceMatch = html.match(/"price":\s*"([\d.,]+)"/) || html.match(/€\s?([\d.,]+)/);
-    let imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/);
-
-    const title = titleMatch ? titleMatch[1].replace(/["']/g, '').trim() : "Onbekend product";
-    const price = priceMatch ? parseFloat(priceMatch[1].replace(",", ".")) : 0;
-    const image = imageMatch ? imageMatch[1] : null;
-
-    // Verkort de URL automatisch via TinyURL
-    let shortUrl = resolvedUrl;
-    try {
-      const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(resolvedUrl)}`);
-      shortUrl = await res.text();
-    } catch {
-      console.warn("URL kon niet verkort worden, gebruik originele link.");
+  <script>
+    // -------------------- Toegangscode --------------------
+    const accessCode = "verlanglijst"; 
+    const enteredCode = prompt("Voer toegangscode in om deze adminpagina te openen:");
+    if (enteredCode !== accessCode) {
+      alert("Onjuiste code. Je wordt teruggestuurd naar de hoofdpagina.");
+      window.location.href = "index.html";
     }
-   // Bouw JSON-item met image-veld
-    const item = {
-    title,
-    price,
-    link: shortUrl,
-    favorite: false,
-    dateAdded: today,
-    image: image || "" // lege string als er geen afbeelding gevonden is
-};
 
+    // -------------------- Genereren JSON --------------------
+    document.getElementById("generate").addEventListener("click", async () => {
+      const url = document.getElementById("url").value.trim();
+      const category = document.getElementById("category").value;
+      if (!url) return alert("Voer een geldige URL in.");
 
-    const jsonResult = JSON.stringify(item, null, 2);
+      const today = new Date().toISOString().split("T")[0];
 
-    // Toon JSON + output container
-    const outputDiv = document.getElementById("output");
-    const resultBox = document.getElementById("jsonResult");
-    outputDiv.style.display = "block";
-    resultBox.value = jsonResult;
+      const resolvedUrl = await fetch(url, { redirect: "follow" })
+        .then(r => r.url)
+        .catch(() => url);
 
-    // Kopieerknop
-    let btn = document.getElementById("copyButton");
-    if (!btn) {
-      btn = document.createElement("button");
-      btn.id = "copyButton";
-      btn.textContent = "Kopieer JSON naar klembord";
-      btn.onclick = async () => {
-        await navigator.clipboard.writeText(jsonResult);
-        btn.textContent = "✅ Gekopieerd!";
-        setTimeout(() => (btn.textContent = "Kopieer JSON naar klembord"), 2500);
+      const html = await fetch(resolvedUrl, { headers: { "User-Agent": "Mozilla/5.0" } })
+        .then(r => r.text())
+        .catch(() => "");
+
+      let titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/);
+      let priceMatch = html.match(/"price":\s*"([\d.,]+)"/) || html.match(/€\s?([\d.,]+)/);
+      let imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/);
+
+      const title = titleMatch ? titleMatch[1].replace(/["']/g, '').trim() : "Onbekend product";
+      const price = priceMatch ? parseFloat(priceMatch[1].replace(",", ".")) : 0;
+      const image = imageMatch ? imageMatch[1] : "";
+
+      let shortUrl = resolvedUrl;
+      try {
+        const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(resolvedUrl)}`);
+        shortUrl = await res.text();
+      } catch {
+        console.warn("URL kon niet verkort worden, gebruik originele link.");
+      }
+
+      const item = {
+        title,
+        price,
+        link: shortUrl,
+        favorite: false,
+        dateAdded: today,
+        image: image
       };
-      outputDiv.appendChild(btn);
-    }
 
-    // Verwijder vorige preview
-    const oldPreview = document.getElementById("previewCard");
-    if (oldPreview) oldPreview.remove();
+      const jsonResult = JSON.stringify(item, null, 2);
 
-    // Visuele preview
-    const preview = document.createElement("div");
-    preview.id = "previewCard";
-    preview.className = "preview-card";
+      const outputDiv = document.getElementById("output");
+      const resultBox = document.getElementById("jsonResult");
+      outputDiv.style.display = "block";
+      resultBox.value = jsonResult; // nu bewerkbaar
 
-    if (image) {
-      const img = document.createElement("img");
-      img.src = image;
-      img.alt = title;
-      preview.appendChild(img);
-    }
+      let btn = document.getElementById("copyButton");
+      if (!btn) {
+        btn = document.createElement("button");
+        btn.id = "copyButton";
+        btn.textContent = "Kopieer JSON naar klembord";
+        btn.onclick = async () => {
+          await navigator.clipboard.writeText(resultBox.value); // leest actuele textarea waarde
+          btn.textContent = "✅ Gekopieerd!";
+          setTimeout(() => (btn.textContent = "Kopieer JSON naar klembord"), 2500);
+        };
+        outputDiv.appendChild(btn);
+      }
 
-    const info = document.createElement("div");
-    info.innerHTML = `
-      <h3>${title}</h3>
-      <p>💶 €${price.toFixed(2)}</p>
-      <a href="${resolvedUrl}" target="_blank" style="color:#2563eb;">Bekijk product</a>
-      <p style="font-size:0.9rem;color:#555;margin-top:.4rem;">Categorie: ${category}</p>
-    `;
-    preview.appendChild(info);
+      const oldPreview = document.getElementById("previewCard");
+      if (oldPreview) oldPreview.remove();
 
-    outputDiv.appendChild(preview);
-  });
-</script>
+      const preview = document.createElement("div");
+      preview.id = "previewCard";
+      preview.className = "preview-card";
+
+      if (image) {
+        const img = document.createElement("img");
+        img.src = image;
+        img.alt = title;
+        preview.appendChild(img);
+      }
+
+      const info = document.createElement("div");
+      info.innerHTML = `
+        <h3>${title}</h3>
+        <p>💶 €${price.toFixed(2)}</p>
+        <a href="${resolvedUrl}" target="_blank" style="color:#2563eb;">Bekijk product</a>
+        <p style="font-size:0.9rem;color:#555;margin-top:.4rem;">Categorie: ${category}</p>
+      `;
+      preview.appendChild(info);
+
+      outputDiv.appendChild(preview);
+    });
+  </script>
+</body>
+</html>
+
