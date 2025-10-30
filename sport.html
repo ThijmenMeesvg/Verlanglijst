@@ -7,38 +7,99 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>Mijn Verlanglijst</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="favorieten.html">Favorieten</a>
-      <a href="alle-items.html">Alles</a>
-      <a href="boeken.html">Boeken</a>
-      <a href="spelletjes.html">Spelletjes</a>
-      <a href="muziek.html">Muziek</a>
-      <a href="kleding.html">Kleding & Accessoires</a>
-      <a href="uitzet.html">Koken, Bakken en Thuis</a>
-      <a href="sport.html">Sport & Buiten</a>
-      <a href="overig.html">Overig</a>
-    </nav>
-  </header>
+<header>
+  <h1>Mijn Verlanglijst</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="favorieten.html">Favorieten</a>
+    <a href="alle-items.html">Alles</a>
+    <a href="boeken.html">Boeken</a>
+    <a href="spelletjes.html">Spelletjes</a>
+    <a href="muziek.html">Muziek</a>
+    <a href="kleding.html">Kleding & Accessoires</a>
+    <a href="uitzet.html">Koken, Bakken en Thuis</a>
+    <a href="sport.html">Sport & Buiten</a>
+    <a href="overig.html">Overig</a>
+  </nav>
+</header>
 
-  <main>
-    <section id="filters">
-      <h2>Filter op prijs</h2>
-      <label>Min: €<input type="number" id="minPrice" placeholder="0" min="0"></label>
-      <label>Max: €<input type="number" id="maxPrice" placeholder="1000" min="0"></label>
-      <button id="applyPriceFilter">Toepassen</button>
-    </section>
+<main>
+  <h2>Sport & Buiten</h2>
 
-    <section>
-      <div id="item-container" class="grid"></div>
-    </section>
-  </main>
+  <section id="filters">
+    <label for="minPrice">Min prijs (€):</label>
+    <input id="minPrice" type="number" min="0" step="0.01">
+    <label for="maxPrice">Max prijs (€):</label>
+    <input id="maxPrice" type="number" min="0" step="0.01">
+    <button id="applyPriceFilter">Filter toepassen</button>
+  </section>
 
-  <script>
-    const currentCategory = "Sport & Buiten";
-  </script>
-  <script src="script.js"></script>
+  <section>
+    <div id="item-container" class="grid"></div>
+  </section>
+</main>
+
+<script>
+  const currentCategory = "Sport & Buiten";
+
+  async function loadCategoryItems() {
+    const container = document.getElementById("item-container");
+    container.innerHTML = "Even laden...";
+
+    try {
+      const response = await fetch("data.json");
+      const data = await response.json();
+      let items = data[currentCategory] || [];
+
+      // Filters toepassen
+      const minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
+      const maxPrice = parseFloat(document.getElementById("maxPrice").value) || Infinity;
+      items = items.filter(i => i.price >= minPrice && i.price <= maxPrice);
+
+      // Sorteer op datum (nieuwste eerst)
+      items.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+
+      // Render items
+      container.innerHTML = "";
+      if (items.length === 0) {
+        container.innerHTML = "<p>Geen items gevonden.</p>";
+      } else {
+        items.forEach(i => {
+          const card = document.createElement("div");
+          card.className = "preview-card" + (i.favorite ? " favorite" : "");
+
+          if (i.image) {
+            const img = document.createElement("img");
+            img.src = i.image;
+            img.alt = i.title;
+            img.style.objectFit = "cover";
+            img.style.height = "100px";
+            img.style.width = "100px";
+            card.appendChild(img);
+          }
+
+          const info = document.createElement("div");
+          info.innerHTML = `
+            <h3>${i.title}</h3>
+            <p>💶 €${i.price.toFixed(2)}</p>
+            <a href="${i.link}" target="_blank" style="color:#2563eb;">Bekijk product</a>
+            <p style="font-size:0.85rem;color:#AAA;margin-top:.3rem;">Categorie: ${currentCategory}</p>
+          `;
+          card.appendChild(info);
+          container.appendChild(card);
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      container.innerHTML = "<p>Fout bij het laden van de items.</p>";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    loadCategoryItems();
+    document.getElementById("applyPriceFilter").addEventListener("click", loadCategoryItems);
+  });
+</script>
 </body>
 </html>
+
