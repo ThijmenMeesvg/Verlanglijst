@@ -7,44 +7,41 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>Mijn Verlanglijst</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="favorieten.html">Favorieten</a>
-      <a href="alle-items.html">Alles</a>
-      <a href="boeken.html">Boeken</a>
-      <a href="spelletjes.html">Spelletjes</a>
-      <a href="muziek.html">Muziek</a>
-      <a href="kleding.html">Kleding & Accessoires</a>
-      <a href="uitzet.html">Koken, Bakken en Thuis</a>
-      <a href="sport.html">Sport & Buiten</a>
-      <a href="overig.html">Overig</a>
-    </nav>
-  </header>
+<header>
+  <h1>Mijn Verlanglijst</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="favorieten.html">Favorieten</a>
+    <a href="alle-items.html">Alles</a>
+    <a href="boeken.html">Boeken</a>
+    <a href="spelletjes.html">Spelletjes</a>
+    <a href="muziek.html">Muziek</a>
+    <a href="kleding.html">Kleding & Accessoires</a>
+    <a href="uitzet.html">Koken, Bakken en Thuis</a>
+    <a href="sport.html">Sport & Buiten</a>
+    <a href="overig.html">Overig</a>
+  </nav>
+</header>
 
-  <main>
-    <h2>Boeken</h2>
+<main>
+  <h2>Boeken</h2>
 
-    <!-- Filter op prijs -->
-    <section id="filters">
-      <label for="minPrice">Min prijs (€):</label>
-      <input id="minPrice" type="number" min="0" step="0.01">
-      <label for="maxPrice">Max prijs (€):</label>
-      <input id="maxPrice" type="number" min="0" step="0.01">
-      <button id="applyPriceFilter">Filter toepassen</button>
-    </section>
+  <section id="filters">
+    <label for="minPrice">Min prijs (€):</label>
+    <input id="minPrice" type="number" min="0" step="0.01">
+    <label for="maxPrice">Max prijs (€):</label>
+    <input id="maxPrice" type="number" min="0" step="0.01">
+    <button id="applyPriceFilter">Filter toepassen</button>
+  </section>
 
-    <!-- Container voor items -->
-    <section>
-      <div id="item-container" class="grid"></div>
-    </section>
-  </main>
+  <section>
+    <div id="item-container" class="grid"></div>
+  </section>
+</main>
 
-  <script>
-    // Geeft aan welke categorie geladen moet worden
-    const currentCategory = "Boeken";
-  </script>
-  <script src="script.js"></script>
+<script>
+  const currentCategory = "Boeken";
+</script>
+<script src="script.js"></script>
 </body>
 </html>
