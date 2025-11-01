@@ -2,7 +2,7 @@
   "Boeken": [
     {
       "title": "Boek - Princesses Behaving Badly",
-      "price": 14.50,
+      "price": 14.5,
       "link": "https://tinyurl.com/29yxlkbp",
       "favorite": false,
       "dateAdded": "2025-10-30",
@@ -32,7 +32,7 @@
       "dateAdded": "2025-10-30",
       "image": "https://media.s-bol.com/qoBPqXDXp9Dy/kNWnJE/550x831.jpg"
     }
-      ],
+  ],
   "Muziek": [
     {
       "title": "LP - Divinely Uninspired To A Hellish Extent",
@@ -102,7 +102,7 @@
     },
     {
       "title": "Spel - Boulderball",
-      "price": 45.90,
+      "price": 45.9,
       "link": "https://tinyurl.com/25pldupw",
       "favorite": false,
       "dateAdded": "2025-10-30",
@@ -118,7 +118,7 @@
     },
     {
       "title": "Bordspel - Ransom Notes",
-      "price": 28.60,
+      "price": 28.6,
       "link": "https://tinyurl.com/26bafr7b",
       "favorite": false,
       "dateAdded": "2025-10-30",
@@ -225,7 +225,7 @@
       "favorite": false,
       "dateAdded": "2025-10-30",
       "image": "http://eu.leatherman.com/cdn/shop/files/akeneo_7_5_c_9_75c9af83eea6e9b35a83f7e63f78053c8f591382_Heritage_Leather_Sheath_shopify.jpg?crop=center&height=1200&v=1761805299&width=1200"
-     },  
+    },
     {
       "title": "Ropetooth - Mes",
       "price": 19.95,
@@ -251,9 +251,14 @@
       "favorite": false,
       "dateAdded": "2025-10-30",
       "image": "https://cdn3.soldeerbout-shop.nl/2323-large_default/digibytez-dbmk103-simon-says-soldeerkit.jpg"
+    },
+    {
+      "title": "Dopper Straw",
+      "price": 9.95,
+      "link": "https://shop.dopper.com/nl/accessoires/dopper-flip-straw-black?_gl=1*7znwiw*_up*MQ..*_gs*MQ..&gclid=Cj0KCQjw35bIBhDqARIsAGjd-cYI9HtJToFZYKXjpGxFqtNvbn4BWPiRuxMsB2XbIEoP54hS2RNG2LoaAn3qEALw_wcB&gbraid=0AAAAADdKNStBsW9Nr5HGglOBQYrFmfFay",
+      "favorite": false,
+      "dateAdded": "2025-11-01",
+      "image": "https://shop.dopper.com/media/catalog/product/cache/2a2e032c9bf8086c8827117f94342663/7/6/7627_dopper_flip_straw_black_01_488x700px.webp"
     }
   ]
 }
-
-
-
