@@ -7,7 +7,7 @@
 <style>
   body {
     font-family: system-ui, sans-serif;
-    max-width: 900px;
+    max-width: 1100px;
     margin: 2rem auto;
     padding: 2rem;
     background: #f3f4f6;
@@ -29,7 +29,6 @@
     color: #333;
     white-space: pre;
     overflow: auto;
-    min-height: 80px;
   }
   button {
     margin-top: 1rem;
@@ -57,9 +56,11 @@
     border-radius: 6px;
     margin-top: 0.5rem;
     word-break: break-all;
-    transition: background 0.2s;
   }
-  .link-item:hover { background: #d1d5db; }
+  .link-buttons {
+    display: flex;
+    gap: 0.3rem;
+  }
   .loading {
     display: none;
     align-items: center;
@@ -96,10 +97,18 @@
     line-height: 1.5em;
     tab-size: 2;
     min-height: 200px;
+    counter-reset: line;
   }
-  .highlight {
-    background-color: #fde68a;
+  #jsonEditor pre {
+    margin: 0;
   }
+  .line-number {
+    display: inline-block;
+    width: 2.5em;
+    user-select: none;
+    opacity: 0.5;
+  }
+  .highlight { background-color: #fde68a; }
   .top-links {
     text-align: center;
     margin-bottom: 1rem;
@@ -143,6 +152,7 @@
   <h2>⚙️ JSON-item genereren</h2>
   <label for="category">Categorie:</label>
   <select id="category">
+    <option value="">-- Kies categorie --</option>
     <option>Boeken</option>
     <option>Muziek</option>
     <option>Spelletjes</option>
@@ -154,16 +164,21 @@
 
   <label for="url">Product-URL:</label>
   <input id="url" type="url" placeholder="Plak hier de volledige productlink...">
-
   <label><input type="checkbox" id="favorite"> Markeer als favoriet</label>
-  <button id="generate">Genereer JSON-item</button>
+
+  <div style="display:flex; gap:0.5rem;">
+    <button id="generate" style="flex:1;">Genereer JSON-item</button>
+    <button id="resetGenerator" style="flex:1; background:#ef4444;">Leegmaken</button>
+  </div>
 
   <div class="loading" id="loading"><div class="spinner"></div><span>Laden...</span></div>
+
   <div id="output" class="section" style="display:none;">
     <h3>Gegenereerd item:</h3>
     <textarea id="jsonResult" rows="6"></textarea>
     <button id="copyItemBtn" style="background:#3b82f6;">Kopieer JSON-item</button>
   </div>
+
   <div id="errorBox" class="error-messages"></div>
 </div>
 
@@ -175,64 +190,66 @@
   <button id="copyJsonBtn" style="background:#3b82f6;">Kopieer</button>
   <button id="clearJsonBtn" style="background:#ef4444;">Leegmaken</button>
   <button id="validateJsonBtn" style="background:#facc15;">Controleer JSON</button>
-  <textarea id="jsonEditor" placeholder="De inhoud van data.json verschijnt hier..." rows="10"></textarea>
+  <pre id="jsonEditor" contenteditable="true"></pre>
   <p id="jsonStatus" class="status"></p>
 </div>
 
 <script>
   // ===== Admin-login onthouden =====
   const accessCode = "verlanglijst";
-  if (localStorage.getItem("adminLoggedIn") !== "true") {
+  if (localStorage.getItem("adminLoggedIn")!=="true"){
     const entered = prompt("Voer toegangscode in om deze adminpagina te openen:");
-    if (entered !== accessCode) {
+    if(entered!==accessCode){
       alert("Onjuiste code. Je wordt teruggestuurd naar de hoofdpagina.");
-      window.location.href = "index.html";
-    } else {
-      localStorage.setItem("adminLoggedIn","true");
-    }
+      window.location.href="index.html";
+    } else { localStorage.setItem("adminLoggedIn","true"); }
   }
-
-  document.getElementById("logoutBtn").onclick = () => {
+  document.getElementById("logoutBtn").onclick = ()=>{
     localStorage.removeItem("adminLoggedIn");
     alert("Je bent uitgelogd.");
-    window.location.href = "index.html";
+    window.location.href="index.html";
   };
 
   // ===== Tijdelijke links parkeren =====
-  const tempLinks = document.getElementById("tempLinks");
-  const rememberLinksBtn = document.getElementById("rememberLinksBtn");
-  const clearLinksBtn = document.getElementById("clearLinksBtn");
-  const savedLinksList = document.getElementById("savedLinksList");
+  const tempLinks=document.getElementById("tempLinks");
+  const rememberLinksBtn=document.getElementById("rememberLinksBtn");
+  const clearLinksBtn=document.getElementById("clearLinksBtn");
+  const savedLinksList=document.getElementById("savedLinksList");
 
-  function updateSavedLinks() {
-    savedLinksList.innerHTML = "";
-    const saved = JSON.parse(localStorage.getItem("tempLinks")||"[]");
+  function updateSavedLinks(){
+    savedLinksList.innerHTML="";
+    const saved=JSON.parse(localStorage.getItem("tempLinks")||"[]");
     saved.forEach((link, idx)=>{
-      const div = document.createElement("div");
-      div.className = "link-item";
-      div.innerHTML = `<span>${link}</span>
-        <button style="background:#ef4444;padding:0.2rem 0.6rem;border:none;color:white;border-radius:6px;" onclick="removeLink(${idx})">❌</button>`;
+      const div=document.createElement("div");
+      div.className="link-item";
+      div.innerHTML=`<span>${link}</span>
+        <div class="link-buttons">
+          <button style="background:#2563eb;padding:0.2rem 0.6rem;border:none;color:white;border-radius:6px;" onclick="copyLink(${idx})">📋</button>
+          <button style="background:#ef4444;padding:0.2rem 0.6rem;border:none;color:white;border-radius:6px;" onclick="removeLink(${idx})">❌</button>
+        </div>`;
       savedLinksList.appendChild(div);
     });
   }
-
   function removeLink(idx){
-    const saved = JSON.parse(localStorage.getItem("tempLinks")||"[]");
+    const saved=JSON.parse(localStorage.getItem("tempLinks")||"[]");
     saved.splice(idx,1);
     localStorage.setItem("tempLinks",JSON.stringify(saved));
     updateSavedLinks();
   }
-
+  function copyLink(idx){
+    const saved=JSON.parse(localStorage.getItem("tempLinks")||"[]");
+    navigator.clipboard.writeText(saved[idx]);
+    alert("Link gekopieerd!");
+  }
   rememberLinksBtn.onclick=()=>{
-    const newLinks = tempLinks.value.split("\n").map(l=>l.trim()).filter(l=>l);
+    const newLinks=tempLinks.value.split("\n").map(l=>l.trim()).filter(l=>l);
     if(!newLinks.length) return;
-    const saved = JSON.parse(localStorage.getItem("tempLinks")||"[]");
+    const saved=JSON.parse(localStorage.getItem("tempLinks")||"[]");
     newLinks.forEach(link=>{if(!saved.includes(link)) saved.push(link)});
     localStorage.setItem("tempLinks",JSON.stringify(saved));
     tempLinks.value="";
     updateSavedLinks();
   };
-
   clearLinksBtn.onclick=()=>{
     if(confirm("Weet je zeker dat je alle tijdelijke links wilt verwijderen?")){
       localStorage.removeItem("tempLinks");
@@ -240,22 +257,37 @@
       updateSavedLinks();
     }
   };
-
   updateSavedLinks();
 
-  // ===== JSON Generator =====
+  // ===== Generator =====
   let lastGeneratedItem=null;
   const generateBtn=document.getElementById("generate");
   const loading=document.getElementById("loading");
   const errorBox=document.getElementById("errorBox");
   const resultBox=document.getElementById("jsonResult");
   const outputDiv=document.getElementById("output");
+  const categorySelect=document.getElementById("category");
+  const resetGeneratorBtn=document.getElementById("resetGenerator");
+
+  function resetGenerator(){
+    document.getElementById("url").value="";
+    document.getElementById("favorite").checked=false;
+    resultBox.value="";
+    categorySelect.value="";
+    outputDiv.style.display="none";
+    errorBox.style.display="none";
+    errorBox.innerHTML="";
+  }
+  resetGeneratorBtn.onclick=resetGenerator;
 
   generateBtn.onclick=async()=>{
     const url=document.getElementById("url").value.trim();
     const category=document.getElementById("category").value;
     const favorite=document.getElementById("favorite").checked;
-    if(!url) return alert("Voer een geldige URL in.");
+
+    if(!category){ errorBox.innerHTML="<p>⚠️ Kies eerst een categorie!</p>"; errorBox.style.display="block"; return; }
+    if(!url){ alert("Voer een geldige URL in."); return; }
+
     loading.style.display="flex";
     outputDiv.style.display="none";
     errorBox.style.display="none";
@@ -263,12 +295,7 @@
 
     const errors=[];
     let html="";
-    try{
-      const r=await fetch(url,{headers:{"User-Agent":"Mozilla/5.0"}});
-      html=await r.text();
-    }catch{
-      errors.push("Kon pagina niet laden — mogelijk geblokkeerd door website.");
-    }
+    try{ const r=await fetch(url,{headers:{"User-Agent":"Mozilla/5.0"}}); html=await r.text(); }catch{ errors.push("Kon pagina niet laden — mogelijk geblokkeerd."); }
 
     let titleMatch=html.match(/<meta property="og:title" content="([^"]+)"/);
     let priceMatch=html.match(/"price":\s*"([\d.,]+)"/)||html.match(/€\s?([\d.,]+)/);
@@ -289,95 +316,8 @@
     loading.style.display="none";
     outputDiv.style.display="block";
 
-    if(errors.length){
-      errorBox.innerHTML=errors.map(e=>`<p>⚠️ ${e}</p>`).join("");
-      errorBox.style.display="block";
-    }
+    if(errors.length){ errorBox.innerHTML=errors.map(e=>`<p>⚠️ ${e}</p>`).join(""); errorBox.style.display="block"; }
   };
 
-  // Kopieer gegenereerd item
-  document.getElementById("copyItemBtn").onclick = async () => {
-    if (!resultBox.value.trim()) return;
-    await navigator.clipboard.writeText(resultBox.value);
-    jsonStatus.textContent = "✅ JSON-item gekopieerd.";
-    jsonStatus.style.color = "#16a34a";
-  };
-
-  // ===== JSON Beheer =====
-  let currentJson=null;
-  const jsonEditor=document.getElementById("jsonEditor");
-  const jsonStatus=document.getElementById("jsonStatus");
-
-  document.getElementById("loadJsonBtn").onclick=async()=>{
-    jsonStatus.textContent="Bezig met laden...";
-    try{
-      const res=await fetch("data.json");
-      if(!res.ok) throw new Error("Kon data.json niet ophalen");
-      currentJson=await res.json();
-      jsonEditor.value=JSON.stringify(currentJson,null,2);
-      jsonStatus.textContent="✅ data.json succesvol geladen.";
-      jsonStatus.style.color="#555";
-    }catch(err){
-      jsonStatus.textContent="❌ "+err.message;
-      jsonStatus.style.color="#dc2626";
-    }
-  };
-
-  document.getElementById("addToJsonBtn").onclick = () => {
-    if (!resultBox.value.trim()) return jsonStatus.textContent = "⚠️ Geen JSON-item om toe te voegen.";
-    try {
-      const editedItem = JSON.parse(resultBox.value); // gebruik de tekstvak-inhoud
-      if (!currentJson) currentJson = jsonEditor.value ? JSON.parse(jsonEditor.value) : {};
-      const cat = document.getElementById("category").value;
-      if (!currentJson[cat]) currentJson[cat] = [];
-      currentJson[cat].push(editedItem);
-      jsonEditor.value = JSON.stringify(currentJson, null, 2);
-      jsonStatus.textContent = `✅ Item toegevoegd aan categorie: ${cat}`;
-      jsonStatus.style.color = "#16a34a";
-    } catch (err) {
-      jsonStatus.textContent = "❌ Ongeldige JSON in tekstvak: " + err.message;
-      jsonStatus.style.color = "#dc2626";
-    }
-  };
-
-  document.getElementById("copyJsonBtn").onclick=async()=>{
-    await navigator.clipboard.writeText(jsonEditor.value);
-    jsonStatus.textContent="✅ JSON gekopieerd.";
-    jsonStatus.style.color="#16a34a";
-  };
-
-  document.getElementById("clearJsonBtn").onclick=()=>{
-    jsonEditor.value="";
-    jsonStatus.textContent="🗑️ Tekstvak geleegd.";
-    jsonStatus.style.color="#555";
-  };
-
-  // ===== JSON Validatie met highlight =====
-  document.getElementById("validateJsonBtn").onclick=()=>{
-    jsonEditor.value=jsonEditor.value.replace(/\u0000/g,""); // reset evt onzichtbare chars
-    const lines=jsonEditor.value.split("\n");
-    try{
-      JSON.parse(jsonEditor.value);
-      jsonStatus.textContent="✅ JSON is geldig!";
-      jsonStatus.style.color="#16a34a";
-    }catch(err){
-      const match=err.message.match(/at position (\d+)/);
-      if(match){
-        let pos=parseInt(match[1]);
-        let count=0;
-        let lineNum=0;
-        for(let i=0;i<lines.length;i++){
-          count+=lines[i].length+1;
-          if(count>pos){ lineNum=i; break; }
-        }
-        jsonStatus.textContent=`❌ Ongeldige JSON: ${err.message} (regel ${lineNum+1})`;
-        jsonStatus.style.color="#dc2626";
-      }else{
-        jsonStatus.textContent=`❌ Ongeldige JSON: ${err.message}`;
-        jsonStatus.style.color="#dc2626";
-      }
-    }
-  };
-</script>
-</body>
-</html>
+  document.getElementById("copyItemBtn").onclick=async()=>{
+    if(!resultBox.value.trim()) return;
