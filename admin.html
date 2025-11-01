@@ -162,6 +162,7 @@
   <div id="output" class="section" style="display:none;">
     <h3>Gegenereerd item:</h3>
     <textarea id="jsonResult" rows="6"></textarea>
+    <button id="copyItemBtn" style="background:#3b82f6;">Kopieer JSON-item</button>
   </div>
   <div id="errorBox" class="error-messages"></div>
 </div>
@@ -294,6 +295,14 @@
     }
   };
 
+  // Kopieer gegenereerd item
+  document.getElementById("copyItemBtn").onclick = async () => {
+    if (!resultBox.value.trim()) return;
+    await navigator.clipboard.writeText(resultBox.value);
+    jsonStatus.textContent = "✅ JSON-item gekopieerd.";
+    jsonStatus.style.color = "#16a34a";
+  };
+
   // ===== JSON Beheer =====
   let currentJson=null;
   const jsonEditor=document.getElementById("jsonEditor");
@@ -314,19 +323,20 @@
     }
   };
 
-  document.getElementById("addToJsonBtn").onclick=()=>{
-    if(!lastGeneratedItem) return jsonStatus.textContent="⚠️ Geen gegenereerd item.";
-    try{
-      if(!currentJson) currentJson=jsonEditor.value?JSON.parse(jsonEditor.value):{};
-      const cat=document.getElementById("category").value;
-      if(!currentJson[cat]) currentJson[cat]=[];
-      currentJson[cat].push(lastGeneratedItem);
-      jsonEditor.value=JSON.stringify(currentJson,null,2);
-      jsonStatus.textContent=`✅ Item toegevoegd aan categorie: ${cat}`;
-      jsonStatus.style.color="#16a34a";
-    }catch(err){
-      jsonStatus.textContent="❌ "+err.message;
-      jsonStatus.style.color="#dc2626";
+  document.getElementById("addToJsonBtn").onclick = () => {
+    if (!resultBox.value.trim()) return jsonStatus.textContent = "⚠️ Geen JSON-item om toe te voegen.";
+    try {
+      const editedItem = JSON.parse(resultBox.value); // gebruik de tekstvak-inhoud
+      if (!currentJson) currentJson = jsonEditor.value ? JSON.parse(jsonEditor.value) : {};
+      const cat = document.getElementById("category").value;
+      if (!currentJson[cat]) currentJson[cat] = [];
+      currentJson[cat].push(editedItem);
+      jsonEditor.value = JSON.stringify(currentJson, null, 2);
+      jsonStatus.textContent = `✅ Item toegevoegd aan categorie: ${cat}`;
+      jsonStatus.style.color = "#16a34a";
+    } catch (err) {
+      jsonStatus.textContent = "❌ Ongeldige JSON in tekstvak: " + err.message;
+      jsonStatus.style.color = "#dc2626";
     }
   };
 
@@ -346,8 +356,6 @@
   document.getElementById("validateJsonBtn").onclick=()=>{
     jsonEditor.value=jsonEditor.value.replace(/\u0000/g,""); // reset evt onzichtbare chars
     const lines=jsonEditor.value.split("\n");
-    // verwijder bestaande highlight
-    jsonEditor.innerHTML=jsonEditor.value;
     try{
       JSON.parse(jsonEditor.value);
       jsonStatus.textContent="✅ JSON is geldig!";
@@ -364,7 +372,6 @@
         }
         jsonStatus.textContent=`❌ Ongeldige JSON: ${err.message} (regel ${lineNum+1})`;
         jsonStatus.style.color="#dc2626";
-        // highlight: we kunnen textarea niet direct stylen per lijn, maar melding is duidelijk
       }else{
         jsonStatus.textContent=`❌ Ongeldige JSON: ${err.message}`;
         jsonStatus.style.color="#dc2626";
