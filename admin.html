@@ -57,7 +57,10 @@
     margin-top: 0.5rem;
     word-break: break-all;
   }
-  .link-buttons { display: flex; gap: 0.3rem; }
+  .link-buttons {
+    display: flex;
+    gap: 0.3rem;
+  }
   .loading {
     display: none;
     align-items: center;
@@ -137,9 +140,9 @@
   <div id="savedLinksList"></div>
 </div>
 
-<!-- Generator -->
+<!-- Generator met invulformulier -->
 <div class="section">
-  <h2>⚙️ JSON-item genereren</h2>
+  <h2>⚙️ Productinformatie invullen</h2>
   <label for="category">Categorie:</label>
   <select id="category">
     <option value="">-- Kies categorie --</option>
@@ -152,188 +155,199 @@
     <option>Overig</option>
   </select>
 
-  <label for="url">Product-URL:</label>
-  <input id="url" type="url" placeholder="Plak hier de volledige productlink...">
-  <label><input type="checkbox" id="favorite"> Markeer als favoriet</label>
+  <label>Product URL:</label>
+  <input type="url" id="urlForm" placeholder="Plak hier de link">
+
+  <label>Titel:</label>
+  <input type="text" id="titleForm" placeholder="Titel verschijnt hier">
+
+  <label>Prijs (€):</label>
+  <input type="number" id="priceForm" placeholder="Prijs in €">
+
+  <label>Afbeelding URL:</label>
+  <input type="url" id="imageForm" placeholder="Afbeelding link">
+
+  <label><input type="checkbox" id="favoriteForm"> Favoriet</label>
+
+  <label>Datum toegevoegd:</label>
+  <input type="date" id="dateForm" value="">
 
   <div style="display:flex; gap:0.5rem;">
-    <button id="generate" style="flex:1;">Genereer JSON-item</button>
-    <button id="resetGenerator" style="flex:1; background:#ef4444;">Leegmaken</button>
+    <button id="populateFormBtn" style="flex:1;">Vul automatisch info in</button>
+    <button id="generateFormJsonBtn" style="flex:1; background:#10b981;">Genereer JSON</button>
+    <button id="resetFormBtn" style="flex:1; background:#ef4444;">Leegmaken</button>
   </div>
 
-  <div class="loading" id="loading"><div class="spinner"></div><span>Laden...</span></div>
-
-  <div id="output" class="section" style="display:none;">
+  <div id="formJsonOutput" class="section" style="display:none;">
     <h3>Gegenereerd item:</h3>
-    <textarea id="jsonResult" rows="6"></textarea>
-    <button id="copyItemBtn" style="background:#3b82f6;">Kopieer JSON-item</button>
-    <button id="addFirebaseBtn" style="background:#10b981;">Voeg toe aan Firebase</button>
+    <textarea id="jsonResultForm" rows="6"></textarea>
+    <button id="addFormJsonToData" style="background:#3b82f6;">Voeg toe aan data.json</button>
   </div>
 
   <div id="errorBox" class="error-messages"></div>
 </div>
 
-<!-- Data beheren -->
+<!-- Data.json beheren -->
 <div class="section">
-  <h2>🗂️ Items beheren</h2>
+  <h2>🗂️ Data.json beheren</h2>
   <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-    <button id="loadFirebaseBtn">Haal items op</button>
-    <button id="copyJsonBtn" style="background:#3b82f6;">Kopieer JSON</button>
+    <button id="loadJsonBtn">Haal data op</button>
+    <button id="copyJsonBtn" style="background:#3b82f6;">Kopieer</button>
+    <button id="clearJsonBtn" style="background:#ef4444;">Leegmaken</button>
     <button id="validateJsonBtn" style="background:#facc15;">Controleer JSON</button>
   </div>
-  <textarea id="jsonEditor" class="data-json" placeholder="De inhoud van Firebase verschijnt hier..."></textarea>
+  <textarea id="jsonEditor" class="data-json" placeholder="De inhoud van data.json verschijnt hier..."></textarea>
   <p id="jsonStatus" class="status"></p>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getDatabase, ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+<script>
+  // ===== Admin-login onthouden =====
+  const accessCode = "verlanglijst";
+  if(localStorage.getItem("adminLoggedIn")!=="true"){
+    const entered = prompt("Voer toegangscode in:");
+    if(entered!==accessCode){ alert("Onjuiste code. Je wordt teruggestuurd."); window.location.href="index.html"; }
+    else localStorage.setItem("adminLoggedIn","true");
+  }
+  document.getElementById("logoutBtn").onclick=()=>{
+    localStorage.removeItem("adminLoggedIn");
+    alert("Je bent uitgelogd.");
+    window.location.href="index.html";
+  };
 
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyCnDzhefAQWgoShNY2geSFwxTzNwqUqvTU",
-  authDomain: "verlanglijst-12015.firebaseapp.com",
-  databaseURL: "https://verlanglijst-12015-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "verlanglijst-12015",
-  storageBucket: "verlanglijst-12015.firebasestorage.app",
-  messagingSenderId: "512971362808",
-  appId: "1:512971362808:web:b16ec8341ec4fbe795460d"
-};
+  // ===== Tijdelijke links =====
+  const tempLinks=document.getElementById("tempLinks");
+  const rememberLinksBtn=document.getElementById("rememberLinksBtn");
+  const clearLinksBtn=document.getElementById("clearLinksBtn");
+  const savedLinksList=document.getElementById("savedLinksList");
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-// ===== Admin login onthouden =====
-const accessCode = "verlanglijst";
-if(localStorage.getItem("adminLoggedIn")!=="true"){
-  const entered = prompt("Voer toegangscode in:");
-  if(entered!==accessCode){ alert("Onjuiste code"); window.location.href="index.html"; }
-  else localStorage.setItem("adminLoggedIn","true");
-}
-document.getElementById("logoutBtn").onclick=()=>{
-  localStorage.removeItem("adminLoggedIn");
-  window.location.href="index.html";
-};
-
-// ===== Tijdelijke links =====
-const tempLinks=document.getElementById("tempLinks");
-const rememberLinksBtn=document.getElementById("rememberLinksBtn");
-const clearLinksBtn=document.getElementById("clearLinksBtn");
-const savedLinksList=document.getElementById("savedLinksList");
-
-function updateSavedLinks(){
-  savedLinksList.innerHTML="";
-  const saved=JSON.parse(localStorage.getItem("tempLinks")||"[]");
-  saved.forEach((link, idx)=>{
-    const div=document.createElement("div");
-    div.className="link-item";
-    div.innerHTML=`<span>${link}</span>
-      <div class="link-buttons">
-        <button style="background:#2563eb;padding:0.2rem 0.6rem;border:none;color:white;border-radius:6px;" onclick="copyLink(${idx})">📋</button>
-        <button style="background:#ef4444;padding:0.2rem 0.6rem;border:none;color:white;border-radius:6px;" onclick="removeLink(${idx})">❌</button>
-      </div>`;
-    savedLinksList.appendChild(div);
-  });
-}
-function removeLink(idx){
-  const saved=JSON.parse(localStorage.getItem("tempLinks")||"[]");
-  saved.splice(idx,1);
-  localStorage.setItem("tempLinks",JSON.stringify(saved));
-  updateSavedLinks();
-}
-function copyLink(idx){
-  const saved=JSON.parse(localStorage.getItem("tempLinks")||"[]");
-  navigator.clipboard.writeText(saved[idx]);
-  alert("Link gekopieerd!");
-}
-rememberLinksBtn.onclick=()=>{
-  const newLinks=tempLinks.value.split("\n").map(l=>l.trim()).filter(l=>l);
-  if(!newLinks.length) return;
-  const saved=JSON.parse(localStorage.getItem("tempLinks")||"[]");
-  newLinks.forEach(link=>{if(!saved.includes(link)) saved.push(link)});
-  localStorage.setItem("tempLinks",JSON.stringify(saved));
-  tempLinks.value="";
-  updateSavedLinks();
-};
-clearLinksBtn.onclick=()=>{
-  if(confirm("Weet je zeker dat je alle tijdelijke links wilt verwijderen?")){
-    localStorage.removeItem("tempLinks");
-    tempLinks.value="";
+  function updateSavedLinks(){
+    savedLinksList.innerHTML="";
+    const saved=JSON.parse(localStorage.getItem("tempLinks")||"[]");
+    saved.forEach((link, idx)=>{
+      const div=document.createElement("div");
+      div.className="link-item";
+      div.innerHTML=`<span>${link}</span>
+        <div class="link-buttons">
+          <button style="background:#2563eb;padding:0.2rem 0.6rem;border:none;color:white;border-radius:6px;" onclick="copyLink(${idx})">📋</button>
+          <button style="background:#ef4444;padding:0.2rem 0.6rem;border:none;color:white;border-radius:6px;" onclick="removeLink(${idx})">❌</button>
+        </div>`;
+      savedLinksList.appendChild(div);
+    });
+  }
+  function removeLink(idx){
+    const saved=JSON.parse(localStorage.getItem("tempLinks")||"[]");
+    saved.splice(idx,1);
+    localStorage.setItem("tempLinks",JSON.stringify(saved));
     updateSavedLinks();
   }
-};
-updateSavedLinks();
+  function copyLink(idx){
+    const saved=JSON.parse(localStorage.getItem("tempLinks")||"[]");
+    navigator.clipboard.writeText(saved[idx]);
+    alert("Link gekopieerd!");
+  }
+  rememberLinksBtn.onclick=()=>{
+    const newLinks=tempLinks.value.split("\n").map(l=>l.trim()).filter(l=>l);
+    if(!newLinks.length) return;
+    const saved=JSON.parse(localStorage.getItem("tempLinks")||"[]");
+    newLinks.forEach(link=>{if(!saved.includes(link)) saved.push(link)});
+    localStorage.setItem("tempLinks",JSON.stringify(saved));
+    tempLinks.value="";
+    updateSavedLinks();
+  };
+  clearLinksBtn.onclick=()=>{
+    if(confirm("Weet je zeker dat je alle tijdelijke links wilt verwijderen?")){
+      localStorage.removeItem("tempLinks");
+      tempLinks.value="";
+      updateSavedLinks();
+    }
+  };
+  updateSavedLinks();
 
-// ===== Generator =====
-let lastGeneratedItem=null;
-const generateBtn=document.getElementById("generate");
-const loading=document.getElementById("loading");
-const errorBox=document.getElementById("errorBox");
-const resultBox=document.getElementById("jsonResult");
-const outputDiv=document.getElementById("output");
-const copyItemBtn=document.getElementById("copyItemBtn");
-const resetGeneratorBtn=document.getElementById("resetGenerator");
-const addFirebaseBtn=document.getElementById("addFirebaseBtn");
+  // ===== Generator formulier =====
+  const urlForm = document.getElementById("urlForm");
+  const titleForm = document.getElementById("titleForm");
+  const priceForm = document.getElementById("priceForm");
+  const imageForm = document.getElementById("imageForm");
+  const favoriteForm = document.getElementById("favoriteForm");
+  const dateForm = document.getElementById("dateForm");
+  const populateFormBtn = document.getElementById("populateFormBtn");
+  const generateFormJsonBtn = document.getElementById("generateFormJsonBtn");
+  const resetFormBtn = document.getElementById("resetFormBtn");
+  const jsonResultForm = document.getElementById("jsonResultForm");
+  const formJsonOutput = document.getElementById("formJsonOutput");
+  const addFormJsonToData = document.getElementById("addFormJsonToData");
 
-generateBtn.onclick=async()=>{
-  const url=document.getElementById("url").value.trim();
-  const category=document.getElementById("category").value;
-  const favorite=document.getElementById("favorite").checked;
+  populateFormBtn.onclick = async () => {
+    const url = urlForm.value.trim();
+    if(!url) return alert("Voer een URL in.");
+    let html="";
+    try {
+      const res = await fetch(url,{ headers:{ "User-Agent":"Mozilla/5.0"}});
+      html = await res.text();
+    } catch { console.log("Kon pagina niet laden, velden blijven leeg"); }
+    const titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/);
+    const priceMatch = html.match(/"price":\s*"([\d.,]+)"/) || html.match(/€\s?([\d.,]+)/);
+    const imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/);
+    titleForm.value = titleMatch ? titleMatch[1] : "";
+    priceForm.value = priceMatch ? parseFloat(priceMatch[1].replace(",", ".")) : "";
+    imageForm.value = imageMatch ? imageMatch[1] : "";
+    favoriteForm.checked = false;
+    dateForm.value = new Date().toISOString().slice(0,10);
+  };
 
-  if(!url) return alert("Voer een geldige URL in.");
-  if(!category) { alert("Kies eerst een categorie!"); return; }
+  generateFormJsonBtn.onclick = () => {
+    const item = {
+      title: titleForm.value || "Onbekend product",
+      price: priceForm.value ? parseFloat(priceForm.value) : 0,
+      link: urlForm.value,
+      favorite: favoriteForm.checked,
+      dateAdded: dateForm.value,
+      image: imageForm.value || ""
+    };
+    jsonResultForm.value = JSON.stringify(item,null,2);
+    formJsonOutput.style.display="block";
+  };
 
-  loading.style.display="flex";
-  outputDiv.style.display="none";
-  errorBox.style.display="none";
-  errorBox.innerHTML="";
+  resetFormBtn.onclick = () => {
+    urlForm.value="";
+    titleForm.value="";
+    priceForm.value="";
+    imageForm.value="";
+    favoriteForm.checked=false;
+    dateForm.value="";
+    jsonResultForm.value="";
+    formJsonOutput.style.display="none";
+  };
 
-  // Simpele data fetch (kan uitgebreid worden)
-  let title = url, price=0, image="";
-  lastGeneratedItem={title,price,link:url,favorite,dateAdded:new Date().toISOString(),image};
-  resultBox.value=JSON.stringify(lastGeneratedItem,null,2);
-  loading.style.display="none";
-  outputDiv.style.display="block";
-};
+  addFormJsonToData.onclick = () => {
+    if(!jsonResultForm.value) return alert("Geen JSON om toe te voegen.");
+    try {
+      let currentJson = jsonEditor.value ? JSON.parse(jsonEditor.value) : {};
+      const cat = document.getElementById("category").value;
+      if(!cat) return alert("Kies eerst een categorie!");
+      if(!currentJson[cat]) currentJson[cat]=[];
+      currentJson[cat].push(JSON.parse(jsonResultForm.value));
+      jsonEditor.value = JSON.stringify(currentJson,null,2);
+      alert("Item toegevoegd aan data.json tekstvak.");
+    } catch(e){ alert("Fout bij toevoegen: "+e.message); }
+  };
 
-copyItemBtn.onclick=()=>{ navigator.clipboard.writeText(resultBox.value); alert("Item gekopieerd!"); };
-resetGeneratorBtn.onclick=()=>{
-  document.getElementById("url").value="";
-  document.getElementById("category").value="";
-  document.getElementById("favorite").checked=false;
-  resultBox.value="";
-  outputDiv.style.display="none";
-  errorBox.style.display="none";
-};
-
-// ===== Firebase =====
-const jsonEditor=document.getElementById("jsonEditor");
-const jsonStatus=document.getElementById("jsonStatus");
-const itemsRef=ref(db,'items');
-
-document.getElementById("loadFirebaseBtn").onclick=()=>{
-  jsonStatus.textContent="Bezig met laden...";
-  onValue(itemsRef,(snapshot)=>{
-    const data = snapshot.val() || {};
-    jsonEditor.value=JSON.stringify(data,null,2);
-    jsonStatus.textContent="✅ Items uit Firebase geladen.";
-  }, (error)=>{
-    jsonStatus.textContent="❌ "+error;
-  });
-};
-
-addFirebaseBtn.onclick=()=>{
-  if(!lastGeneratedItem) return alert("Geen item beschikbaar");
-  push(itemsRef, {...lastGeneratedItem, checked:false})
-    .then(()=>{ jsonStatus.textContent="✅ Item toegevoegd in Firebase"; })
-    .catch(err=>{ jsonStatus.textContent="❌ "+err.message; });
-};
-
-document.getElementById("copyJsonBtn").onclick=()=>{ navigator.clipboard.writeText(jsonEditor.value); jsonStatus.textContent="✅ JSON gekopieerd."; };
-document.getElementById("validateJsonBtn").onclick=()=>{
-  try{ JSON.parse(jsonEditor.value); jsonStatus.textContent="✅ JSON is geldig."; }
-  catch(e){ jsonStatus.textContent="❌ JSON fout: "+e.message; };
-};
+  // ===== JSON beheer =====
+  const jsonEditor=document.getElementById("jsonEditor");
+  const jsonStatus=document.getElementById("jsonStatus");
+  document.getElementById("loadJsonBtn").onclick=async()=>{
+    jsonStatus.textContent="Bezig met laden...";
+    try{
+      const res=await fetch("data.json");
+      if(!res.ok) throw new Error("Kon data.json niet ophalen");
+      const currentJson=await res.json();
+      jsonEditor.value=JSON.stringify(currentJson,null,2);
+      jsonStatus.textContent="✅ data.json geladen.";
+    } catch(err){ jsonStatus.textContent="❌ "+err.message; }
+  };
+  document.getElementById("copyJsonBtn").onclick=async()=>{ await navigator.clipboard.writeText(jsonEditor.value); jsonStatus.textContent="✅ JSON gekopieerd."; };
+  document.getElementById("clearJsonBtn").onclick=()=>{ jsonEditor.value=""; jsonStatus.textContent="🗑️ Tekstvak geleegd."; };
+  document.getElementById("validateJsonBtn").onclick=()=>{ try{ JSON.parse(jsonEditor.value); jsonStatus.textContent="✅ JSON is geldig."; } catch(e){ jsonStatus.textContent="❌ JSON fout: "+e.message; } };
 </script>
 </body>
 </html>
