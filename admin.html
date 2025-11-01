@@ -57,6 +57,7 @@
       padding: 0.4rem 0.6rem;
       border-radius: 6px;
       margin-top: 0.4rem;
+      word-break: break-all;
     }
 
     .loading {
@@ -188,16 +189,30 @@
     }
 
     rememberLinksBtn.onclick = () => {
-      const newLinks = tempLinks.value.split("\n").filter(l => l.trim());
-      localStorage.setItem("tempLinks", JSON.stringify(newLinks));
+      const newLinks = tempLinks.value
+        .split("\n")
+        .map(l => l.trim())
+        .filter(l => l);
+
+      if (!newLinks.length) return;
+
+      const saved = JSON.parse(localStorage.getItem("tempLinks") || "[]");
+
+      newLinks.forEach(link => {
+        if (!saved.includes(link)) saved.push(link);
+      });
+
+      localStorage.setItem("tempLinks", JSON.stringify(saved));
       tempLinks.value = "";
       updateSavedLinks();
     };
 
     clearLinksBtn.onclick = () => {
-      localStorage.removeItem("tempLinks");
-      tempLinks.value = "";
-      updateSavedLinks();
+      if (confirm("Weet je zeker dat je alle tijdelijke links wilt verwijderen?")) {
+        localStorage.removeItem("tempLinks");
+        tempLinks.value = "";
+        updateSavedLinks();
+      }
     };
 
     updateSavedLinks();
@@ -308,3 +323,4 @@
   </script>
 </body>
 </html>
+
