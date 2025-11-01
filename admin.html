@@ -30,6 +30,8 @@
     textarea {
       font-family: monospace;
       color: #333;
+      white-space: pre;
+      overflow: auto;
     }
     button {
       margin-top: 1rem;
@@ -93,6 +95,14 @@
     .status {
       margin-top: .5rem;
       color: #555;
+      white-space: pre-wrap;
+    }
+
+    /* kleine styling voor jsonEditor regels */
+    #jsonEditor {
+      font-family: monospace;
+      line-height: 1.4em;
+      tab-size: 2;
     }
   </style>
 </head>
@@ -148,6 +158,7 @@
     <button id="addToJsonBtn" style="background:#10b981;">Voeg item toe</button>
     <button id="copyJsonBtn" style="background:#f59e0b;">Kopieer</button>
     <button id="clearJsonBtn" style="background:#ef4444;">Leegmaken</button>
+    <button id="validateJsonBtn" style="background:#3b82f6;">Controleer JSON</button>
     <textarea id="jsonEditor" placeholder="De inhoud van data.json verschijnt hier..." rows="10"></textarea>
     <p id="jsonStatus" class="status"></p>
   </div>
@@ -292,8 +303,10 @@
         currentJson = await res.json();
         jsonEditor.value = JSON.stringify(currentJson, null, 2);
         jsonStatus.textContent = "✅ data.json succesvol geladen.";
+        jsonStatus.style.color = "#555";
       } catch (err) {
         jsonStatus.textContent = "❌ " + err.message;
+        jsonStatus.style.color = "#dc2626";
       }
     };
 
@@ -306,21 +319,36 @@
         currentJson[cat].push(lastGeneratedItem);
         jsonEditor.value = JSON.stringify(currentJson, null, 2);
         jsonStatus.textContent = `✅ Item toegevoegd aan categorie: ${cat}`;
+        jsonStatus.style.color = "#16a34a";
       } catch (err) {
         jsonStatus.textContent = "❌ " + err.message;
+        jsonStatus.style.color = "#dc2626";
       }
     };
 
     document.getElementById("copyJsonBtn").onclick = async () => {
       await navigator.clipboard.writeText(jsonEditor.value);
       jsonStatus.textContent = "✅ JSON gekopieerd.";
+      jsonStatus.style.color = "#16a34a";
     };
 
     document.getElementById("clearJsonBtn").onclick = () => {
       jsonEditor.value = "";
       jsonStatus.textContent = "🗑️ Tekstvak geleegd.";
+      jsonStatus.style.color = "#555";
+    };
+
+    // ===== JSON validatie =====
+    document.getElementById("validateJsonBtn").onclick = () => {
+      try {
+        JSON.parse(jsonEditor.value);
+        jsonStatus.textContent = "✅ JSON is geldig!";
+        jsonStatus.style.color = "#16a34a";
+      } catch (err) {
+        jsonStatus.textContent = `❌ Ongeldige JSON: ${err.message}`;
+        jsonStatus.style.color = "#dc2626";
+      }
     };
   </script>
 </body>
 </html>
-
