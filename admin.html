@@ -7,8 +7,8 @@
   <style>
     body {
       font-family: system-ui, sans-serif;
-      max-width: 700px;
-      margin: 3rem auto;
+      max-width: 800px;
+      margin: 2rem auto;
       padding: 2rem;
       background: #f9fafb;
       color: #111;
@@ -17,7 +17,7 @@
     label {
       font-weight: bold;
       display: block;
-      margin-top: 1.5rem;
+      margin-top: 1.2rem;
     }
     input, select, textarea, button {
       width: 100%;
@@ -28,7 +28,6 @@
       border: 1px solid #ccc;
     }
     textarea {
-      height: 120px;
       font-family: monospace;
       color: #333;
     }
@@ -38,31 +37,27 @@
       color: white;
       border: none;
       cursor: pointer;
+      border-radius: 8px;
     }
     button:hover { background-color: #1d4ed8; }
-    .result {
+
+    .section {
       background: white;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-top: 1rem;
-      border: 1px solid #ddd;
-    }
-    .preview-card {
+      padding: 1.5rem;
       margin-top: 2rem;
-      padding: 1rem;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    .link-item {
       display: flex;
-      gap: 1rem;
+      justify-content: space-between;
       align-items: center;
+      background: #f1f5f9;
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      margin-top: 0.4rem;
     }
-    .preview-card img {
-      width: 100px;
-      border-radius: 8px;
-    }
-    .preview-card h3 { margin: 0 0 .3rem 0; }
-    .preview-card p { margin: 0; }
 
     .loading {
       display: none;
@@ -93,200 +88,223 @@
       display: none;
     }
     .error-messages p { margin: 0.2rem 0; }
+
+    .status {
+      margin-top: .5rem;
+      color: #555;
+    }
   </style>
 </head>
 <body>
-  <section style="margin-top: 2rem; text-align: center;">
-    <a href="https://github.com/thijmenmeesvg/Verlanglijst/blob/main/data.json" target="_blank" style="
-        display: inline-block;
-        padding: 0.6rem 1.2rem;
-        background-color: #10b981;
-        color: white;
-        border-radius: 8px;
-        font-weight: bold;
-        text-decoration: none;
-        transition: background-color 0.2s;"
-      onmouseover="this.style.backgroundColor='#059669';"
-      onmouseout="this.style.backgroundColor='#10b981';">
-      Open GitHub Repo
-    </a>
-  </section>
-
-  <section style="margin-top: 2rem; text-align: center;">
-    <a href="index.html" style="
-        display: inline-block;
-        padding: 0.6rem 1.2rem;
-        background-color: #FF8C42;
-        color: white;
-        border-radius: 8px;
-        font-weight: bold;
-        text-decoration: none;
-        transition: background-color 0.2s;"
-      onmouseover="this.style.backgroundColor='#FFD369';"
-      onmouseout="this.style.backgroundColor='#FF8C42';">
-      Terug naar Home
-    </a>
+  <section style="text-align:center;">
+    <a href="index.html" style="display:inline-block;padding:.6rem 1.2rem;background:#FF8C42;color:white;border-radius:8px;text-decoration:none;font-weight:bold;">🏠 Terug naar Home</a>
+    <a href="https://github.com/thijmenmeesvg/Verlanglijst/blob/main/data.json" target="_blank" style="display:inline-block;padding:.6rem 1.2rem;background:#10b981;color:white;border-radius:8px;text-decoration:none;font-weight:bold;margin-left:.5rem;">💻 GitHub Repo</a>
   </section>
 
   <h1>🛠️ Verlanglijst Admin</h1>
 
-  <label for="category">Categorie:</label>
-  <select id="category">
-    <option>Boeken</option>
-    <option>Muziek</option>
-    <option>Spelletjes</option>
-    <option>Kleding & Accesoires</option>
-    <option>Uitzet</option>
-    <option>Sport & Buiten</option>
-    <option>Overig</option>
-  </select>
-
-  <label for="url">Product-URL:</label>
-  <input id="url" type="url" placeholder="Plak hier de link van bol.com of ap.lc">
-
-  <label for="favorite">
-    <input type="checkbox" id="favorite"> Markeer als favoriet
-  </label>
-
-  <button id="generate">Genereer JSON-item</button>
-
-  <div class="loading" id="loading">
-    <div class="spinner"></div>
-    <span>Laden...</span>
+  <!-- Tijdelijke links parkeren -->
+  <div class="section">
+    <h2>📎 Tijdelijke links</h2>
+    <textarea id="tempLinks" placeholder="Plak hier tijdelijk links, één per regel..."></textarea>
+    <button id="rememberLinksBtn">Onthoud mij</button>
+    <button id="clearLinksBtn" style="background:#ef4444;">Leegmaken</button>
+    <div id="savedLinksList"></div>
   </div>
 
-  <div id="output" class="result" style="display:none;">
-    <h2>Gegenereerd JSON-item:</h2>
-    <textarea id="jsonResult"></textarea>
+  <!-- Generator -->
+  <div class="section">
+    <h2>⚙️ JSON-item genereren</h2>
+    <label for="category">Categorie:</label>
+    <select id="category">
+      <option>Boeken</option>
+      <option>Muziek</option>
+      <option>Spelletjes</option>
+      <option>Kleding & Accessoires</option>
+      <option>Uitzet</option>
+      <option>Sport & Buiten</option>
+      <option>Overig</option>
+    </select>
+
+    <label for="url">Product-URL:</label>
+    <input id="url" type="url" placeholder="Plak hier de volledige productlink...">
+
+    <label><input type="checkbox" id="favorite"> Markeer als favoriet</label>
+    <button id="generate">Genereer JSON-item</button>
+
+    <div class="loading" id="loading"><div class="spinner"></div><span>Laden...</span></div>
+    <div id="output" class="section" style="display:none;">
+      <h3>Gegenereerd item:</h3>
+      <textarea id="jsonResult" rows="6"></textarea>
+    </div>
+    <div id="errorBox" class="error-messages"></div>
   </div>
 
-  <div id="errorBox" class="error-messages"></div>
+  <!-- Data.json beheren -->
+  <div class="section">
+    <h2>🗂️ Data.json beheren</h2>
+    <button id="loadJsonBtn">Haal data op</button>
+    <button id="addToJsonBtn" style="background:#10b981;">Voeg item toe</button>
+    <button id="copyJsonBtn" style="background:#f59e0b;">Kopieer</button>
+    <button id="clearJsonBtn" style="background:#ef4444;">Leegmaken</button>
+    <textarea id="jsonEditor" placeholder="De inhoud van data.json verschijnt hier..." rows="10"></textarea>
+    <p id="jsonStatus" class="status"></p>
+  </div>
 
   <script>
-    const accessCode = "verlanglijst"; 
-    const enteredCode = prompt("Voer toegangscode in om deze adminpagina te openen:");
-    if (enteredCode !== accessCode) {
+    // ===== Toegangscode =====
+    const accessCode = "verlanglijst";
+    const entered = prompt("Voer toegangscode in om deze adminpagina te openen:");
+    if (entered !== accessCode) {
       alert("Onjuiste code. Je wordt teruggestuurd naar de hoofdpagina.");
       window.location.href = "index.html";
     }
 
-    document.getElementById("generate").addEventListener("click", async () => {
+    // ===== Tijdelijke links parkeren =====
+    const tempLinks = document.getElementById("tempLinks");
+    const rememberLinksBtn = document.getElementById("rememberLinksBtn");
+    const clearLinksBtn = document.getElementById("clearLinksBtn");
+    const savedLinksList = document.getElementById("savedLinksList");
+
+    function updateSavedLinks() {
+      savedLinksList.innerHTML = "";
+      const saved = JSON.parse(localStorage.getItem("tempLinks") || "[]");
+      saved.forEach((link, idx) => {
+        const div = document.createElement("div");
+        div.className = "link-item";
+        div.innerHTML = `
+          <span>${link}</span>
+          <button style="background:#ef4444;padding:0.2rem 0.6rem;border:none;color:white;border-radius:6px;" onclick="removeLink(${idx})">❌</button>
+        `;
+        savedLinksList.appendChild(div);
+      });
+    }
+
+    function removeLink(index) {
+      const saved = JSON.parse(localStorage.getItem("tempLinks") || "[]");
+      saved.splice(index, 1);
+      localStorage.setItem("tempLinks", JSON.stringify(saved));
+      updateSavedLinks();
+    }
+
+    rememberLinksBtn.onclick = () => {
+      const newLinks = tempLinks.value.split("\n").filter(l => l.trim());
+      localStorage.setItem("tempLinks", JSON.stringify(newLinks));
+      tempLinks.value = "";
+      updateSavedLinks();
+    };
+
+    clearLinksBtn.onclick = () => {
+      localStorage.removeItem("tempLinks");
+      tempLinks.value = "";
+      updateSavedLinks();
+    };
+
+    updateSavedLinks();
+
+    // ===== Generator =====
+    let lastGeneratedItem = null;
+    const generateBtn = document.getElementById("generate");
+    const loading = document.getElementById("loading");
+    const errorBox = document.getElementById("errorBox");
+    const resultBox = document.getElementById("jsonResult");
+    const outputDiv = document.getElementById("output");
+
+    generateBtn.onclick = async () => {
       const url = document.getElementById("url").value.trim();
       const category = document.getElementById("category").value;
-      const isFavorite = document.getElementById("favorite").checked;
-      const outputDiv = document.getElementById("output");
-      const resultBox = document.getElementById("jsonResult");
-      const loading = document.getElementById("loading");
-      const errorBox = document.getElementById("errorBox");
+      const favorite = document.getElementById("favorite").checked;
 
       if (!url) return alert("Voer een geldige URL in.");
-
+      loading.style.display = "flex";
       outputDiv.style.display = "none";
       errorBox.style.display = "none";
       errorBox.innerHTML = "";
-      loading.style.display = "flex";
 
-      const today = new Date().toISOString().split("T")[0];
       const errors = [];
-
-      let resolvedUrl = url;
-      try {
-        const r = await fetch(url, { redirect: "follow" });
-        resolvedUrl = r.url || url;
-      } catch {
-        errors.push("Kon URL niet volgen — mogelijk geblokkeerd door website.");
-      }
-
       let html = "";
+
       try {
-        const r = await fetch(resolvedUrl, { headers: { "User-Agent": "Mozilla/5.0" } });
+        const r = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
         html = await r.text();
       } catch {
-        errors.push("Pagina kon niet worden opgehaald (website blokkeerde toegang).");
+        errors.push("Kon pagina niet laden — mogelijk geblokkeerd door website.");
       }
 
-      // Slimmere fallback voor geblokkeerde sites
       let titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/);
       let priceMatch = html.match(/"price":\s*"([\d.,]+)"/) || html.match(/€\s?([\d.,]+)/);
       let imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/);
 
-      let title = titleMatch ? titleMatch[1].trim() : "";
-      if (!title && resolvedUrl.includes("bol.com")) {
-        title = decodeURIComponent(resolvedUrl.split("/").pop().replace(/-/g, " ")).split("?")[0];
-      }
-      if (!title) errors.push("Titel kon niet worden opgehaald.");
+      const title = titleMatch ? titleMatch[1] : "Onbekend product";
       const price = priceMatch ? parseFloat(priceMatch[1].replace(",", ".")) : 0;
-      if (!price) errors.push("Prijs kon niet worden opgehaald.");
       const image = imageMatch ? imageMatch[1] : "";
-      if (!image) errors.push("Afbeelding kon niet worden opgehaald.");
 
-      let shortUrl = resolvedUrl;
-      try {
-        const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(resolvedUrl)}`);
-        shortUrl = await res.text();
-      } catch {
-        errors.push("Kon TinyURL niet genereren — originele link gebruikt.");
-      }
+      if (!title) errors.push("Titel kon niet worden opgehaald.");
+      if (!price) errors.push("Prijs niet gevonden.");
+      if (!image) errors.push("Afbeelding niet gevonden.");
 
       const item = {
-        title: title || "Onbekend product",
+        title,
         price,
-        link: shortUrl,
-        favorite: isFavorite,
-        dateAdded: today,
+        link: url,
+        favorite,
+        dateAdded: new Date().toISOString(),
         image
       };
 
-      const jsonResult = JSON.stringify(item, null, 2);
-      resultBox.value = jsonResult;
-      outputDiv.style.display = "block";
+      resultBox.value = JSON.stringify(item, null, 2);
+      lastGeneratedItem = item;
+
       loading.style.display = "none";
+      outputDiv.style.display = "block";
 
-      let btn = document.getElementById("copyButton");
-      if (!btn) {
-        btn = document.createElement("button");
-        btn.id = "copyButton";
-        btn.textContent = "Kopieer JSON naar klembord";
-        btn.onclick = async () => {
-          await navigator.clipboard.writeText(resultBox.value);
-          btn.textContent = "✅ Gekopieerd!";
-          setTimeout(() => (btn.textContent = "Kopieer JSON naar klembord"), 2500);
-        };
-        outputDiv.appendChild(btn);
-      }
-
-      const oldPreview = document.getElementById("previewCard");
-      if (oldPreview) oldPreview.remove();
-
-      const preview = document.createElement("div");
-      preview.id = "previewCard";
-      preview.className = "preview-card";
-
-      if (image) {
-        const img = document.createElement("img");
-        img.src = image;
-        img.alt = title;
-        preview.appendChild(img);
-      }
-
-      const info = document.createElement("div");
-      info.innerHTML = `
-        <h3>${title || "Onbekend product"}</h3>
-        <p>💶 €${price ? price.toFixed(2) : "?"}</p>
-        <a href="${resolvedUrl}" target="_blank" style="color:#2563eb;">Bekijk product</a>
-        <p style="font-size:0.9rem;color:#555;margin-top:.4rem;">Categorie: ${category}</p>
-        <p style="font-size:0.9rem;color:${isFavorite ? '#dc2626' : '#555'};">
-          ${isFavorite ? "❤️ Favoriet" : "🤍 Niet favoriet"}
-        </p>
-      `;
-      preview.appendChild(info);
-      outputDiv.appendChild(preview);
-
-      if (errors.length > 0) {
+      if (errors.length) {
         errorBox.innerHTML = errors.map(e => `<p>⚠️ ${e}</p>`).join("");
         errorBox.style.display = "block";
       }
-    });
+    };
+
+    // ===== JSON beheer =====
+    let currentJson = null;
+    const jsonEditor = document.getElementById("jsonEditor");
+    const jsonStatus = document.getElementById("jsonStatus");
+
+    document.getElementById("loadJsonBtn").onclick = async () => {
+      jsonStatus.textContent = "Bezig met laden...";
+      try {
+        const res = await fetch("data.json");
+        if (!res.ok) throw new Error("Kon data.json niet ophalen");
+        currentJson = await res.json();
+        jsonEditor.value = JSON.stringify(currentJson, null, 2);
+        jsonStatus.textContent = "✅ data.json succesvol geladen.";
+      } catch (err) {
+        jsonStatus.textContent = "❌ " + err.message;
+      }
+    };
+
+    document.getElementById("addToJsonBtn").onclick = () => {
+      if (!lastGeneratedItem) return jsonStatus.textContent = "⚠️ Geen gegenereerd item.";
+      try {
+        if (!currentJson) currentJson = jsonEditor.value ? JSON.parse(jsonEditor.value) : {};
+        const cat = document.getElementById("category").value;
+        if (!currentJson[cat]) currentJson[cat] = [];
+        currentJson[cat].push(lastGeneratedItem);
+        jsonEditor.value = JSON.stringify(currentJson, null, 2);
+        jsonStatus.textContent = `✅ Item toegevoegd aan categorie: ${cat}`;
+      } catch (err) {
+        jsonStatus.textContent = "❌ " + err.message;
+      }
+    };
+
+    document.getElementById("copyJsonBtn").onclick = async () => {
+      await navigator.clipboard.writeText(jsonEditor.value);
+      jsonStatus.textContent = "✅ JSON gekopieerd.";
+    };
+
+    document.getElementById("clearJsonBtn").onclick = () => {
+      jsonEditor.value = "";
+      jsonStatus.textContent = "🗑️ Tekstvak geleegd.";
+    };
   </script>
 </body>
 </html>
