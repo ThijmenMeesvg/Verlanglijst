@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mijn Verlanglijst – Categorie</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 <header>
@@ -16,9 +16,10 @@
     <a href="categorie.html?cat=Boeken">Boeken</a>
     <a href="categorie.html?cat=Spelletjes">Spelletjes</a>
     <a href="categorie.html?cat=Muziek">Muziek</a>
-    <a href="categorie.html?cat=Kleding & Accessoires">Kleding & Accessoires</a>
+    <!-- ✅ exact gelijk aan Firebase -->
+    <a href="categorie.html?cat=Kleding%20%26%20Accessoires">Kleding & Accessoires</a>
     <a href="categorie.html?cat=Uitzet">Koken, Bakken & Thuis</a>
-    <a href="categorie.html?cat=Sport & Buiten">Sport & Buiten</a>
+    <a href="categorie.html?cat=Sport%20%26%20Buiten">Sport & Buiten</a>
     <a href="categorie.html?cat=Overig">Overig</a>
   </nav>
 </header>
@@ -28,9 +29,9 @@
 
   <div id="filters">
     <label for="minPrice">Min prijs (€):</label>
-    <input id="minPrice" type="number" min="0" step="0.01"/>
+    <input id="minPrice" type="number" min="0" step="0.01" />
     <label for="maxPrice">Max prijs (€):</label>
-    <input id="maxPrice" type="number" min="0" step="0.01"/>
+    <input id="maxPrice" type="number" min="0" step="0.01" />
     <button id="applyPriceFilter">Filter toepassen</button>
   </div>
 
@@ -38,11 +39,13 @@
 </main>
 
 <script>
+  // Haal categorie uit de URL en toon titel
   const p = new URLSearchParams(location.search);
   const cat = p.get("cat") || "Boeken";
   document.getElementById("category-title").textContent = cat;
   window.CURRENT_CATEGORY = cat;
 </script>
+
 <script type="module" src="script.js"></script>
 </body>
 </html>
