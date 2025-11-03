@@ -97,6 +97,11 @@
     <input type="checkbox" id="favoriteForm"/>
     <label for="favoriteForm">Markeer als favoriet ❤️</label>
   </div>
+  <div class="favorite-wrapper">
+  <input type="checkbox" id="privateForm"/>
+  <label for="privateForm">Markeer als privé 🔒</label>
+</div>
+
 
   <label>Datum toegevoegd:</label>
   <input type="date" id="dateForm"/>
@@ -356,15 +361,16 @@ document.getElementById("addItemBtn").onclick = async () => {
     );
     if (dup) return showError(`⚠️ Dit product staat al in de categorie "${c}".`);
 
-    const item = {
-      title: titleEl.value || "Onbekend product",
-      price: priceEl.value ? parseFloat(priceEl.value) : 0,
-      link,
-      favorite: favEl.checked,
-      dateAdded: dateEl.value || new Date().toISOString().slice(0,10),
-      image: imageEl.value || "",
-      done: false
-    };
+   const item = {
+  title: titleEl.value || "Onbekend product",
+  price: priceEl.value ? parseFloat(priceEl.value) : 0,
+  link,
+  favorite: favEl.checked,
+  private: document.getElementById("privateForm").checked || false,
+  dateAdded: dateEl.value || new Date().toISOString().slice(0,10),
+  image: imageEl.value || "",
+  done: false
+};
 
     const newRef = await push(ref(db, `/${c}`), item);
 
@@ -542,8 +548,10 @@ function startEdit(cat, key) {
       <input class="edit-input" id="editPrice" type="number" value="${i.price || 0}" placeholder="Prijs"/>
       <input class="edit-input" id="editLink"  value="${i.link || ''}"  placeholder="Link"/>
       <input class="edit-input" id="editImage" value="${i.image || ''}" placeholder="Afbeelding"/>
-      <label><input type="checkbox" id="editFav"  ${i.favorite ? "checked" : ""}/> Favoriet</label>
-      <label><input type="checkbox" id="editDone" ${i.done ? "checked" : ""}/> Afgestreept</label>
+     <label><input type="checkbox" id="editFav"  ${i.favorite ? "checked" : ""}/> Favoriet</label>
+    <label><input type="checkbox" id="editPrivate" ${i.private ? "checked" : ""}/> Privé 🔒</label>
+    <label><input type="checkbox" id="editDone" ${i.done ? "checked" : ""}/> Afgestreept</label>
+
     </div>
     <div style="display:flex;flex-direction:column;gap:.3rem;">
       <button id="saveEdit"   style="background:#10b981;color:#fff;">💾 Opslaan</button>
@@ -563,6 +571,8 @@ function startEdit(cat, key) {
     const ni = row.querySelector("#editImage").value;
     const nf = row.querySelector("#editFav").checked;
     const nd = row.querySelector("#editDone").checked;
+    const npv = row.querySelector("#editPrivate").checked;
+
 
     // Als de categorie veranderd is → verplaats het item
     if (nc !== cat) {
@@ -572,8 +582,9 @@ function startEdit(cat, key) {
       showSuccess(`✅ Item verplaatst naar ${nc}`);
     } else {
       await update(ref(db, `/${cat}/${key}`), {
-        title: nt, price: np, link: nl, image: ni, favorite: nf, done: nd
+        title: nt, price: np, link: nl, image: ni, favorite: nf, private: npv, done: nd
       });
+
       showSuccess("✅ Item aangepast.");
       // Sluit editmodus en herlaad realtime preview
       setTimeout(() => renderList(), 800);
