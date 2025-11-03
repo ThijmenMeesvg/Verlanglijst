@@ -1,243 +1,129 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Verlanglijst Admin</title>
-<style>
-  body {
-    font-family: system-ui, sans-serif;
-    max-width: 1100px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background: #f3f4f6;
-    color: #111;
-  }
-  h1,h2,h3 { text-align:center; margin-bottom:1rem; }
-  label { font-weight:bold; display:block; margin-top:1rem; }
-  input,select,textarea,button { width:100%; padding:0.6rem; font-size:1rem; margin-top:0.3rem; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; }
-  textarea { font-family: monospace; color:#333; white-space:pre; overflow:auto; }
-  button { margin-top:1rem; background-color:#2563eb; color:white; border:none; cursor:pointer; border-radius:8px; transition: background 0.3s; }
-  button:hover { background-color:#1e40af; }
-  .section { background:white; padding:2rem; margin-top:2rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
-  .link-item { display:flex; justify-content:space-between; align-items:center; background:#e5e7eb; padding:0.5rem 0.8rem; border-radius:6px; margin-top:0.5rem; word-break:break-all; }
-  .link-buttons { display:flex; gap:0.3rem; }
-  .top-links { text-align:center; margin-bottom:1rem; }
-  .top-links a,.top-links button { display:inline-block; padding:0.5rem 1rem; border-radius:8px; text-decoration:none; font-weight:bold; margin:0 0.3rem 0.3rem 0.3rem; border:none; cursor:pointer; }
-  .home { background:#ff8c42; color:white; }
-  .github { background:#10b981; color:white; }
-  .logout { background:#ef4444; color:white; }
-  .item-list { margin-top:1rem; }
-  .item-card { display:flex; justify-content:space-between; align-items:center; background:#e5e7eb; padding:0.6rem; border-radius:6px; margin-bottom:0.5rem; }
-  .item-card span { flex:1; margin-right:0.5rem; word-break:break-word; }
-  .item-buttons { display:flex; gap:0.3rem; }
-</style>
-</head>
-<body>
-
-<div class="top-links">
-  <a href="index.html" class="home">🏠 Terug naar Home</a>
-  <a href="https://github.com/thijmenmeesvg/Verlanglijst/blob/main/data.json" target="_blank" class="github">💻 GitHub Repo</a>
-  <button id="logoutBtn" class="logout">Log uit</button>
-</div>
-
-<h1>🛠️ Verlanglijst Admin</h1>
-
-<!-- Tijdelijke links -->
-<div class="section">
-  <h2>📎 Tijdelijke links</h2>
-  <textarea id="tempLinks" placeholder="Plak hier tijdelijk links, één per regel..."></textarea>
-  <div style="display:flex; gap:0.5rem;">
-    <button id="rememberLinksBtn" style="flex:1;">Onthoud mij</button>
-    <button id="clearLinksBtn" style="flex:1; background:#ef4444;">Leegmaken</button>
-  </div>
-  <div id="savedLinksList"></div>
-</div>
-
-<!-- Generator formulier -->
-<div class="section">
-  <h2>⚙️ Productinformatie invullen</h2>
-  <label for="category">Categorie:</label>
-  <select id="category">
-    <option value="">-- Kies categorie --</option>
-    <option>Boeken</option>
-    <option>Muziek</option>
-    <option>Spelletjes</option>
-    <option>Kleding & Accessoires</option>
-    <option>Uitzet</option>
-    <option>Sport & Buiten</option>
-    <option>Overig</option>
-  </select>
-
-  <label>Product URL:</label>
-  <input type="url" id="urlForm" placeholder="Plak hier de link">
-
-  <label>Titel:</label>
-  <input type="text" id="titleForm" placeholder="Titel verschijnt hier">
-
-  <label>Prijs (€):</label>
-  <input type="number" id="priceForm" placeholder="Prijs in €">
-
-  <label>Afbeelding URL:</label>
-  <input type="url" id="imageForm" placeholder="Afbeelding link">
-
-  <label><input type="checkbox" id="favoriteForm"> Favoriet</label>
-
-  <label>Datum toegevoegd:</label>
-  <input type="date" id="dateForm" value="">
-
-  <div style="display:flex; gap:0.5rem;">
-    <button id="populateFormBtn" style="flex:1;">Vul automatisch info in</button>
-    <button id="addItemBtn" style="flex:1; background:#10b981;">Voeg toe aan Firebase</button>
-    <button id="resetFormBtn" style="flex:1; background:#ef4444;">Leegmaken</button>
-  </div>
-</div>
-
-<!-- Realtime items vanuit Firebase -->
-<div class="section">
-  <h2>📋 Items beheren (Realtime)</h2>
-  <div id="itemList" class="item-list">Laden...</div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-<script>
-  // ===== Firebase config =====
-  const firebaseConfig = {
-    apiKey: "AIzaSyCnDzhefAQWgoShNY2geSFwxTzNwqUqvTU",
-    authDomain: "verlanglijst-12015.firebaseapp.com",
-    databaseURL: "https://verlanglijst-12015-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "verlanglijst-12015",
-    storageBucket: "verlanglijst-12015.appspot.com",
-    messagingSenderId: "512971362808",
-    appId: "1:512971362808:web:b16ec8341ec4fbe795460d"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-
-  // ===== Admin-login =====
-  const accessCode = "verlanglijst";
-  if(localStorage.getItem("adminLoggedIn")!=="true"){
-    const entered = prompt("Voer toegangscode in:");
-    if(entered!==accessCode){ alert("Onjuiste code. Terug naar Home."); window.location.href="index.html"; }
-    else localStorage.setItem("adminLoggedIn","true");
-  }
-  document.getElementById("logoutBtn").onclick=()=>{ localStorage.removeItem("adminLoggedIn"); alert("Je bent uitgelogd."); window.location.href="index.html"; };
-
-  // ===== Tijdelijke links =====
-  const tempLinks=document.getElementById("tempLinks");
-  const rememberLinksBtn=document.getElementById("rememberLinksBtn");
-  const clearLinksBtn=document.getElementById("clearLinksBtn");
-  const savedLinksList=document.getElementById("savedLinksList");
-  function updateSavedLinks(){
-    savedLinksList.innerHTML="";
-    const saved=JSON.parse(localStorage.getItem("tempLinks")||"[]");
-    saved.forEach((link, idx)=>{
-      const div=document.createElement("div");
-      div.className="link-item";
-      div.innerHTML=`<span>${link}</span><div class="link-buttons">
-      <button style="background:#2563eb;padding:0.2rem 0.6rem;border:none;color:white;border-radius:6px;" onclick="copyLink(${idx})">📋</button>
-      <button style="background:#ef4444;padding:0.2rem 0.6rem;border:none;color:white;border-radius:6px;" onclick="removeLink(${idx})">❌</button>
-      </div>`;
-      savedLinksList.appendChild(div);
-    });
-  }
-  function removeLink(idx){ const saved=JSON.parse(localStorage.getItem("tempLinks")||"[]"); saved.splice(idx,1); localStorage.setItem("tempLinks",JSON.stringify(saved)); updateSavedLinks(); }
-  function copyLink(idx){ const saved=JSON.parse(localStorage.getItem("tempLinks")||"[]"); navigator.clipboard.writeText(saved[idx]); alert("Link gekopieerd!"); }
-  rememberLinksBtn.onclick=()=>{
-    const newLinks=tempLinks.value.split("\n").map(l=>l.trim()).filter(l=>l);
-    if(!newLinks.length) return;
-    const saved=JSON.parse(localStorage.getItem("tempLinks")||"[]");
-    newLinks.forEach(link=>{if(!saved.includes(link)) saved.push(link)});
-    localStorage.setItem("tempLinks",JSON.stringify(saved));
-    tempLinks.value=""; updateSavedLinks();
-  };
-  clearLinksBtn.onclick=()=>{
-    if(confirm("Weet je zeker dat je alle tijdelijke links wilt verwijderen?")){
-      localStorage.removeItem("tempLinks"); tempLinks.value=""; updateSavedLinks();
-    }
-  };
-  updateSavedLinks();
-
-  // ===== Formulier auto-populate =====
-  const urlForm=document.getElementById("urlForm");
-  const titleForm=document.getElementById("titleForm");
-  const priceForm=document.getElementById("priceForm");
-  const imageForm=document.getElementById("imageForm");
-  const favoriteForm=document.getElementById("favoriteForm");
-  const dateForm=document.getElementById("dateForm");
-  const populateFormBtn=document.getElementById("populateFormBtn");
-  const resetFormBtn=document.getElementById("resetFormBtn");
-  const addItemBtn=document.getElementById("addItemBtn");
-
-  populateFormBtn.onclick=async()=>{
-    const url=urlForm.value.trim();
-    if(!url) return alert("Voer een URL in.");
-    let html="";
-    try { const res=await fetch(url,{headers:{"User-Agent":"Mozilla/5.0"}}); html=await res.text(); } catch{}
-    const titleMatch=html.match(/<meta property="og:title" content="([^"]+)"/);
-    const priceMatch=html.match(/"price":\s*"([\d.,]+)"/) || html.match(/€\s?([\d.,]+)/);
-    const imageMatch=html.match(/<meta property="og:image" content="([^"]+)"/);
-    titleForm.value = titleMatch ? titleMatch[1] : "";
-    priceForm.value = priceMatch ? parseFloat(priceMatch[1].replace(",", ".")) : "";
-    imageForm.value = imageMatch ? imageMatch[1] : "";
-    favoriteForm.checked=false;
-    dateForm.value=new Date().toISOString().slice(0,10);
-  };
-
-  resetFormBtn.onclick=()=>{
-    urlForm.value=""; titleForm.value=""; priceForm.value=""; imageForm.value=""; favoriteForm.checked=false; dateForm.value="";
-  };
-
-  // ===== Voeg toe aan Firebase =====
-  addItemBtn.onclick=()=>{
-    const category=document.getElementById("category").value;
-    if(!category) return alert("Kies eerst een categorie!");
-    const item={
-      title: titleForm.value||"Onbekend product",
-      price: priceForm.value ? parseFloat(priceForm.value) : 0,
-      link: urlForm.value,
-      favorite: favoriteForm.checked,
-      dateAdded: dateForm.value||new Date().toISOString().slice(0,10),
-      image: imageForm.value||""
-    };
-    const newRef = db.ref("items/"+category).push();
-    newRef.set(item).then(()=>{ alert("Item toegevoegd aan Firebase."); resetFormBtn.onclick(); }).catch(err=>alert("Fout: "+err));
-  };
-
-  // ===== Realtime items weergeven =====
-  const itemList=document.getElementById("itemList");
-  function renderItems(snapshot){
-    itemList.innerHTML="";
-    const data=snapshot.val();
-    if(!data){ itemList.innerHTML="<p>Geen items.</p>"; return; }
-    for(const cat in data){
-      const catItems=data[cat];
-      for(const key in catItems){
-        const i=catItems[key];
-        const card=document.createElement("div");
-        card.className="item-card";
-        card.innerHTML=`<span><strong>${i.title}</strong> (€${i.price}) [${cat}]</span>
-          <div class="item-buttons">
-            <button onclick="toggleFavorite('${cat}','${key}',${i.favorite})" style="background:${i.favorite?'#ff8c42':'#ccc'}">★</button>
-            <button onclick="deleteItem('${cat}','${key}')" style="background:#ef4444;color:white;">❌</button>
-          </div>`;
-        itemList.appendChild(card);
-      }
-    }
-  }
-
-  db.ref("items").on("value",renderItems);
-
-  function toggleFavorite(cat,key,current){
-    db.ref("items/"+cat+"/"+key+"/favorite").set(!current);
-  }
-  function deleteItem(cat,key){
-    if(confirm("Weet je zeker dat je dit item wilt verwijderen?")){
-      db.ref("items/"+cat+"/"+key).remove();
-    }
-  }
-</script>
-</body>
-</html>
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a/admin.html b/admin.html
+index e2aa862e16912a41bbd9cf6d163953e39ca00967..0fa32f6d8d39df7b7f5d9bff18e4db404659b28a 100644
+--- a/admin.html
++++ b/admin.html
+@@ -93,50 +93,51 @@
+   </div>
+ </div>
+ 
+ <!-- Realtime items vanuit Firebase -->
+ <div class="section">
+   <h2>📋 Items beheren (Realtime)</h2>
+   <div id="itemList" class="item-list">Laden...</div>
+ </div>
+ 
+ <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+ <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+ 
+ <script>
+   // ===== Firebase config =====
+   const firebaseConfig = {
+     apiKey: "AIzaSyCnDzhefAQWgoShNY2geSFwxTzNwqUqvTU",
+     authDomain: "verlanglijst-12015.firebaseapp.com",
+     databaseURL: "https://verlanglijst-12015-default-rtdb.europe-west1.firebasedatabase.app",
+     projectId: "verlanglijst-12015",
+     storageBucket: "verlanglijst-12015.appspot.com",
+     messagingSenderId: "512971362808",
+     appId: "1:512971362808:web:b16ec8341ec4fbe795460d"
+   };
+   firebase.initializeApp(firebaseConfig);
+   const db = firebase.database();
++  const ITEMS_ROOT = "items";
+ 
+   // ===== Admin-login =====
+   const accessCode = "verlanglijst";
+   if(localStorage.getItem("adminLoggedIn")!=="true"){
+     const entered = prompt("Voer toegangscode in:");
+     if(entered!==accessCode){ alert("Onjuiste code. Terug naar Home."); window.location.href="index.html"; }
+     else localStorage.setItem("adminLoggedIn","true");
+   }
+   document.getElementById("logoutBtn").onclick=()=>{ localStorage.removeItem("adminLoggedIn"); alert("Je bent uitgelogd."); window.location.href="index.html"; };
+ 
+   // ===== Tijdelijke links =====
+   const tempLinks=document.getElementById("tempLinks");
+   const rememberLinksBtn=document.getElementById("rememberLinksBtn");
+   const clearLinksBtn=document.getElementById("clearLinksBtn");
+   const savedLinksList=document.getElementById("savedLinksList");
+   function updateSavedLinks(){
+     savedLinksList.innerHTML="";
+     const saved=JSON.parse(localStorage.getItem("tempLinks")||"[]");
+     saved.forEach((link, idx)=>{
+       const div=document.createElement("div");
+       div.className="link-item";
+       div.innerHTML=`<span>${link}</span><div class="link-buttons">
+       <button style="background:#2563eb;padding:0.2rem 0.6rem;border:none;color:white;border-radius:6px;" onclick="copyLink(${idx})">📋</button>
+       <button style="background:#ef4444;padding:0.2rem 0.6rem;border:none;color:white;border-radius:6px;" onclick="removeLink(${idx})">❌</button>
+       </div>`;
+@@ -180,64 +181,64 @@
+     const priceMatch=html.match(/"price":\s*"([\d.,]+)"/) || html.match(/€\s?([\d.,]+)/);
+     const imageMatch=html.match(/<meta property="og:image" content="([^"]+)"/);
+     titleForm.value = titleMatch ? titleMatch[1] : "";
+     priceForm.value = priceMatch ? parseFloat(priceMatch[1].replace(",", ".")) : "";
+     imageForm.value = imageMatch ? imageMatch[1] : "";
+     favoriteForm.checked=false;
+     dateForm.value=new Date().toISOString().slice(0,10);
+   };
+ 
+   resetFormBtn.onclick=()=>{
+     urlForm.value=""; titleForm.value=""; priceForm.value=""; imageForm.value=""; favoriteForm.checked=false; dateForm.value="";
+   };
+ 
+   // ===== Voeg toe aan Firebase =====
+   addItemBtn.onclick=()=>{
+     const category=document.getElementById("category").value;
+     if(!category) return alert("Kies eerst een categorie!");
+     const item={
+       title: titleForm.value||"Onbekend product",
+       price: priceForm.value ? parseFloat(priceForm.value) : 0,
+       link: urlForm.value,
+       favorite: favoriteForm.checked,
+       dateAdded: dateForm.value||new Date().toISOString().slice(0,10),
+       image: imageForm.value||""
+     };
+-    const newRef = db.ref("items/"+category).push();
++    const newRef = db.ref(`${ITEMS_ROOT}/${category}`).push();
+     newRef.set(item).then(()=>{ alert("Item toegevoegd aan Firebase."); resetFormBtn.onclick(); }).catch(err=>alert("Fout: "+err));
+   };
+ 
+   // ===== Realtime items weergeven =====
+   const itemList=document.getElementById("itemList");
+   function renderItems(snapshot){
+     itemList.innerHTML="";
+     const data=snapshot.val();
+     if(!data){ itemList.innerHTML="<p>Geen items.</p>"; return; }
+     for(const cat in data){
+       const catItems=data[cat];
+       for(const key in catItems){
+         const i=catItems[key];
+         const card=document.createElement("div");
+         card.className="item-card";
+         card.innerHTML=`<span><strong>${i.title}</strong> (€${i.price}) [${cat}]</span>
+           <div class="item-buttons">
+             <button onclick="toggleFavorite('${cat}','${key}',${i.favorite})" style="background:${i.favorite?'#ff8c42':'#ccc'}">★</button>
+             <button onclick="deleteItem('${cat}','${key}')" style="background:#ef4444;color:white;">❌</button>
+           </div>`;
+         itemList.appendChild(card);
+       }
+     }
+   }
+ 
+-  db.ref("items").on("value",renderItems);
++  db.ref(ITEMS_ROOT).on("value",renderItems);
+ 
+   function toggleFavorite(cat,key,current){
+-    db.ref("items/"+cat+"/"+key+"/favorite").set(!current);
++    db.ref(`${ITEMS_ROOT}/${cat}/${key}/favorite`).set(!current);
+   }
+   function deleteItem(cat,key){
+     if(confirm("Weet je zeker dat je dit item wilt verwijderen?")){
+-      db.ref("items/"+cat+"/"+key).remove();
++      db.ref(`${ITEMS_ROOT}/${cat}/${key}`).remove();
+     }
+   }
+ </script>
+ </body>
+ </html>
+ 
+EOF
+)
