@@ -5,99 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Verlanglijst – Alle items</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    /* Extra styling voor de preview-kaarten */
-    .preview-card {
-      margin-top: 1rem;
-      padding: 1rem;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      background: #262626;
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      transition: transform 0.2s ease, box-shadow 0.3s ease;
-    }
-
-    .preview-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 20px rgba(255, 140, 66, 0.3);
-    }
-
-    .preview-card img {
-      width: 100px;
-      border-radius: 8px;
-    }
-
-    .preview-card h3 {
-      margin: 0 0 .3rem 0;
-      color: #FFD369;
-    }
-
-    .preview-card p {
-      margin: 0;
-      color: #EDEDED;
-    }
-
-    .preview-card.favorite {
-      border: 2px solid #FF8C42;
-      box-shadow: 0 0 20px rgba(255, 140, 66, 0.4);
-      background-color: #2E2A25;
-    }
-
-    #filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    #filters label, #filters input, #filters select, #filters button {
-      font-size: 0.95rem;
-    }
-
-    #filters input, #filters select {
-      padding: 5px;
-      border-radius: 6px;
-      border: 1px solid #555;
-      background-color: #1E1E1E;
-      color: #FFD369;
-    }
-
-    #filters button {
-      padding: 6px 12px;
-      border-radius: 6px;
-      border: none;
-      background-color: #FF8C42;
-      color: #1E1E1E;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-
-    #filters button:hover {
-      background-color: #FFD369;
-      transform: scale(1.05);
-    }
-  </style>
 </head>
 <body>
 
 <header>
   <h1>Mijn Verlanglijst</h1>
   <nav>
-      <a href="index.html">Home</a>
-      <a href="favorieten.html">Over Mij</a>
-      <a href="alle-items.html">Alles</a>
-      <a href="boeken.html">Boeken</a>
-      <a href="spelletjes.html">Spelletjes</a>
-      <a href="muziek.html">Muziek</a>
-      <a href="kleding.html">Kleding & Accessoires</a>
-      <a href="uitzet.html">Koken, Bakken & Thuis</a>
-      <a href="sport.html">Sport & Buiten</a>
-      <a href="overig.html">Overig</a>
+    <a href="index.html">Home</a>
+    <a href="favorieten.html">Over Mij</a>
+    <a href="alle-items.html">Alles</a>
+    <a href="categorie.html?cat=Boeken">Boeken</a>
+    <a href="categorie.html?cat=Spelletjes">Spelletjes</a>
+    <a href="categorie.html?cat=Muziek">Muziek</a>
+    <a href="categorie.html?cat=Kleding & Accessoires">Kleding & Accessoires</a>
+    <a href="categorie.html?cat=Uitzet">Koken, Bakken & Thuis</a>
+    <a href="categorie.html?cat=Sport & Buiten">Sport & Buiten</a>
+    <a href="categorie.html?cat=Overig">Overig</a>
   </nav>
 </header>
 
@@ -109,9 +32,9 @@
     <select id="categoryFilter">
       <option value="">Alles</option>
       <option>Boeken</option>
-      <option>Muziek</option>
       <option>Spelletjes</option>
-      <option>Kleding & Accesoires</option>
+      <option>Muziek</option>
+      <option>Kleding & Accessoires</option>
       <option>Uitzet</option>
       <option>Sport & Buiten</option>
       <option>Overig</option>
@@ -129,55 +52,78 @@
   <div id="item-container" class="grid"></div>
 </main>
 
-<script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCnDzhefAQWgoShNY2geSFwxTzNwqUqvTU",
+    authDomain: "verlanglijst-12015.firebaseapp.com",
+    databaseURL: "https://verlanglijst-12015-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "verlanglijst-12015",
+    storageBucket: "verlanglijst-12015.appspot.com",
+    messagingSenderId: "512971362808",
+    appId: "1:512971362808:web:b16ec8341ec4fbe795460d"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
   async function loadItems(options = {}) {
     const container = document.getElementById("item-container");
     container.innerHTML = "Even laden...";
 
     try {
-      const response = await fetch("data.json");
-      const itemsByCategory = await response.json();
+      const dbRef = ref(db, "items");
+      onValue(dbRef, (snapshot) => {
+        const itemsByCategory = snapshot.val() || {};
+        let allItems = Object.entries(itemsByCategory).flatMap(([category, items]) =>
+          items.map(i => ({ ...i, category }))
+        );
 
-      let allItems = Object.entries(itemsByCategory).flatMap(([category, items]) =>
-        items.map(i => ({ ...i, category }))
-      );
+        let filteredItems = allItems;
+        if (options.category) filteredItems = filteredItems.filter(i => i.category === options.category);
+        if (options.minPrice != null) filteredItems = filteredItems.filter(i => i.price >= options.minPrice);
+        if (options.maxPrice != null) filteredItems = filteredItems.filter(i => i.price <= options.maxPrice);
 
-      let filteredItems = allItems;
+        filteredItems.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
 
-      if (options.category) filteredItems = filteredItems.filter(i => i.category === options.category);
-      if (options.minPrice != null) filteredItems = filteredItems.filter(i => i.price >= options.minPrice);
-      if (options.maxPrice != null) filteredItems = filteredItems.filter(i => i.price <= options.maxPrice);
+        container.innerHTML = filteredItems.length === 0 ? "<p>Geen items gevonden.</p>" : "";
 
-      filteredItems.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+        filteredItems.forEach(i => {
+          const card = document.createElement("div");
+          card.className = "preview-card" + (i.favorite ? " favorite" : "") + (i.striked ? " striked" : "");
 
-      if (filteredItems.length === 0) {
-        container.innerHTML = "<p>Geen items gevonden.</p>";
-        return;
-      }
+          if (i.image) {
+            const img = document.createElement("img");
+            img.src = i.image;
+            img.alt = i.title;
+            card.appendChild(img);
+          }
 
-      container.innerHTML = ""; // reset
+          const info = document.createElement("div");
+          info.innerHTML = `
+            <h3>${i.title}</h3>
+            <p>💶 €${i.price.toFixed(2)}</p>
+            <a href="${i.link}" target="_blank" style="color:#2563eb;">Bekijk product</a>
+            <p style="font-size:0.85rem;color:#AAA;margin-top:.3rem;">Categorie: ${i.category}</p>
+          `;
 
-      filteredItems.forEach(i => {
-        const card = document.createElement("div");
-        card.className = "preview-card" + (i.favorite ? " favorite" : "");
+          // Afstrepen knop
+          const strikeBtn = document.createElement("button");
+          strikeBtn.textContent = i.striked ? "Afgestreept" : "Afstrepen";
+          strikeBtn.disabled = !!i.striked;
+          strikeBtn.addEventListener("click", async () => {
+            const updates = {};
+            updates[`items/${i.category}/${i.id}/striked`] = true;
+            await update(ref(db), updates);
+          });
 
-        if (i.image) {
-          const img = document.createElement("img");
-          img.src = i.image;
-          img.alt = i.title;
-          card.appendChild(img);
-        }
-
-        const info = document.createElement("div");
-        info.innerHTML = `
-          <h3>${i.title}</h3>
-          <p>💶 €${i.price.toFixed(2)}</p>
-          <a href="${i.link}" target="_blank" style="color:#2563eb;">Bekijk product</a>
-          <p style="font-size:0.85rem;color:#AAA;margin-top:.3rem;">Categorie: ${i.category}</p>
-        `;
-        card.appendChild(info);
-
-        container.appendChild(card);
+          info.appendChild(strikeBtn);
+          card.appendChild(info);
+          container.appendChild(card);
+        });
       });
 
     } catch (error) {
@@ -196,13 +142,12 @@
       const category = categorySelect.value || null;
       const minPrice = minPriceInput.value ? parseFloat(minPriceInput.value) : null;
       const maxPrice = maxPriceInput.value ? parseFloat(maxPriceInput.value) : null;
-
       loadItems({ category, minPrice, maxPrice });
     }
 
     applyBtn.addEventListener("click", applyFilters);
 
-    loadItems();
+    loadItems(); // initial load
   });
 </script>
 
