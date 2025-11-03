@@ -13,6 +13,7 @@
   button:hover{background:#1e40af;transform:translateY(-1px)}
   .section{background:#fff;padding:2rem;margin-top:2rem;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
   .error-box{margin-top:1rem;padding:.8rem;border-radius:8px;background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;display:none;white-space:pre-wrap}
+  .success-box{margin-top:1rem;padding:.8rem;border-radius:8px;background:#dcfce7;border:1px solid #86efac;color:#166534;display:none}
   .favorite-wrapper{display:flex;align-items:center;gap:.5rem;margin-top:1rem}
   .favorite-wrapper input{width:auto;transform:scale(1.3);cursor:pointer}
   .favorite-wrapper label{margin-top:0;font-weight:500}
@@ -23,15 +24,14 @@
   .top-links a,.top-links button{display:inline-block;padding:.5rem 1rem;border-radius:8px;text-decoration:none;font-weight:bold;margin:0 .3rem .3rem;border:none;cursor:pointer}
   .home{background:#ff8c42;color:#fff}
   .firebase{background:#fbbc04;color:#000}
+  .github{background:#10b981;color:#fff}
   .logout{background:#ef4444;color:#fff}
-  .link-item,.item-card{display:flex;justify-content:space-between;align-items:center;background:#e5e7eb;padding:.5rem .8rem;border-radius:6px;margin-top:.5rem;word-break:break-all}
+  .link-item,.item-card{display:flex;justify-content:space-between;align-items:center;background:#e5e7eb;padding:.5rem .8rem;border-radius:6px;margin-top:.5rem;word-break:break-all;transition:background .4s}
   .item-buttons,.link-buttons{display:flex;gap:.3rem}
   #filterBar{display:flex;gap:.5rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:1rem}
   #filterBar select{padding:.4rem .8rem;border-radius:6px;border:1px solid #ccc;background:#f9fafb}
   #deleteDoneBtn{background:#ef4444;color:#fff;padding:.4rem .8rem;border-radius:8px;font-weight:bold;cursor:pointer}
   #deleteDoneBtn:hover{background:#dc2626}
-
-  /* Preview-stijl (matcht categoriepagina) */
   #previewContainer{margin-top:1.5rem;background:#1E1E1E;padding:1rem;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.25);display:none}
   .preview-card{margin-top:1rem;padding:1rem;border:1px solid #ddd;border-radius:10px;background:#262626;display:flex;gap:1rem;align-items:center}
   .preview-card.favorite{border:2px solid #FF8C42;box-shadow:0 0 20px rgba(255,140,66,.4);background:#2E2A25}
@@ -40,13 +40,16 @@
   .preview-card p{margin:0;color:#EDEDED}
   .preview-card a{color:#2563eb;text-decoration:none;font-weight:bold}
   .preview-card a:hover{color:#FFD369}
+  .edit-input{width:auto;margin:0 4px;padding:2px 4px;font-size:.9rem;border-radius:4px}
+  .highlight{background:#bbf7d0 !important;transition:background 1.5s ease}
 </style>
 </head>
 <body>
 
 <div class="top-links">
-  <a href="index.html" class="home">🏠 Terug naar Home</a>
+  <a href="index.html" class="home">🏠 Home</a>
   <a href="https://console.firebase.google.com/project/verlanglijst-12015/database/verlanglijst-12015-default-rtdb/data" target="_blank" class="firebase">🌐 Firebase Console</a>
+  <a href="https://github.com/ThijmenMeesvg/Verlanglijst/blob/main/admin.html" target="_blank" class="github">💻 GitHub Repo</a>
   <button id="logoutBtn" class="logout">Log uit</button>
 </div>
 
@@ -66,7 +69,6 @@
 <!-- Product toevoegen -->
 <div class="section">
   <h2>⚙️ Productinformatie</h2>
-
   <label for="category">Categorie:</label>
   <select id="category">
     <option value="">-- Kies categorie --</option>
@@ -107,19 +109,22 @@
 
   <div class="loading-spinner" id="loadingSpinner"><div class="spinner"></div></div>
   <div id="errorBox" class="error-box"></div>
+  <div id="successBox" class="success-box"></div>
 
   <button id="previewBtn" style="width:100%;margin-top:1rem;background:#FF8C42;">Preview</button>
 </div>
 
-<!-- Preview container -->
+<!-- Preview -->
 <div id="previewContainer"></div>
 
-<!-- Realtime items -->
+<!-- Realtime beheer -->
 <div class="section">
   <h2>📊 Huidige items (Realtime)</h2>
-
   <div id="filterBar">
-    <label for="statusFilter">Filter:</label>
+    <label for="catFilter">Categorie:</label>
+    <select id="catFilter"><option value="all">Alle categorieën</option></select>
+
+    <label for="statusFilter">Status:</label>
     <select id="statusFilter">
       <option value="all">Alles</option>
       <option value="done">Afgestreept</option>
@@ -127,313 +132,432 @@
       <option value="favorite">Favorieten</option>
     </select>
 
-    <label for="dateSort">Sorteer op:</label>
+    <label for="dateSort">Datum:</label>
     <select id="dateSort">
       <option value="neutral">– Kies datum –</option>
       <option value="newest">Nieuwste eerst</option>
       <option value="oldest">Oudste eerst</option>
     </select>
 
-    <button id="deleteDoneBtn">🗑️ Verwijder alle afgestreepte items</button>
+    <button id="applyFilters" style="background:#2563eb;">Filters toepassen</button>
+    <button id="resetFilters" style="background:#10b981;">Toon alles</button>
+    <button id="deleteDoneBtn">🗑️ Verwijder afgestreepte items</button>
   </div>
 
   <div id="itemList"></div>
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import { getDatabase, ref, push, set, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+/* ================================
+   Firebase
+================================ */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getDatabase, ref, push, set, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCnDzhefAQWgoShNY2geSFwxTzNwqUqvTU",
-    authDomain: "verlanglijst-12015.firebaseapp.com",
-    databaseURL: "https://verlanglijst-12015-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "verlanglijst-12015",
-    storageBucket: "verlanglijst-12015.firebasestorage.app",
-    messagingSenderId: "512971362808",
-    appId: "1:512971362808:web:b16ec8341ec4fbe795460d"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyCnDzhefAQWgoShNY2geSFwxTzNwqUqvTU",
+  authDomain: "verlanglijst-12015.firebaseapp.com",
+  databaseURL: "https://verlanglijst-12015-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "verlanglijst-12015",
+  storageBucket: "verlanglijst-12015.firebasestorage.app",
+  messagingSenderId: "512971362808",
+  appId: "1:512971362808:web:b16ec8341ec4fbe795460d"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
 
-  // --- Login ---
-  const accessCode = "verlanglijst";
-  if (localStorage.getItem("adminLoggedIn") !== "true") {
-    const entered = prompt("Voer toegangscode in:");
-    if (entered !== accessCode) { alert("Onjuiste code. Je wordt teruggestuurd."); window.location.href="index.html"; }
-    else localStorage.setItem("adminLoggedIn", "true");
+/* ================================
+   Login
+================================ */
+if (localStorage.getItem("adminLoggedIn") !== "true") {
+  const entered = prompt("Voer toegangscode in:");
+  if (entered !== "verlanglijst") { alert("Onjuiste code."); window.location.href = "index.html"; }
+  else localStorage.setItem("adminLoggedIn","true");
+}
+document.getElementById("logoutBtn").onclick = () => {
+  localStorage.removeItem("adminLoggedIn");
+  alert("Uitgelogd.");
+  window.location.href = "index.html";
+};
+
+/* ================================
+   UI helpers
+================================ */
+const errBox = document.getElementById("errorBox");
+const okBox  = document.getElementById("successBox");
+const spin   = document.getElementById("loadingSpinner");
+
+const showError = (msg) => { okBox.style.display="none"; errBox.style.display="block"; errBox.textContent = msg; };
+const showSuccess = (msg) => { errBox.style.display="none"; okBox.style.display="block"; okBox.textContent = msg; setTimeout(()=> okBox.style.display="none", 3000); };
+const clearMsg = () => { errBox.style.display="none"; okBox.style.display="none"; };
+const setLoading = (b) => spin.style.display = b ? "flex" : "none";
+
+/* ================================
+   Tijdelijke links
+================================ */
+const tempLinks = document.getElementById("tempLinks");
+const rememberLinksBtn = document.getElementById("rememberLinksBtn");
+const clearLinksBtn = document.getElementById("clearLinksBtn");
+const savedLinksList = document.getElementById("savedLinksList");
+
+function renderSavedLinks() {
+  savedLinksList.innerHTML = "";
+  const saved = JSON.parse(localStorage.getItem("tempLinks") || "[]");
+  saved.forEach((link, idx) => {
+    const div = document.createElement("div");
+    div.className = "link-item";
+    div.innerHTML = `
+      <span>${link}</span>
+      <div class="link-buttons">
+        <button style="background:#2563eb;color:#fff;" onclick="navigator.clipboard.writeText('${link}')">📋</button>
+        <button style="background:#ef4444;color:#fff;" onclick="(function(){const s=JSON.parse(localStorage.getItem('tempLinks')||'[]');s.splice(${idx},1);localStorage.setItem('tempLinks',JSON.stringify(s));})(),(function(){(${renderSavedLinks.toString()})()})()">❌</button>
+      </div>`;
+    savedLinksList.appendChild(div);
+  });
+}
+rememberLinksBtn.onclick = () => {
+  const links = tempLinks.value.split("\n").map(l=>l.trim()).filter(Boolean);
+  if (!links.length) return;
+  const saved = JSON.parse(localStorage.getItem("tempLinks") || "[]");
+  links.forEach(l => { if (!saved.includes(l)) saved.push(l); });
+  localStorage.setItem("tempLinks", JSON.stringify(saved));
+  tempLinks.value = "";
+  renderSavedLinks();
+};
+clearLinksBtn.onclick = () => {
+  if (confirm("Alle tijdelijke links verwijderen?")) {
+    localStorage.removeItem("tempLinks");
+    tempLinks.value = "";
+    renderSavedLinks();
   }
-  document.getElementById("logoutBtn").onclick = () => {
-    localStorage.removeItem("adminLoggedIn");
-    alert("Je bent uitgelogd.");
-    window.location.href = "index.html";
-  };
+};
+renderSavedLinks();
 
-  // --- Tijdelijke links ---
-  const tempLinks = document.getElementById("tempLinks");
-  const rememberLinksBtn = document.getElementById("rememberLinksBtn");
-  const clearLinksBtn = document.getElementById("clearLinksBtn");
-  const savedLinksList = document.getElementById("savedLinksList");
-  function updateSavedLinks(){
-    savedLinksList.innerHTML="";
-    const saved = JSON.parse(localStorage.getItem("tempLinks")||"[]");
-    saved.forEach((link,idx)=>{
-      const div = document.createElement("div");
-      div.className="link-item";
-      div.innerHTML = `
-        <span>${link}</span>
-        <div class="link-buttons">
-          <button style="background:#2563eb;color:#fff;" onclick="navigator.clipboard.writeText('${link}')">📋</button>
-          <button style="background:#ef4444;color:#fff;" onclick="removeLink(${idx})">❌</button>
-        </div>`;
-      savedLinksList.appendChild(div);
-    });
+/* ================================
+   Form referenties
+================================ */
+const catEl    = document.getElementById("category");
+const urlEl    = document.getElementById("urlForm");
+const titleEl  = document.getElementById("titleForm");
+const priceEl  = document.getElementById("priceForm");
+const imageEl  = document.getElementById("imageForm");
+const favEl    = document.getElementById("favoriteForm");
+const dateEl   = document.getElementById("dateForm");
+const previewContainer = document.getElementById("previewContainer");
+
+/* ================================
+   Automatisch invullen
+   (JSON-LD, OG/Twitter, regex fallback + foutmeldingen)
+================================ */
+document.getElementById("populateFormBtn").onclick = async () => {
+  clearMsg(); setLoading(true);
+  const url = urlEl.value.trim();
+  if (!url) { setLoading(false); return showError("⚠️ Voer een product-URL in."); }
+
+  let html = "";
+  const errors = [];
+  try {
+    const res = await fetch(url, { mode: "cors" });
+    html = await res.text();
+  } catch {
+    errors.push("❌ Kon de productpagina niet laden (CORS of ongeldig URL).");
   }
-  window.removeLink = (idx)=>{
-    const saved = JSON.parse(localStorage.getItem("tempLinks")||"[]");
-    saved.splice(idx,1);
-    localStorage.setItem("tempLinks", JSON.stringify(saved));
-    updateSavedLinks();
-  };
-  rememberLinksBtn.onclick=()=>{
-    const newLinks = tempLinks.value.split("\n").map(l=>l.trim()).filter(Boolean);
-    if(!newLinks.length) return;
-    const saved = JSON.parse(localStorage.getItem("tempLinks")||"[]");
-    newLinks.forEach(l=>{ if(!saved.includes(l)) saved.push(l); });
-    localStorage.setItem("tempLinks", JSON.stringify(saved));
-    tempLinks.value=""; updateSavedLinks();
-  };
-  clearLinksBtn.onclick=()=>{
-    if(confirm("Alle tijdelijke links verwijderen?")){
-      localStorage.removeItem("tempLinks"); tempLinks.value=""; updateSavedLinks();
+
+  const doc = new DOMParser().parseFromString(html, "text/html");
+
+  // JSON-LD (ook binnen @graph)
+  let jsonLd;
+  try {
+    const scripts = [...doc.querySelectorAll('script[type="application/ld+json"]')];
+    for (const s of scripts) {
+      const parsed = JSON.parse(s.textContent);
+      const graph = Array.isArray(parsed?.["@graph"]) ? parsed["@graph"] : [parsed];
+      const product = graph.find(n => (n?.["@type"]||"").toString().toLowerCase().includes("product"));
+      if (product) { jsonLd = product; break; }
     }
-  };
-  updateSavedLinks();
+  } catch {/* stil */}
 
-  // --- UI helpers ---
-  const errorBox = document.getElementById("errorBox");
-  const spinner = document.getElementById("loadingSpinner");
-  const showError = msg => { errorBox.style.display="block"; errorBox.textContent=msg; };
-  const clearError = () => { errorBox.style.display="none"; errorBox.textContent=""; };
-  const showSpinner = on => { spinner.style.display = on ? "flex" : "none"; };
+  // Titel
+  const metaTitle = jsonLd?.name
+    || doc.querySelector('meta[property="og:title"]')?.content
+    || doc.querySelector('meta[name="twitter:title"]')?.content
+    || doc.title;
+  if (metaTitle) titleEl.value = metaTitle.trim();
+  else { titleEl.value=""; errors.push("⚠️ Kon titel niet ophalen."); }
 
-  // --- Elementen productformulier ---
-  const categoryEl = document.getElementById("category");
-  const urlEl = document.getElementById("urlForm");
-  const titleEl = document.getElementById("titleForm");
-  const priceEl = document.getElementById("priceForm");
-  const imageEl = document.getElementById("imageForm");
-  const favEl = document.getElementById("favoriteForm");
-  const dateEl = document.getElementById("dateForm");
-  const previewContainer = document.getElementById("previewContainer");
+  // Afbeelding
+  let metaImg = jsonLd?.image
+    || doc.querySelector('meta[property="og:image"]')?.content
+    || doc.querySelector('meta[name="twitter:image"]')?.content;
+  if (Array.isArray(metaImg)) metaImg = metaImg[0];
+  if (metaImg) imageEl.value = metaImg;
+  else { imageEl.value=""; errors.push("⚠️ Kon afbeelding niet ophalen."); }
 
-  // --- Automatisch invullen (JSON-LD + meta + fallback) ---
-  document.getElementById("populateFormBtn").onclick = async () => {
-    clearError(); showSpinner(true);
-    const url = urlEl.value.trim();
-    if(!url){ showSpinner(false); return showError("⚠️ Voer een product-URL in."); }
+  // Prijs
+  const text = html.replace(/\s+/g, " ");
+  let priceValue =
+    jsonLd?.offers?.price
+    || (text.match(/"price"\s*:\s*"([\d.,]+)/)?.[1])
+    || (text.match(/€\s?([\d.,]+)/)?.[1])
+    || (text.match(/"priceAmount"\s*:\s*"([\d.,]+)/)?.[1]);
+  if (priceValue) priceEl.value = parseFloat(priceValue.replace(",", "."));
+  else { priceEl.value=""; errors.push("⚠️ Kon prijs niet ophalen."); }
 
-    let html = ""; const errs = [];
-    try {
-      const res = await fetch(url, { mode:"cors" });
-      html = await res.text();
-    } catch {
-      errs.push("❌ Kon de productpagina niet laden (CORS of ongeldig URL).");
-    }
+  // Datum altijd invullen
+  dateEl.value = new Date().toISOString().slice(0,10);
 
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
+  setLoading(false);
+  if (errors.length) showError(errors.join("\n"));
+};
 
-    // JSON-LD zoeken (ook in @graph arrays)
-    let jsonLd;
-    try{
-      const scripts = [...doc.querySelectorAll('script[type="application/ld+json"]')];
-      for(const s of scripts){
-        const parsed = JSON.parse(s.textContent);
-        const candidates = Array.isArray(parsed?.["@graph"]) ? parsed["@graph"] : [parsed];
-        const productNode = candidates.find(n => {
-          const t = (n?.["@type"]||"").toString().toLowerCase();
-          return t.includes("product");
-        });
-        if(productNode){ jsonLd = productNode; break; }
-      }
-    }catch{}
+/* ================================
+   Preview
+================================ */
+document.getElementById("previewBtn").onclick = () => {
+  clearMsg();
+  const t = titleEl.value.trim();
+  const p = priceEl.value;
+  const i = imageEl.value;
+  const l = urlEl.value;
+  const f = favEl.checked;
+  const c = catEl.value || "Geen categorie";
+  if (!t && !p && !i) return showError("⚠️ Geen gegevens om te tonen in de preview.");
 
-    // Titel
-    const t = jsonLd?.name || doc.querySelector('meta[property="og:title"]')?.content || doc.title || "";
-    if(t) titleEl.value = t.trim(); else { titleEl.value=""; errs.push("⚠️ Kon titel niet ophalen."); }
-
-    // Afbeelding
-    let img = jsonLd?.image || doc.querySelector('meta[property="og:image"]')?.content || doc.querySelector('meta[name="twitter:image"]')?.content;
-    if(Array.isArray(img)) img = img[0];
-    if(img) imageEl.value = img; else { imageEl.value=""; errs.push("⚠️ Kon afbeelding niet ophalen."); }
-
-    // Prijs
-    const text = html.replace(/\s+/g," ");
-    let priceVal = jsonLd?.offers?.price ||
-                   (text.match(/"price"\s*:\s*"([\d.,]+)/)?.[1]) ||
-                   (text.match(/€\s?([\d.,]+)/)?.[1]) ||
-                   (text.match(/"priceAmount"\s*:\s*"([\d.,]+)/)?.[1]);
-    if(priceVal) priceEl.value = parseFloat(priceVal.replace(",", ".")); else { priceEl.value=""; errs.push("⚠️ Kon prijs niet ophalen."); }
-
-    // Datum altijd invullen
-    dateEl.value = new Date().toISOString().slice(0,10);
-
-    showSpinner(false);
-    if(errs.length) showError(errs.join("\n"));
-  };
-
-  // --- Preview ---
-  document.getElementById("previewBtn").onclick = () => {
-    clearError();
-    const title = titleEl.value.trim();
-    const price = priceEl.value;
-    const img = imageEl.value;
-    const link = urlEl.value;
-    const fav = favEl.checked;
-    const cat = categoryEl.value || "Geen categorie";
-    if(!title && !price && !img) return showError("⚠️ Geen gegevens om te tonen in de preview.");
-
-    previewContainer.style.display = "block";
-    previewContainer.innerHTML = `
-      <div class="preview-card ${fav ? "favorite" : ""}">
-        ${img ? `<img src="${img}" alt="${title}">` : ""}
-        <div>
-          <h3>${title || "Onbekend product"}</h3>
-          ${price ? `<p>💶 €${parseFloat(price).toFixed(2)}</p>` : ""}
-          ${link ? `<a href="${link}" target="_blank">Bekijk product</a>` : ""}
-          <p style="font-size:.9rem;color:#aaa;margin-top:.4rem;">Categorie: ${cat}</p>
-        </div>
+  previewContainer.style.display = "block";
+  previewContainer.innerHTML = `
+    <div class="preview-card ${f ? "favorite" : ""}">
+      ${i ? `<img src="${i}" alt="${t}">` : ""}
+      <div>
+        <h3>${t || "Onbekend product"}</h3>
+        ${p ? `<p>💶 €${parseFloat(p).toFixed(2)}</p>` : ""}
+        ${l ? `<a href="${l}" target="_blank">Bekijk product</a>` : ""}
+        <p style="font-size:.9rem;color:#aaa;margin-top:.4rem;">Categorie: ${c}</p>
       </div>
-    `;
-  };
+    </div>
+  `;
+};
 
-  // --- Item toevoegen (met duplicaatcontrole) ---
-  document.getElementById("addItemBtn").onclick = async () => {
-    clearError();
-    const cat = categoryEl.value;
-    const link = urlEl.value.trim();
-    if(!cat) return showError("⚠️ Kies eerst een categorie.");
-    if(!link) return showError("⚠️ Vul een product-URL in.");
+/* ================================
+   Toevoegen + duplicaatcontrole + succesmelding + scroll
+================================ */
+document.getElementById("addItemBtn").onclick = async () => {
+  clearMsg();
+  const c = catEl.value;
+  const link = urlEl.value.trim();
+  if (!c)   return showError("⚠️ Kies eerst een categorie.");
+  if (!link) return showError("⚠️ Vul een product-URL in.");
 
-    try{
-      const snap = await get(ref(db, `/${cat}`));
-      const data = snap.val() || {};
-      const dup = Object.values(data).some(i =>
-        (i.link||"").replace(/^https?:\/\//,"").toLowerCase() === link.replace(/^https?:\/\//,"").toLowerCase()
-      );
-      if(dup) return showError(`⚠️ Dit product staat al in de categorie "${cat}".`);
+  try {
+    const snap = await get(ref(db, `/${c}`));
+    const data = snap.val() || {};
+    const dup = Object.values(data).some(item =>
+      (item.link||"").replace(/^https?:\/\//,"").toLowerCase() === link.replace(/^https?:\/\//,"").toLowerCase()
+    );
+    if (dup) return showError(`⚠️ Dit product staat al in de categorie "${c}".`);
 
-      const item = {
-        title: titleEl.value || "Onbekend product",
-        price: priceEl.value ? parseFloat(priceEl.value) : 0,
-        link,
-        favorite: favEl.checked,
-        dateAdded: dateEl.value || new Date().toISOString().slice(0,10),
-        image: imageEl.value || "",
-        done: false
-      };
-      await set(push(ref(db, `/${cat}`)), item);
-      resetForm(); // auto leegmaken + categorie terugzetten
-    }catch(err){
-      showError("❌ Fout bij toevoegen aan Firebase: "+err.message);
+    const item = {
+      title: titleEl.value || "Onbekend product",
+      price: priceEl.value ? parseFloat(priceEl.value) : 0,
+      link,
+      favorite: favEl.checked,
+      dateAdded: dateEl.value || new Date().toISOString().slice(0,10),
+      image: imageEl.value || "",
+      done: false
+    };
+
+    const newRef = await push(ref(db, `/${c}`), item);
+
+    // Reset formulier
+    resetForm();
+
+    // Succes + scroll/highlight zodra het item in de realtime lijst staat
+    showSuccess(`✅ Item toegevoegd aan ${c}`);
+    // Geef de onValue even tijd om te renderen, dan highlighten en scrollen:
+    setTimeout(() => {
+      const el = document.querySelector(`[data-key='${newRef.key}']`);
+      if (el) {
+        el.classList.add("highlight");
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        setTimeout(() => el.classList.remove("highlight"), 1500);
+      }
+    }, 1200);
+
+  } catch (e) {
+    showError("❌ Fout bij toevoegen aan Firebase: " + e.message);
+  }
+};
+
+document.getElementById("resetFormBtn").onclick = () => resetForm();
+function resetForm(){
+  catEl.value = "";
+  urlEl.value = titleEl.value = priceEl.value = imageEl.value = "";
+  favEl.checked = false;
+  dateEl.value = "";
+  clearMsg();
+  previewContainer.style.display = "none";
+}
+
+/* ================================
+   Realtime lijst + filters + inline edit
+================================ */
+const itemList     = document.getElementById("itemList");
+const statusFilter = document.getElementById("statusFilter");
+const dateSort     = document.getElementById("dateSort");
+const catFilter    = document.getElementById("catFilter");
+const applyFilters = document.getElementById("applyFilters");
+const resetFilters = document.getElementById("resetFilters");
+const deleteDone   = document.getElementById("deleteDoneBtn");
+
+let latestData = {};
+
+onValue(ref(db,"/"), (snap) => {
+  latestData = snap.val() || {};
+  updateCategoryFilter();
+});
+
+function updateCategoryFilter(){
+  const cats = Object.keys(latestData);
+  catFilter.innerHTML = "<option value='all'>Alle categorieën</option>" +
+    cats.map(c => `<option>${c}</option>`).join("");
+  // Niet automatisch renderen; gebruiker klikt op "Filters toepassen"
+  // zodat filters los van elkaar kunnen worden ingesteld.
+}
+
+applyFilters.onclick = () => renderList();
+resetFilters.onclick = () => {
+  catFilter.value    = "all";
+  statusFilter.value = "notdone";
+  dateSort.value     = "neutral";
+  renderList();
+};
+
+deleteDone.onclick = async () => {
+  if (!confirm("Weet je zeker dat je ALLE afgestreepte items wilt verwijderen?")) return;
+  for (const [cat, items] of Object.entries(latestData)) {
+    for (const [key, val] of Object.entries(items)) {
+      if (val.done) await remove(ref(db, `/${cat}/${key}`));
     }
-  };
+  }
+  alert("Alle afgestreepte items zijn verwijderd.");
+};
 
-  // --- Form reset ---
-  document.getElementById("resetFormBtn").onclick = () => resetForm();
-  function resetForm(){
-    categoryEl.value = "";
-    urlEl.value = ""; titleEl.value = ""; priceEl.value = ""; imageEl.value = "";
-    favEl.checked = false; dateEl.value = "";
-    clearError(); document.getElementById("previewContainer").style.display="none";
+function renderList(){
+  itemList.innerHTML = "";
+  if (!Object.keys(latestData).length) {
+    itemList.innerHTML = "<p>Geen items.</p>";
+    return;
   }
 
-  // --- Realtime overzicht ---
-  const itemList = document.getElementById("itemList");
-  const statusFilter = document.getElementById("statusFilter");
-  const dateSort = document.getElementById("dateSort");
-  const deleteDoneBtn = document.getElementById("deleteDoneBtn");
-  let latestData = {};
+  const f  = statusFilter.value;
+  const s  = dateSort.value;
+  const cf = catFilter.value;
 
-  onValue(ref(db, "/"), (snap)=>{ latestData = snap.val()||{}; renderItems(); });
-  statusFilter.addEventListener("change", renderItems);
-  dateSort.addEventListener("change", renderItems);
+  for (const [cat, items] of Object.entries(latestData)) {
+    if (cf !== "all" && cf !== cat) continue;
 
-  deleteDoneBtn.onclick = async () => {
-    if(!confirm("Weet je zeker dat je ALLE afgestreepte items wilt verwijderen?")) return;
-    for(const [cat, items] of Object.entries(latestData)){
-      for(const [key, i] of Object.entries(items)){
-        if(i.done) await remove(ref(db, `/${cat}/${key}`));
-      }
+    let arr = Object.entries(items).map(([key, v]) => ({ key, ...v }));
+
+    if (f === "done")     arr = arr.filter(i => i.done);
+    if (f === "notdone")  arr = arr.filter(i => !i.done);
+    if (f === "favorite") arr = arr.filter(i => i.favorite);
+
+    if (s === "newest") arr.sort((a,b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+    if (s === "oldest") arr.sort((a,b) => new Date(a.dateAdded) - new Date(b.dateAdded));
+
+    const h = document.createElement("h3");
+    h.textContent = `${cat} (${arr.length} items)`;
+    itemList.appendChild(h);
+
+    for (const i of arr) {
+      const row = document.createElement("div");
+      row.className = "item-card";
+      row.dataset.key = i.key;
+
+      row.innerHTML = `
+        <span class="info">
+          <strong>${i.title}</strong> (€${i.price || 0})
+          ${i.done ? '<em style="color:#22c55e;">[Afgestreept]</em>' : ''}
+        </span>
+        <div class="item-buttons">
+          <button class="edit-btn" data-cat="${cat}" data-key="${i.key}" style="background:#0ea5e9;color:#fff;">📝</button>
+          <button class="fav-btn"  data-cat="${cat}" data-key="${i.key}" style="background:${i.favorite ? '#ff8c42' : '#999'};color:#fff;">★</button>
+          <button class="done-btn" data-cat="${cat}" data-key="${i.key}" style="background:${i.done ? '#22c55e' : '#999'};color:#fff;">✔️</button>
+          <button class="del-btn"  data-cat="${cat}" data-key="${i.key}" style="background:#ef4444;color:#fff;">❌</button>
+        </div>
+      `;
+      itemList.appendChild(row);
     }
-    alert("Alle afgestreepte items zijn verwijderd!");
-  };
-
-  function renderItems(){
-    itemList.innerHTML = "";
-    const filter = statusFilter.value;
-    const sort = dateSort.value;
-
-    if(!latestData || !Object.keys(latestData).length){
-      itemList.innerHTML = "<p>Geen items in de database.</p>";
-      return;
-    }
-
-    for(const [cat, items] of Object.entries(latestData)){
-      let arr = Object.entries(items).map(([key,val])=>({key,...val}));
-
-      if(filter==="done") arr = arr.filter(i=>i.done);
-      if(filter==="notdone") arr = arr.filter(i=>!i.done);
-      if(filter==="favorite") arr = arr.filter(i=>i.favorite);
-
-      if(sort==="newest") arr.sort((a,b)=> new Date(b.dateAdded) - new Date(a.dateAdded));
-      if(sort==="oldest") arr.sort((a,b)=> new Date(a.dateAdded) - new Date(b.dateAdded));
-
-      const count = arr.length; // aantal getoonde items (geen aparte teller voor 'done')
-      const h = document.createElement("h3");
-      h.textContent = `${cat} (${count} items)`;
-      itemList.appendChild(h);
-
-      for(const i of arr){
-        const row = document.createElement("div");
-        row.className="item-card";
-        row.innerHTML = `
-          <span><strong>${i.title}</strong> (€${(i.price||0)})
-            ${i.done ? '<em style="color:#22c55e;">[Afgestreept]</em>' : ''}
-          </span>
-          <div class="item-buttons">
-            <button style="background:${i.favorite ? '#ff8c42' : '#999'};color:#fff;" data-cat="${cat}" data-key="${i.key}" class="fav-btn">★</button>
-            <button style="background:${i.done ? '#22c55e' : '#999'};color:#fff;" data-cat="${cat}" data-key="${i.key}" class="done-btn">✔️</button>
-            <button style="background:#ef4444;color:#fff;" data-cat="${cat}" data-key="${i.key}" class="del-btn">❌</button>
-          </div>`;
-        itemList.appendChild(row);
-      }
-    }
-
-    // Acties koppelen
-    itemList.querySelectorAll(".fav-btn").forEach(btn=>{
-      btn.onclick = async ()=>{
-        const {cat,key} = btn.dataset;
-        const current = latestData[cat][key];
-        await update(ref(db, `/${cat}/${key}`), { favorite: !current.favorite });
-      };
-    });
-    itemList.querySelectorAll(".done-btn").forEach(btn=>{
-      btn.onclick = async ()=>{
-        const {cat,key} = btn.dataset;
-        const current = latestData[cat][key];
-        await update(ref(db, `/${cat}/${key}`), { done: !current.done });
-      };
-    });
-    itemList.querySelectorAll(".del-btn").forEach(btn=>{
-      btn.onclick = async ()=>{
-        const {cat,key} = btn.dataset;
-        if(confirm("Verwijderen?")) await remove(ref(db, `/${cat}/${key}`));
-      };
-    });
   }
+
+  // Koppelingen
+  itemList.querySelectorAll(".fav-btn").forEach(btn => {
+    btn.onclick = async () => {
+      const { cat, key } = btn.dataset;
+      const current = latestData[cat][key];
+      await update(ref(db, `/${cat}/${key}`), { favorite: !current.favorite });
+    };
+  });
+
+  itemList.querySelectorAll(".done-btn").forEach(btn => {
+    btn.onclick = async () => {
+      const { cat, key } = btn.dataset;
+      const current = latestData[cat][key];
+      await update(ref(db, `/${cat}/${key}`), { done: !current.done });
+    };
+  });
+
+  itemList.querySelectorAll(".del-btn").forEach(btn => {
+    btn.onclick = async () => {
+      const { cat, key } = btn.dataset;
+      if (confirm("Verwijderen?")) await remove(ref(db, `/${cat}/${key}`));
+    };
+  });
+
+  itemList.querySelectorAll(".edit-btn").forEach(btn => {
+    btn.onclick = () => startEdit(btn.dataset.cat, btn.dataset.key);
+  });
+}
+
+/* ================================
+   Inline edit (alle velden)
+================================ */
+function startEdit(cat, key) {
+  const row = [...itemList.querySelectorAll(".item-card")].find(r => r.dataset.key === key);
+  if (!row) return;
+  const i = latestData[cat][key];
+
+  row.innerHTML = `
+    <div style="flex:1;display:flex;flex-direction:column;gap:.3rem;">
+      <input class="edit-input" id="editTitle" value="${i.title || ''}" placeholder="Titel"/>
+      <input class="edit-input" id="editPrice" type="number" value="${i.price || 0}" placeholder="Prijs"/>
+      <input class="edit-input" id="editLink"  value="${i.link || ''}"  placeholder="Link"/>
+      <input class="edit-input" id="editImage" value="${i.image || ''}" placeholder="Afbeelding"/>
+      <label><input type="checkbox" id="editFav"  ${i.favorite ? "checked" : ""}/> Favoriet</label>
+      <label><input type="checkbox" id="editDone" ${i.done ? "checked" : ""}/> Afgestreept</label>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.3rem;">
+      <button id="saveEdit"   style="background:#10b981;color:#fff;">💾 Opslaan</button>
+      <button id="cancelEdit" style="background:#ef4444;color:#fff;">✖️ Annuleer</button>
+    </div>
+  `;
+
+  row.querySelector("#cancelEdit").onclick = () => renderList();
+  row.querySelector("#saveEdit").onclick = async () => {
+    const nt = row.querySelector("#editTitle").value;
+    const np = parseFloat(row.querySelector("#editPrice").value) || 0;
+    const nl = row.querySelector("#editLink").value;
+    const ni = row.querySelector("#editImage").value;
+    const nf = row.querySelector("#editFav").checked;
+    const nd = row.querySelector("#editDone").checked;
+
+    await update(ref(db, `/${cat}/${key}`), {
+      title: nt, price: np, link: nl, image: ni, favorite: nf, done: nd
+    });
+
+    showSuccess("✅ Item aangepast.");
+  };
+}
 </script>
 </body>
 </html>
