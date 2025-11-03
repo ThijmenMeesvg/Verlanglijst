@@ -16,62 +16,41 @@
     h1, h2, h3 { text-align: center; margin-bottom: 1rem; }
     label { font-weight: bold; display: block; margin-top: 1rem; }
     input, select, textarea, button {
-      width: 100%;
-      padding: 0.6rem;
-      font-size: 1rem;
-      margin-top: 0.3rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
+      width: 100%; padding: 0.6rem; font-size: 1rem;
+      margin-top: 0.3rem; border-radius: 8px; border: 1px solid #ccc;
     }
     button {
-      margin-top: 1rem;
-      background-color: #2563eb;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 8px;
-      transition: background 0.3s;
+      margin-top: 1rem; background-color: #2563eb; color: white;
+      border: none; cursor: pointer; border-radius: 8px; transition: background 0.3s;
     }
     button:hover { background-color: #1e40af; }
     .section {
-      background: white;
-      padding: 2rem;
-      margin-top: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      background: white; padding: 2rem; margin-top: 2rem;
+      border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
     .link-item, .item-card {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #e5e7eb;
-      padding: 0.5rem 0.8rem;
-      border-radius: 6px;
-      margin-top: 0.5rem;
-      word-break: break-all;
+      display: flex; justify-content: space-between; align-items: center;
+      background: #e5e7eb; padding: 0.5rem 0.8rem; border-radius: 6px;
+      margin-top: 0.5rem; word-break: break-all;
     }
-    .item-buttons, .link-buttons {
-      display: flex;
-      gap: 0.3rem;
-    }
-    .top-links {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
+    .item-buttons, .link-buttons { display: flex; gap: 0.3rem; }
+    .top-links { text-align: center; margin-bottom: 1rem; }
     .top-links a, .top-links button {
-      display: inline-block;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      margin: 0 0.3rem 0.3rem 0.3rem;
-      border: none;
-      cursor: pointer;
+      display: inline-block; padding: 0.5rem 1rem; border-radius: 8px;
+      text-decoration: none; font-weight: bold; margin: 0 0.3rem 0.3rem 0.3rem;
+      border: none; cursor: pointer;
     }
     .home { background: #ff8c42; color: white; }
     .github { background: #10b981; color: white; }
     .logout { background: #ef4444; color: white; }
+    #filterBar {
+      display: flex; gap: .5rem; align-items: center; justify-content: center;
+      flex-wrap: wrap; margin-bottom: 1rem;
+    }
+    #filterBar select {
+      padding: .4rem .8rem; border-radius: 6px;
+      border: 1px solid #ccc; background: #f9fafb;
+    }
   </style>
 </head>
 <body>
@@ -137,6 +116,17 @@
 <!-- Realtime items -->
 <div class="section">
   <h2>📊 Huidige items (Realtime)</h2>
+
+  <div id="filterBar">
+    <label for="statusFilter">Filter:</label>
+    <select id="statusFilter">
+      <option value="all">Alles</option>
+      <option value="done">Afgestreept</option>
+      <option value="notdone">Niet-afgestreept</option>
+      <option value="favorite">Favorieten</option>
+    </select>
+  </div>
+
   <div id="itemList"></div>
 </div>
 
@@ -154,11 +144,10 @@
     messagingSenderId: "512971362808",
     appId: "1:512971362808:web:b16ec8341ec4fbe795460d"
   };
-
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  // Admin-login
+  // --- Login ---
   const accessCode = "verlanglijst";
   if (localStorage.getItem("adminLoggedIn") !== "true") {
     const entered = prompt("Voer toegangscode in:");
@@ -173,7 +162,7 @@
     window.location.href = "index.html";
   };
 
-  // Tijdelijke links
+  // --- Tijdelijke links ---
   const tempLinks = document.getElementById("tempLinks");
   const rememberLinksBtn = document.getElementById("rememberLinksBtn");
   const clearLinksBtn = document.getElementById("clearLinksBtn");
@@ -211,7 +200,6 @@
     tempLinks.value = "";
     updateSavedLinks();
   };
-
   clearLinksBtn.onclick = () => {
     if (confirm("Alle tijdelijke links verwijderen?")) {
       localStorage.removeItem("tempLinks");
@@ -219,10 +207,9 @@
       updateSavedLinks();
     }
   };
-
   updateSavedLinks();
 
-  // Autofill
+  // --- Product info ---
   const urlForm = document.getElementById("urlForm");
   const titleForm = document.getElementById("titleForm");
   const priceForm = document.getElementById("priceForm");
@@ -247,14 +234,11 @@
       alert("Kon productinfo niet ophalen.");
     }
   };
-
   document.getElementById("resetFormBtn").onclick = () => {
     urlForm.value = titleForm.value = priceForm.value = imageForm.value = "";
-    favoriteForm.checked = false;
-    dateForm.value = "";
+    favoriteForm.checked = false; dateForm.value = "";
   };
 
-  // Voeg item toe aan Firebase
   document.getElementById("addItemBtn").onclick = async () => {
     const cat = document.getElementById("category").value;
     if (!cat) return alert("Kies eerst een categorie!");
@@ -267,54 +251,84 @@
       image: imageForm.value || "",
       done: false
     };
-    const newRef = push(ref(db, "/" + cat));
-    await set(newRef, item);
+    await set(push(ref(db, "/" + cat)), item);
     alert("Item toegevoegd!");
     document.getElementById("resetFormBtn").click();
   };
 
-  // Realtime overzicht
+  // --- Realtime overzicht met filter ---
   const itemList = document.getElementById("itemList");
+  const statusFilter = document.getElementById("statusFilter");
+
+  let latestData = {};
 
   onValue(ref(db, "/"), (snap) => {
-    const data = snap.val();
-    itemList.innerHTML = "";
-    if (!data) return itemList.innerHTML = "<p>Geen items in de database.</p>";
+    latestData = snap.val() || {};
+    renderItems();
+  });
 
-    for (const [cat, items] of Object.entries(data)) {
+  statusFilter.addEventListener("change", renderItems);
+
+  function renderItems() {
+    itemList.innerHTML = "";
+    const filter = statusFilter.value;
+    if (!latestData || Object.keys(latestData).length === 0) {
+      itemList.innerHTML = "<p>Geen items in de database.</p>";
+      return;
+    }
+
+    for (const [cat, items] of Object.entries(latestData)) {
       const catTitle = document.createElement("h3");
       catTitle.textContent = cat;
       itemList.appendChild(catTitle);
 
       for (const [key, i] of Object.entries(items)) {
+        if (
+          (filter === "done" && !i.done) ||
+          (filter === "notdone" && i.done) ||
+          (filter === "favorite" && !i.favorite)
+        ) continue;
+
         const div = document.createElement("div");
         div.className = "item-card";
         div.innerHTML = `
-          <span><strong>${i.title}</strong> (€${i.price})</span>
+          <span>
+            <strong>${i.title}</strong> (€${i.price})
+            ${i.done ? '<em style="color:#22c55e;">[Afgestreept]</em>' : ''}
+          </span>
           <div class="item-buttons">
             <button style="background:${i.favorite ? '#ff8c42' : '#ccc'};color:white;" data-cat="${cat}" data-key="${key}" class="fav-btn">★</button>
+            <button style="background:${i.done ? '#22c55e' : '#999'};color:white;" data-cat="${cat}" data-key="${key}" class="done-btn">✔️</button>
             <button style="background:#ef4444;color:white;" data-cat="${cat}" data-key="${key}" class="del-btn">❌</button>
           </div>`;
         itemList.appendChild(div);
       }
     }
 
-    // Acties koppelen
     itemList.querySelectorAll(".fav-btn").forEach(btn => {
       btn.onclick = async () => {
-        const cat = btn.dataset.cat, key = btn.dataset.key;
+        const { cat, key } = btn.dataset;
         const newFav = btn.style.background !== "rgb(255, 140, 66)";
         await update(ref(db, `/${cat}/${key}`), { favorite: newFav });
       };
     });
 
+    itemList.querySelectorAll(".done-btn").forEach(btn => {
+      btn.onclick = async () => {
+        const { cat, key } = btn.dataset;
+        const snapshot = latestData[cat][key];
+        const newDone = !snapshot.done;
+        await update(ref(db, `/${cat}/${key}`), { done: newDone });
+      };
+    });
+
     itemList.querySelectorAll(".del-btn").forEach(btn => {
       btn.onclick = async () => {
-        const cat = btn.dataset.cat, key = btn.dataset.key;
+        const { cat, key } = btn.dataset;
         if (confirm("Verwijderen?")) await remove(ref(db, `/${cat}/${key}`));
       };
     });
-  });
+  }
 </script>
 </body>
 </html>
