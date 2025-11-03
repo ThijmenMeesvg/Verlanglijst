@@ -1,47 +1,176 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Over Mij – Mijn Verlanglijst</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Over mij – Verlanglijst</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Extra, compacte stijlen voor deze pagina (sluiten aan bij je dark theme) */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 18px; }
+    .card {
+      background:#262626; border-radius:12px; padding:18px; box-shadow:0 4px 12px rgba(0,0,0,.35);
+      transition: transform .2s ease, box-shadow .3s ease;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow:0 6px 20px rgba(255,140,66,.25); }
+    .card h3 { margin:0 0 .6rem 0; color:#FFD369; font-weight:600; display:flex; align-items:center; gap:.5rem; }
+    .pill {
+      display:inline-block; padding:.25rem .55rem; border-radius:999px; background:#333; color:#FFD369; font-size:.9rem; margin:.15rem .2rem 0 0;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .list { margin:.4rem 0 0 0; padding:0 0 0 1em; }
+    .list li { margin:.25rem 0; }
+    .lead { font-size:1.05rem; line-height:1.9; color:#EDEDED; max-width:820px; margin:0 auto; }
+    .inline-note { font-size:.95rem; color:#cfcfcf; }
+    .btn-row { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:16px; }
+    .btn {
+      background:#FF8C42; color:#1E1E1E; border:none; padding:.7rem 1rem; border-radius:10px; font-weight:700; text-decoration:none;
+      transition:background .2s ease, transform .2s ease;
+    }
+    .btn:hover { background:#FFD369; transform:translateY(-2px); }
+    .icon { font-size:1.2rem; }
+    .muted { color:#bdbdbd; font-size:.95rem; }
+    .divider { height:1px; background:rgba(255,255,255,.08); margin:26px 0; border-radius:999px; }
+    .grid-2 { display:grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap:18px; }
+  </style>
 </head>
 <body>
-  <header>
-    <nav>
-     <a href="index.html">Home</a>
-      <a href="favorieten.html">Over Mij</a>
-      <a href="alle-items.html">Alles</a>
-      <a href="boeken.html">Boeken</a>
-      <a href="spelletjes.html">Spelletjes</a>
-      <a href="muziek.html">Muziek</a>
-      <a href="kleding.html">Kleding & Accessoires</a>
-      <a href="uitzet.html">Koken, Bakken & Thuis</a>
-      <a href="sport.html">Sport & Buiten</a>
-      <a href="overig.html">Overig</a>
-    </nav>
-  </header>
 
-  <main>
-    <section>
-      <h2>Mijn Favorieten & Alles Wat Je Moet Weten</h2>
-          
-      <h3>Kleding</h3>
-      <ul>
-        <li>T-shirt maat: L</li>
-        <li>Sokken maat: 40</li>
-      </ul>
-      
-      <h3>Eten</h3>
-      <ul>
-        <li>Favoriete chocola: Witte chocolade. Of dove met caramel.</li>
-        <li>Favoriete snoepjes: Zure jellybeans of zure skittles.</li>
-        <li>Favoriete snackjes: Kaas! Paprika chips, cashew noten.</li>
-      </ul>
-      
+<header>
+  <h1>Mijn Verlanglijst</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="favorieten.html">Over Mij</a>
+    <a href="alle-items.html">Alles</a>
+    <a href="categorie.html?cat=Boeken">Boeken</a>
+    <a href="categorie.html?cat=Spelletjes">Spelletjes</a>
+    <a href="categorie.html?cat=Muziek">Muziek</a>
+    <!-- let op: deze spelling matcht je database -->
+    <a href="categorie.html?cat=Kleding%20%26%20Accesoires">Kleding & Accesoires</a>
+    <a href="categorie.html?cat=Uitzet">Koken, Bakken & Thuis</a>
+    <a href="categorie.html?cat=Sport%20%26%20Buiten">Sport & Buiten</a>
+    <a href="categorie.html?cat=Overig">Overig</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero" style="min-height:auto;">
+    <h2>Over mij</h2>
+    <p class="lead">
+      Leuk dat je er bent! 👋 Op deze pagina vind je wat snelle info, persoonlijke voorkeuren en inspiratie.
+      Zie het als een kleine gids die je helpt iets te kiezen waar je me echt blij mee maakt. Dankjewel dat je me verrassen wilt! ✨
+    </p>
+    <div class="btn-row">
+      <a class="btn" href="alle-items.html">Bekijk alle items</a>
+      <a class="btn" href="categorie.html?cat=Boeken">Boeken</a>
+      <a class="btn" href="categorie.html?cat=Kleding%20%26%20Accesoires">Kleding & Accesoires</a>
+      <a class="btn" href="categorie.html?cat=Sport%20%26%20Buiten">Sport & Buiten</a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Snelle facts</h2>
+    <div class="cards">
+      <div class="card">
+        <h3><span class="icon">🧥</span> Maten & voorkeuren</h3>
+        <div>
+          <span class="pill">T-shirt: L</span>
+          <span class="pill">Broek: L / XL</span>
+          <span class="pill">Schoen: 40 / 41</span>
+          <span class="pill">Sokken/ondergoed: Stance ❤️</span>
+        </div>
+        <p class="inline-note" style="margin-top:.7rem;">
+          Qua stijl hou ik van kwaliteit en comfort; rustig en tijdloos werkt meestal het beste.
+        </p>
       </div>
-    </section>
-  </main>
+
+      <div class="card">
+        <h3><span class="icon">🌿</span> Geuren waar je me blij mee maakt</h3>
+        <ul class="list">
+          <li>Lavendel</li>
+          <li>Appel / kaneel</li>
+          <li>Vanille</li>
+          <li>Sandaalhout</li>
+        </ul>
+        <p class="muted" style="margin-top:.5rem;">Tip: kaarsen, roomsprays, badproducten of geurzakjes met deze geuren zijn altijd fijn.</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="icon">🌱</span> Kleine kanttekening</h3>
+        <p class="inline-note">
+          Ik ben <em>ontzettend</em> slecht met planten 😅. Dus liever iets anders dan een kamerplant.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section>
+    <h2>Inspiratie & ideeën</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3><span class="icon">🧦</span> Kleding & accessoires</h3>
+        <ul class="list">
+          <li>Stance sokken of ondergoed (maat 40/41 / L)</li>
+          <li>Comfortabele basics (T-shirt L, neutrale tinten)</li>
+          <li>Warme sjaal of muts voor buiten</li>
+          <li>Handschoenen voor wandelen/fietsen</li>
+        </ul>
+        <p class="muted">Praktisch en duurzaam scoort altijd punten.</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="icon">🕯️</span> Geur & ontspanning</h3>
+        <ul class="list">
+          <li>Geurkaarsen of roomsprays (lavendel / vanille / appel-kaneel / sandaalhout)</li>
+          <li>Bad- of doucheproducten met zachte, natuurlijke geuren</li>
+          <li>Olie/branders met lavendel of woodsy blends</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3><span class="icon">📚</span> Boeken & muziek</h3>
+        <ul class="list">
+          <li>Boeken (natuur, outdoors, reflectie, verhalen die raken)</li>
+          <li>Muziek (vinyl/merch/kleine accessoires)</li>
+        </ul>
+        <p class="muted">Op de boeken- en muziekpagina vind je concrete titels.</p>
+        <div class="btn-row" style="justify-content:flex-start;">
+          <a class="btn" href="categorie.html?cat=Boeken">Naar boeken</a>
+          <a class="btn" href="categorie.html?cat=Muziek">Naar muziek</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><span class="icon">🏕️</span> Ervaringen & lekkers</h3>
+        <ul class="list">
+          <li>Uitje: wandeling, boulderen, sauna of een dagje weg</li>
+          <li>Warm drankje of lekkers (kaneel, vanille vibes)</li>
+          <li>Gezellig samen koken of bakken</li>
+        </ul>
+        <p class="muted">Samen iets doen is misschien wel mijn lievelings.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section>
+    <h2>Waar vind je wat?</h2>
+    <p class="lead" style="font-size:1rem;">
+      Wil je gericht zoeken? Kies hieronder een categorie of bekijk alles. Items die ik extra leuk vind zijn gemarkeerd.
+    </p>
+    <div class="btn-row">
+      <a class="btn" href="alle-items.html">Alles bekijken</a>
+      <a class="btn" href="categorie.html?cat=Kleding%20%26%20Accesoires">Kleding & Accesoires</a>
+      <a class="btn" href="categorie.html?cat=Sport%20%26%20Buiten">Sport & Buiten</a>
+      <a class="btn" href="categorie.html?cat=Uitzet">Koken, Bakken & Thuis</a>
+      <a class="btn" href="categorie.html?cat=Overig">Overig</a>
+    </div>
+  </section>
+</main>
+
+
 </body>
 </html>
-
