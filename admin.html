@@ -42,6 +42,7 @@
     }
     .home { background: #ff8c42; color: white; }
     .github { background: #10b981; color: white; }
+    .firebase { background: #fbbc04; color: black; }
     .logout { background: #ef4444; color: white; }
     #filterBar {
       display: flex; gap: .5rem; align-items: center; justify-content: center;
@@ -51,6 +52,12 @@
       padding: .4rem .8rem; border-radius: 6px;
       border: 1px solid #ccc; background: #f9fafb;
     }
+    #deleteDoneBtn {
+      background: #ef4444; color: white;
+      padding: .4rem .8rem; border-radius: 8px;
+      font-weight: bold; cursor: pointer;
+    }
+    #deleteDoneBtn:hover { background: #dc2626; }
   </style>
 </head>
 <body>
@@ -58,6 +65,8 @@
 <div class="top-links">
   <a href="index.html" class="home">🏠 Terug naar Home</a>
   <a href="https://github.com/thijmenmeesvg/Verlanglijst" target="_blank" class="github">💻 GitHub Repo</a>
+  <a href="https://console.firebase.google.com/project/verlanglijst-12015/database/verlanglijst-12015-default-rtdb/data"
+     target="_blank" class="firebase">🌐 Open Firebase Console</a>
   <button id="logoutBtn" class="logout">Log uit</button>
 </div>
 
@@ -122,9 +131,18 @@
     <select id="statusFilter">
       <option value="all">Alles</option>
       <option value="done">Afgestreept</option>
-      <option value="notdone">Niet-afgestreept</option>
+      <option value="notdone" selected>Niet-afgestreept</option>
       <option value="favorite">Favorieten</option>
     </select>
+
+    <label for="dateSort">Sorteer op:</label>
+    <select id="dateSort">
+      <option value="neutral">– Kies datum –</option>
+      <option value="newest">Nieuwste eerst</option>
+      <option value="oldest">Oudste eerst</option>
+    </select>
+
+    <button id="deleteDoneBtn">🗑️ Verwijder alle afgestreepte items</button>
   </div>
 
   <div id="itemList"></div>
@@ -134,7 +152,6 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
   import { getDatabase, ref, push, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyCnDzhefAQWgoShNY2geSFwxTzNwqUqvTU",
     authDomain: "verlanglijst-12015.firebaseapp.com",
@@ -144,6 +161,7 @@
     messagingSenderId: "512971362808",
     appId: "1:512971362808:web:b16ec8341ec4fbe795460d"
   };
+
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
@@ -162,12 +180,11 @@
     window.location.href = "index.html";
   };
 
-  // --- Tijdelijke links ---
+  // --- Tijdelijke links (verkort, werkt zoals eerder) ---
   const tempLinks = document.getElementById("tempLinks");
   const rememberLinksBtn = document.getElementById("rememberLinksBtn");
   const clearLinksBtn = document.getElementById("clearLinksBtn");
   const savedLinksList = document.getElementById("savedLinksList");
-
   function updateSavedLinks() {
     savedLinksList.innerHTML = "";
     const saved = JSON.parse(localStorage.getItem("tempLinks") || "[]");
@@ -183,14 +200,12 @@
       savedLinksList.appendChild(div);
     });
   }
-
   window.removeLink = (idx) => {
     const saved = JSON.parse(localStorage.getItem("tempLinks") || "[]");
     saved.splice(idx, 1);
     localStorage.setItem("tempLinks", JSON.stringify(saved));
     updateSavedLinks();
   };
-
   rememberLinksBtn.onclick = () => {
     const newLinks = tempLinks.value.split("\n").map(l => l.trim()).filter(l => l);
     if (!newLinks.length) return;
@@ -209,102 +224,91 @@
   };
   updateSavedLinks();
 
-  // --- Product info ---
-  const urlForm = document.getElementById("urlForm");
-  const titleForm = document.getElementById("titleForm");
-  const priceForm = document.getElementById("priceForm");
-  const imageForm = document.getElementById("imageForm");
-  const favoriteForm = document.getElementById("favoriteForm");
-  const dateForm = document.getElementById("dateForm");
-
-  document.getElementById("populateFormBtn").onclick = async () => {
-    const url = urlForm.value.trim();
-    if (!url) return alert("Voer een URL in.");
-    try {
-      const res = await fetch(url);
-      const html = await res.text();
-      const title = html.match(/<meta property="og:title" content="([^"]+)"/);
-      const price = html.match(/"price":\s*"([\d.,]+)"/) || html.match(/€\s?([\d.,]+)/);
-      const image = html.match(/<meta property="og:image" content="([^"]+)"/);
-      titleForm.value = title ? title[1] : "";
-      priceForm.value = price ? parseFloat(price[1].replace(",", ".")) : "";
-      imageForm.value = image ? image[1] : "";
-      dateForm.value = new Date().toISOString().slice(0, 10);
-    } catch {
-      alert("Kon productinfo niet ophalen.");
-    }
-  };
-  document.getElementById("resetFormBtn").onclick = () => {
-    urlForm.value = titleForm.value = priceForm.value = imageForm.value = "";
-    favoriteForm.checked = false; dateForm.value = "";
-  };
-
+  // --- Items toevoegen ---
   document.getElementById("addItemBtn").onclick = async () => {
     const cat = document.getElementById("category").value;
     if (!cat) return alert("Kies eerst een categorie!");
     const item = {
-      title: titleForm.value || "Onbekend product",
-      price: parseFloat(priceForm.value) || 0,
-      link: urlForm.value || "",
-      favorite: favoriteForm.checked,
-      dateAdded: dateForm.value || new Date().toISOString().slice(0, 10),
-      image: imageForm.value || "",
+      title: document.getElementById("titleForm").value || "Onbekend product",
+      price: parseFloat(document.getElementById("priceForm").value) || 0,
+      link: document.getElementById("urlForm").value || "",
+      favorite: document.getElementById("favoriteForm").checked,
+      dateAdded: document.getElementById("dateForm").value || new Date().toISOString().slice(0, 10),
+      image: document.getElementById("imageForm").value || "",
       done: false
     };
     await set(push(ref(db, "/" + cat)), item);
     alert("Item toegevoegd!");
-    document.getElementById("resetFormBtn").click();
   };
 
-  // --- Realtime overzicht met filter ---
+  // --- Realtime overzicht ---
   const itemList = document.getElementById("itemList");
   const statusFilter = document.getElementById("statusFilter");
-
+  const dateSort = document.getElementById("dateSort");
+  const deleteDoneBtn = document.getElementById("deleteDoneBtn");
   let latestData = {};
 
   onValue(ref(db, "/"), (snap) => {
     latestData = snap.val() || {};
     renderItems();
   });
-
   statusFilter.addEventListener("change", renderItems);
+  dateSort.addEventListener("change", renderItems);
+
+  // Verwijder alle afgestreepte items
+  deleteDoneBtn.onclick = async () => {
+    if (!confirm("Weet je zeker dat je ALLE afgestreepte items wilt verwijderen?")) return;
+    for (const [cat, items] of Object.entries(latestData)) {
+      for (const [key, i] of Object.entries(items)) {
+        if (i.done) await remove(ref(db, `/${cat}/${key}`));
+      }
+    }
+    alert("Alle afgestreepte items zijn verwijderd!");
+  };
 
   function renderItems() {
     itemList.innerHTML = "";
     const filter = statusFilter.value;
+    const sort = dateSort.value;
     if (!latestData || Object.keys(latestData).length === 0) {
       itemList.innerHTML = "<p>Geen items in de database.</p>";
       return;
     }
 
     for (const [cat, items] of Object.entries(latestData)) {
+      let itemArr = Object.entries(items).map(([key, val]) => ({ key, ...val }));
+      if (filter === "done") itemArr = itemArr.filter(i => i.done);
+      if (filter === "notdone") itemArr = itemArr.filter(i => !i.done);
+      if (filter === "favorite") itemArr = itemArr.filter(i => i.favorite);
+
+      // Sortering op datum
+      if (sort === "newest")
+        itemArr.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+      if (sort === "oldest")
+        itemArr.sort((a, b) => new Date(a.dateAdded) - new Date(b.dateAdded));
+
+      const count = itemArr.length;
       const catTitle = document.createElement("h3");
-      catTitle.textContent = cat;
+      catTitle.textContent = `${cat} (${count} items)`;
       itemList.appendChild(catTitle);
 
-      for (const [key, i] of Object.entries(items)) {
-        if (
-          (filter === "done" && !i.done) ||
-          (filter === "notdone" && i.done) ||
-          (filter === "favorite" && !i.favorite)
-        ) continue;
-
+      for (const i of itemArr) {
         const div = document.createElement("div");
         div.className = "item-card";
         div.innerHTML = `
-          <span>
-            <strong>${i.title}</strong> (€${i.price})
+          <span><strong>${i.title}</strong> (€${i.price})
             ${i.done ? '<em style="color:#22c55e;">[Afgestreept]</em>' : ''}
           </span>
           <div class="item-buttons">
-            <button style="background:${i.favorite ? '#ff8c42' : '#ccc'};color:white;" data-cat="${cat}" data-key="${key}" class="fav-btn">★</button>
-            <button style="background:${i.done ? '#22c55e' : '#999'};color:white;" data-cat="${cat}" data-key="${key}" class="done-btn">✔️</button>
-            <button style="background:#ef4444;color:white;" data-cat="${cat}" data-key="${key}" class="del-btn">❌</button>
+            <button style="background:${i.favorite ? '#ff8c42' : '#ccc'};color:white;" data-cat="${cat}" data-key="${i.key}" class="fav-btn">★</button>
+            <button style="background:${i.done ? '#22c55e' : '#999'};color:white;" data-cat="${cat}" data-key="${i.key}" class="done-btn">✔️</button>
+            <button style="background:#ef4444;color:white;" data-cat="${cat}" data-key="${i.key}" class="del-btn">❌</button>
           </div>`;
         itemList.appendChild(div);
       }
     }
 
+    // Acties koppelen
     itemList.querySelectorAll(".fav-btn").forEach(btn => {
       btn.onclick = async () => {
         const { cat, key } = btn.dataset;
@@ -312,16 +316,13 @@
         await update(ref(db, `/${cat}/${key}`), { favorite: newFav });
       };
     });
-
     itemList.querySelectorAll(".done-btn").forEach(btn => {
       btn.onclick = async () => {
         const { cat, key } = btn.dataset;
         const snapshot = latestData[cat][key];
-        const newDone = !snapshot.done;
-        await update(ref(db, `/${cat}/${key}`), { done: newDone });
+        await update(ref(db, `/${cat}/${key}`), { done: !snapshot.done });
       };
     });
-
     itemList.querySelectorAll(".del-btn").forEach(btn => {
       btn.onclick = async () => {
         const { cat, key } = btn.dataset;
