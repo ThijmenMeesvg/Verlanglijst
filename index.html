@@ -5,65 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Verlanglijst – Home</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    /* Preview-kaarten voor homepagina */
-    #item-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      justify-items: center;
-      margin-top: 1rem;
-    }
-
-    .preview-card {
-      padding: 1rem;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      background: #fff;
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      transition: transform 0.2s ease, box-shadow 0.3s ease;
-    }
-
-    .preview-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 20px rgba(255, 140, 66, 0.3);
-    }
-
-    .preview-card img {
-      width: 100px;
-      border-radius: 8px;
-      object-fit: cover;
-    }
-
-    .preview-card h3 {
-      margin: 0 0 .3rem 0;
-      color: #FFD369;
-    }
-
-    .preview-card p {
-      margin: 0;
-      font-size: 0.95rem;
-      color: #333;
-    }
-
-    .preview-card a {
-      color: #2563eb;
-      font-weight: bold;
-      text-decoration: none;
-    }
-
-    .preview-card a:hover {
-      color: #FFD369;
-    }
-
-    .preview-card.favorite {
-      border: 2px solid #FF8C42;
-      box-shadow: 0 0 20px rgba(255, 140, 66, 0.4);
-      background-color: #fef8f2;
-    }
-  </style>
 </head>
 <body>
   <header>
@@ -71,29 +12,27 @@
       <a href="index.html">Home</a>
       <a href="favorieten.html">Over Mij</a>
       <a href="alle-items.html">Alles</a>
-      <a href="boeken.html">Boeken</a>
-      <a href="spelletjes.html">Spelletjes</a>
-      <a href="muziek.html">Muziek</a>
-      <a href="kleding.html">Kleding & Accessoires</a>
-      <a href="uitzet.html">Koken, Bakken & Thuis</a>
-      <a href="sport.html">Sport & Buiten</a>
-      <a href="overig.html">Overig</a>
+      <a href="categorie.html?cat=Boeken">Boeken</a>
+      <a href="categorie.html?cat=Spelletjes">Spelletjes</a>
+      <a href="categorie.html?cat=Muziek">Muziek</a>
+      <a href="categorie.html?cat=Kleding & Accessoires">Kleding & Accessoires</a>
+      <a href="categorie.html?cat=Uitzet">Koken, Bakken & Thuis</a>
+      <a href="categorie.html?cat=Sport & Buiten">Sport & Buiten</a>
+      <a href="categorie.html?cat=Overig">Overig</a>
     </nav>
   </header>
 
   <main>
-    <!-- Introductie -->
     <section>
       <h2>Welkom!</h2>
       <p>
         Heyhoi, wat gezellig dat je cadeau-inspiratie op komt doen. 
         Ik houd mijn verlanglijstje al een aantal jaar lang het hele jaar door bij, 
         en dus is het ellenlang geworden. 
-       </p>
-        <p style="color: #F59B3B;"><em>Je kunt de lijst bekijken per categorie en cadeaus filteren op prijs.</em></p>
-        <p style="color: #3B95F5;"><em>Klik op een item om de link naar het product te volgen.</em></p>
-        <p style="color: #F59B3B;"><em>Items die ik extra leuk vind, zijn gehighlight.</em></p>
-
+      </p>
+      <p style="color: #F59B3B;"><em>Je kunt de lijst bekijken per categorie en cadeaus filteren op prijs.</em></p>
+      <p style="color: #3B95F5;"><em>Klik op een item om de link naar het product te volgen.</em></p>
+      <p style="color: #F59B3B;"><em>Items die ik extra leuk vind, zijn gehighlight.</em></p>
     </section>
 
     <section>
@@ -101,7 +40,6 @@
       <div id="item-container"></div>
     </section>
 
-    <!-- Admin knop onderaan -->
     <section style="margin-top: 3rem; text-align: center;">
       <a href="admin.html" style="
           display: inline-block;
@@ -120,55 +58,59 @@
     </section>
   </main>
 
-  <!-- Confetti library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
-  <!-- Scripts onderaan voor correcte volgorde -->
-  <script>
-    const homePage = true;
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-    // Confetti effect bij openen
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCnDzhefAQWgoShNY2geSFwxTzNwqUqvTU",
+      authDomain: "verlanglijst-12015.firebaseapp.com",
+      databaseURL: "https://verlanglijst-12015-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "verlanglijst-12015",
+      storageBucket: "verlanglijst-12015.appspot.com",
+      messagingSenderId: "512971362808",
+      appId: "1:512971362808:web:b16ec8341ec4fbe795460d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Confetti bij openen
     document.addEventListener("DOMContentLoaded", () => {
-      // Van links
-      confetti({
-        particleCount: 70,
-        angle: 60,
-        spread: 60,
-        origin: { x: 0, y: 0.6 }
-      });
-      // Van rechts
-      confetti({
-        particleCount: 70,
-        angle: 120,
-        spread: 60,
-        origin: { x: 1, y: 0.6 }
-      });
+      confetti({ particleCount: 70, angle: 60, spread: 60, origin: { x: 0, y: 0.6 } });
+      confetti({ particleCount: 70, angle: 120, spread: 60, origin: { x: 1, y: 0.6 } });
     });
-  </script>
 
-  <!-- Laad laatste 3 items als preview-cards -->
-  <script>
-    if (homePage) {
-      async function loadHomeItems() {
-        const container = document.getElementById("item-container");
-        container.innerHTML = "Even laden...";
+    async function loadHomeItems() {
+      const container = document.getElementById("item-container");
+      container.innerHTML = "Even laden...";
 
-        try {
-          const response = await fetch("data.json");
-          const itemsByCategory = await response.json();
-
+      try {
+        const dbRef = ref(db, "items");
+        onValue(dbRef, (snapshot) => {
+          const itemsByCategory = snapshot.val() || {};
           let allItems = Object.entries(itemsByCategory).flatMap(([category, items]) =>
             items.map(i => ({ ...i, category }))
           );
 
-          allItems.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
-          const lastItems = allItems.slice(0, 3);
+          // Filter alleen favorieten
+          let favoriteItems = allItems.filter(i => i.favorite);
+
+          // Shuffle en neem 3 random items
+          for (let i = favoriteItems.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [favoriteItems[i], favoriteItems[j]] = [favoriteItems[j], favoriteItems[i]];
+          }
+          favoriteItems = favoriteItems.slice(0, 3);
 
           container.innerHTML = "";
 
-          lastItems.forEach(i => {
+          favoriteItems.forEach(i => {
             const card = document.createElement("div");
-            card.className = "preview-card" + (i.favorite ? " favorite" : "");
+            card.className = "preview-card favorite";
 
             if (i.image) {
               const img = document.createElement("img");
@@ -185,20 +127,17 @@
               <p style="font-size:0.85rem;color:#AAA;margin-top:.3rem;">Categorie: ${i.category}</p>
             `;
             card.appendChild(info);
-
             container.appendChild(card);
           });
+        });
 
-        } catch (error) {
-          console.error(error);
-          container.innerHTML = "<p>Fout bij het laden van de items.</p>";
-        }
+      } catch (error) {
+        console.error(error);
+        container.innerHTML = "<p>Fout bij het laden van de items.</p>";
       }
-
-      document.addEventListener("DOMContentLoaded", loadHomeItems);
     }
-  </script>
 
-  <script src="script.js"></script>
+    document.addEventListener("DOMContentLoaded", loadHomeItems);
+  </script>
 </body>
 </html>
