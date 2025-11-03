@@ -336,3 +336,41 @@ footer {
   background-color: #FFD369;
   transform: scale(1.05);
 }
+/* --- Snelle facts blok --- */
+.hidden {
+  display: none !important;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background-color: #2C2C2C;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+.card h3 {
+  color: #FFD369;
+  margin-bottom: 0.6rem;
+}
+
+.pill {
+  display: inline-block;
+  background-color: #FF8C42;
+  color: #1E1E1E;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin: 0.2rem;
+}
+
+.icon {
+  margin-right: 0.3rem;
+}
