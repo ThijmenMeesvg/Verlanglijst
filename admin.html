@@ -5,44 +5,279 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Verlanglijst Admin</title>
 <style>
-  body{font-family:system-ui,sans-serif;max-width:1100px;margin:2rem auto;padding:2rem;background:#f3f4f6;color:#111}
-  h1,h2,h3{text-align:center;margin-bottom:1rem}
-  label{font-weight:bold;display:block;margin-top:1rem}
-  input,select,textarea,button{width:100%;padding:.6rem;font-size:1rem;margin-top:.3rem;border-radius:8px;border:1px solid #ccc;box-sizing:border-box}
-  button{margin-top:1rem;background:#2563eb;color:#fff;border:none;cursor:pointer;border-radius:8px;transition:background .3s,transform .2s}
-  button:hover{background:#1e40af;transform:translateY(-1px)}
-  .section{background:#fff;padding:2rem;margin-top:2rem;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
-  .error-box{margin-top:1rem;padding:.8rem;border-radius:8px;background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;display:none;white-space:pre-wrap}
-  .success-box{margin-top:1rem;padding:.8rem;border-radius:8px;background:#dcfce7;border:1px solid #86efac;color:#166534;display:none}
-  .favorite-wrapper{display:flex;align-items:center;gap:.5rem;margin-top:1rem}
-  .favorite-wrapper input{width:auto;transform:scale(1.3);cursor:pointer}
-  .favorite-wrapper label{margin-top:0;font-weight:500}
-  .loading-spinner{display:none;justify-content:center;align-items:center;margin-top:1rem}
-  .spinner{border:4px solid #ddd;border-top:4px solid #2563eb;border-radius:50%;width:28px;height:28px;animation:spin 1s linear infinite}
-  @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-  .top-links{text-align:center;margin-bottom:1rem}
-  .top-links a,.top-links button{display:inline-block;padding:.5rem 1rem;border-radius:8px;text-decoration:none;font-weight:bold;margin:0 .3rem .3rem;border:none;cursor:pointer}
-  .home{background:#ff8c42;color:#fff}
-  .firebase{background:#fbbc04;color:#000}
-  .github{background:#10b981;color:#fff}
-  .logout{background:#ef4444;color:#fff}
-  .link-item,.item-card{display:flex;justify-content:space-between;align-items:center;background:#e5e7eb;padding:.5rem .8rem;border-radius:6px;margin-top:.5rem;word-break:break-all;transition:background .4s}
-  .item-buttons,.link-buttons{display:flex;gap:.3rem}
-  #filterBar{display:flex;gap:.5rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:1rem}
-  #filterBar select{padding:.4rem .8rem;border-radius:6px;border:1px solid #ccc;background:#f9fafb}
-  #deleteDoneBtn{background:#ef4444;color:#fff;padding:.4rem .8rem;border-radius:8px;font-weight:bold;cursor:pointer}
-  #deleteDoneBtn:hover{background:#dc2626}
-  #previewContainer{margin-top:1.5rem;background:#1E1E1E;padding:1rem;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.25);display:none}
-  .preview-card{margin-top:1rem;padding:1rem;border:1px solid #ddd;border-radius:10px;background:#262626;display:flex;gap:1rem;align-items:center}
-  .preview-card.favorite{border:2px solid #FF8C42;box-shadow:0 0 20px rgba(255,140,66,.4);background:#2E2A25}
-  .preview-card img{width:100px;border-radius:8px;object-fit:cover}
-  .preview-card h3{margin:0 0 .3rem;color:#FFD369}
-  .preview-card p{margin:0;color:#EDEDED}
-  .preview-card a{color:#2563eb;text-decoration:none;font-weight:bold}
-  .preview-card a:hover{color:#FFD369}
-  .edit-input{width:auto;margin:0 4px;padding:2px 4px;font-size:.9rem;border-radius:4px}
-  .highlight{background:#bbf7d0 !important;transition:background 1.5s ease}
+  body {
+    font-family: 'Inter', 'Poppins', 'Arial', sans-serif;
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #1E1E1E;
+    color: #EDEDED;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #FFD369;
+    letter-spacing: 0.5px;
+  }
+
+  label {
+    font-weight: bold;
+    display: block;
+    margin-top: 1rem;
+    color: #FFD369;
+  }
+
+  input, select, textarea, button {
+    width: 100%;
+    padding: .6rem;
+    font-size: 1rem;
+    margin-top: .3rem;
+    border-radius: 8px;
+    border: 1px solid #555;
+    box-sizing: border-box;
+    background-color: #2C2C2C;
+    color: #EDEDED;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #aaa;
+  }
+
+  button {
+    margin-top: 1rem;
+    background-color: #FF8C42;
+    color: #1E1E1E;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  button:hover {
+    background-color: #FFD369;
+    transform: translateY(-1px);
+  }
+
+  .section {
+    background-color: #2C2C2C;
+    padding: 2rem;
+    margin-top: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    transition: box-shadow 0.3s ease;
+  }
+
+  .section:hover {
+    box-shadow: 0 8px 20px rgba(255, 140, 66, 0.3);
+  }
+
+  .error-box {
+    margin-top: 1rem;
+    padding: .8rem;
+    border-radius: 8px;
+    background: #3b0a0a;
+    border: 1px solid #f87171;
+    color: #fca5a5;
+    display: none;
+    white-space: pre-wrap;
+  }
+
+  .success-box {
+    margin-top: 1rem;
+    padding: .8rem;
+    border-radius: 8px;
+    background: #064e3b;
+    border: 1px solid #34d399;
+    color: #a7f3d0;
+    display: none;
+  }
+
+  .favorite-wrapper {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin-top: 1rem;
+  }
+
+  .favorite-wrapper input {
+    width: auto;
+    transform: scale(1.3);
+    cursor: pointer;
+  }
+
+  .favorite-wrapper label {
+    margin-top: 0;
+    font-weight: 500;
+    color: #FFD369;
+  }
+
+  .loading-spinner {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+  }
+
+  .spinner {
+    border: 4px solid #333;
+    border-top: 4px solid #FFD369;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .top-links {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .top-links a, .top-links button {
+    display: inline-block;
+    padding: .5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    margin: 0 .3rem .3rem;
+    border: none;
+    cursor: pointer;
+  }
+
+  .home { background: #FF8C42; color: #1E1E1E; }
+  .firebase { background: #FFD369; color: #1E1E1E; }
+  .github { background: #10b981; color: #fff; }
+  .logout { background: #ef4444; color: #fff; }
+
+  .link-item, .item-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #262626;
+    padding: .5rem .8rem;
+    border-radius: 6px;
+    margin-top: .5rem;
+    word-break: break-all;
+    transition: background 0.4s;
+    border: 1px solid #333;
+  }
+
+  .link-item:hover, .item-card:hover {
+    background: #333;
+  }
+
+  .item-buttons, .link-buttons {
+    display: flex;
+    gap: .3rem;
+  }
+
+  #filterBar {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  #filterBar select {
+    padding: .4rem .8rem;
+    border-radius: 6px;
+    border: 1px solid #555;
+    background: #1E1E1E;
+    color: #FFD369;
+  }
+
+  #deleteDoneBtn {
+    background: #ef4444;
+    color: #fff;
+    padding: .4rem .8rem;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  #deleteDoneBtn:hover {
+    background: #dc2626;
+  }
+
+  #previewContainer {
+    margin-top: 1.5rem;
+    background: #1E1E1E;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .5);
+    display: none;
+  }
+
+  .preview-card {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid #333;
+    border-radius: 10px;
+    background: #262626;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .preview-card.favorite {
+    border: 2px solid #FF8C42;
+    box-shadow: 0 0 20px rgba(255, 140, 66, .4);
+    background: #2E2A25;
+  }
+
+  .preview-card img {
+    width: 100px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  .preview-card h3 {
+    margin: 0 0 .3rem;
+    color: #FFD369;
+  }
+
+  .preview-card p {
+    margin: 0;
+    color: #EDEDED;
+  }
+
+  .preview-card a {
+    color: #FF8C42;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .preview-card a:hover {
+    color: #FFD369;
+  }
+
+  .edit-input {
+    width: auto;
+    margin: 0 4px;
+    padding: 2px 4px;
+    font-size: .9rem;
+    border-radius: 4px;
+    background: #2C2C2C;
+    color: #FFD369;
+    border: 1px solid #555;
+  }
+
+  .highlight {
+    background: rgba(255, 140, 66, 0.2) !important;
+    transition: background 1.5s ease;
+  }
 </style>
+
 </head>
 <body>
 
