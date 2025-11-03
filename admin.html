@@ -527,8 +527,15 @@ function startEdit(cat, key) {
   if (!row) return;
   const i = latestData[cat][key];
 
+  // Dropdown met alle categorieën
+  const allCats = Object.keys(latestData);
+  const catOptions = allCats.map(c => `<option value="${c}" ${c === cat ? "selected" : ""}>${c}</option>`).join("");
+
   row.innerHTML = `
     <div style="flex:1;display:flex;flex-direction:column;gap:.3rem;">
+      <label>Categorie:
+        <select id="editCategory" class="edit-input">${catOptions}</select>
+      </label>
       <input class="edit-input" id="editTitle" value="${i.title || ''}" placeholder="Titel"/>
       <input class="edit-input" id="editPrice" type="number" value="${i.price || 0}" placeholder="Prijs"/>
       <input class="edit-input" id="editLink"  value="${i.link || ''}"  placeholder="Link"/>
@@ -542,8 +549,12 @@ function startEdit(cat, key) {
     </div>
   `;
 
+  // Annuleren: renderlijst opnieuw
   row.querySelector("#cancelEdit").onclick = () => renderList();
+
+  // Opslaan
   row.querySelector("#saveEdit").onclick = async () => {
+    const nc = row.querySelector("#editCategory").value;
     const nt = row.querySelector("#editTitle").value;
     const np = parseFloat(row.querySelector("#editPrice").value) || 0;
     const nl = row.querySelector("#editLink").value;
@@ -551,11 +562,18 @@ function startEdit(cat, key) {
     const nf = row.querySelector("#editFav").checked;
     const nd = row.querySelector("#editDone").checked;
 
-    await update(ref(db, `/${cat}/${key}`), {
-      title: nt, price: np, link: nl, image: ni, favorite: nf, done: nd
-    });
-
-    showSuccess("✅ Item aangepast.");
+    // Als de categorie veranderd is → verplaats het item
+    if (nc !== cat) {
+      const newRef = push(ref(db, `/${nc}`));
+      await set(newRef, { ...i, title: nt, price: np, link: nl, image: ni, favorite: nf, done: nd });
+      await remove(ref(db, `/${cat}/${key}`));
+      showSuccess(`✅ Item verplaatst naar ${nc}`);
+    } else {
+      await update(ref(db, `/${cat}/${key}`), {
+        title: nt, price: np, link: nl, image: ni, favorite: nf, done: nd
+      });
+      showSuccess("✅ Item aangepast.");
+    }
   };
 }
 </script>
