@@ -341,36 +341,74 @@ footer {
   display: none !important;
 }
 
+/* --- Snelle facts blok (compact en stijlvol) --- */
+#quick-facts {
+  margin: 2rem auto;
+  max-width: 800px;
+  text-align: center;
+  background: none;
+  box-shadow: none;
+  padding: 0;
+}
+
 .grid-2 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 1rem;
 }
 
 .card {
-  background-color: #2C2C2C;
-  padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  background: #2C2C2C;
+  border: 2px solid #FF8C42;
+  color: #EDEDED;
+  border-radius: 50px;
+  padding: 0.8rem 1.4rem;
+  min-width: 200px;
   text-align: center;
+  font-weight: 600;
+  box-shadow: 0 0 12px rgba(255, 140, 66, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 18px rgba(255, 140, 66, 0.5);
 }
 
 .card h3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   color: #FFD369;
-  margin-bottom: 0.6rem;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.card div {
+  margin-top: 0.4rem;
 }
 
 .pill {
   display: inline-block;
   background-color: #FF8C42;
   color: #1E1E1E;
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
-  font-weight: bold;
+  padding: 0.3rem 0.9rem;
+  border-radius: 50px;
+  font-weight: 600;
   font-size: 0.9rem;
   margin: 0.2rem;
+  box-shadow: 0 0 6px rgba(255, 140, 66, 0.4);
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.pill:hover {
+  background: #FFD369;
+  transform: translateY(-2px);
 }
 
 .icon {
-  margin-right: 0.3rem;
+  font-size: 1.2rem;
 }
+
