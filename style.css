@@ -327,6 +327,10 @@ footer {
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
+.hidden {
+  display: none !important;
+}
+
 
 .strike-btn:hover {
   background-color: #FFD369;
