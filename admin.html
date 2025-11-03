@@ -373,6 +373,8 @@ document.getElementById("addItemBtn").onclick = async () => {
 
     // Succes + scroll/highlight zodra het item in de realtime lijst staat
     showSuccess(`✅ Item toegevoegd aan ${c}`);
+    // Herlaad realtime previewlijst
+    setTimeout(() => renderList(), 800);
     // Geef de onValue even tijd om te renderen, dan highlighten en scrollen:
     setTimeout(() => {
       const el = document.querySelector(`[data-key='${newRef.key}']`);
@@ -573,6 +575,8 @@ function startEdit(cat, key) {
         title: nt, price: np, link: nl, image: ni, favorite: nf, done: nd
       });
       showSuccess("✅ Item aangepast.");
+      // Sluit editmodus en herlaad realtime preview
+      setTimeout(() => renderList(), 800);
     }
   };
 }
