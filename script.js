@@ -151,7 +151,38 @@ async function runCategory(cat) {
   applyBtn?.addEventListener("click", updateView);
   updateView();
 }
+// ------- Privépagina (login + private items) -------
+async function runPrivatePage() {
+  const gate = document.getElementById("private-gate");
+  const content = document.getElementById("private-content");
+  const form = document.getElementById("private-login");
+  const error = document.getElementById("private-error");
+  const listContainer = document.getElementById("private-items");
 
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const entered = document.getElementById("private-password").value.trim();
+    if (entered !== window.PRIVATE_PASSWORD) {
+      error.textContent = "❌ Onjuist wachtwoord.";
+      return;
+    }
+
+    // Verberg login, toon inhoud
+    gate.classList.add("hidden");
+    content.classList.remove("hidden");
+    error.textContent = "";
+
+    // Haal items op uit Firebase
+    const allItems = await fetchAllItems();
+    const privateItems = allItems.filter(i => i.private === true);
+
+    if (!privateItems.length) {
+      listContainer.innerHTML = "<p>Geen privé-items gevonden.</p>";
+    } else {
+      renderItems(listContainer, privateItems);
+    }
+  });
+}
 // ------- Router op basis van flags die we in HTML zetten -------
 if (window.HOME_PAGE) {
   runHome();
@@ -159,4 +190,6 @@ if (window.HOME_PAGE) {
   runAllItems();
 } else if (window.CURRENT_CATEGORY) {
   runCategory(window.CURRENT_CATEGORY);
+} else if (window.PRIVATE_PAGE) {
+  runPrivatePage();
 }
