@@ -56,7 +56,7 @@ header nav a:hover {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 60vh; /* zorgt dat het groter wordt en meer centraal staat */
+  min-height: 60vh;
   margin: 40px auto;
   text-align: center;
   opacity: 0;
@@ -129,7 +129,7 @@ section p {
   padding: 20px;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.3s ease, opacity 0.3s ease;
 }
 
 .item:hover {
@@ -231,17 +231,19 @@ footer {
   .hero h2 {
     font-size: 1.8rem;
   }
-  /* Preview-kaarten zoals op adminpagina */
+}
+
+/* Preview-kaarten zoals op adminpagina */
 .preview-card {
   margin-top: 1rem;
   padding: 1rem;
   border: 1px solid #ddd;
   border-radius: 10px;
-  background: #262626; /* past bij je huidige donkere stijl */
+  background: #262626;
   display: flex;
   gap: 1rem;
   align-items: center;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.3s ease, opacity 0.3s ease;
 }
 
 .preview-card:hover {
@@ -276,27 +278,57 @@ footer {
   color: #FFD369;
 }
 
-
-  .hero p {
-    font-size: 1rem;
-  }
-}
-  /* Favorieten variant voor preview-card */
+/* Favorieten variant voor preview-card */
 .preview-card.favorite {
   border: 2px solid #FF8C42;
   box-shadow: 0 0 20px rgba(255, 140, 66, 0.4);
-  background-color: #2E2A25; /* past bij je huidige favorieten-items */
+  background-color: #2E2A25;
 }
+
 /* Zorg dat elke preview-card een eigen box krijgt op de homepage */
 #item-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;           /* ruimte tussen de items */
-  justify-content: center; /* centreert de items */
+  gap: 20px;
+  justify-content: center;
 }
 
 .preview-card {
-  flex: 1 1 250px; /* minimale breedte van 250px per kaart */
-  max-width: 300px; /* maximale breedte */
+  flex: 1 1 250px;
+  max-width: 300px;
 }
 
+/* Afgestreepte items */
+.preview-card.done {
+  opacity: 0.5;
+  filter: grayscale(80%);
+  pointer-events: none; /* voorkomt extra klikken op doorstreepte items */
+}
+
+.preview-card.done::after {
+  content: "Afgestreept";
+  display: block;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #FF8C42;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Afstrepen knop */
+.strike-btn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #FF8C42;
+  color: #1E1E1E;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.strike-btn:hover {
+  background-color: #FFD369;
+  transform: scale(1.05);
+}
