@@ -3,8 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mijn Verlanglijst</title>
+  <title>Mijn Verlanglijst - Categorie</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    #filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #filters label, #filters input, #filters button {
+      font-size: 0.95rem;
+    }
+
+    #filters input {
+      padding: 5px;
+      border-radius: 6px;
+      border: 1px solid #555;
+      background-color: #1E1E1E;
+      color: #FFD369;
+    }
+
+    #filters button {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      background-color: #FF8C42;
+      color: #1E1E1E;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    #filters button:hover {
+      background-color: #FFD369;
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
 <header>
@@ -16,9 +54,9 @@
     <a href="categorie.html?cat=Boeken">Boeken</a>
     <a href="categorie.html?cat=Spelletjes">Spelletjes</a>
     <a href="categorie.html?cat=Muziek">Muziek</a>
-    <a href="categorie.html?cat=Kleding">Kleding & Accessoires</a>
+    <a href="categorie.html?cat=Kleding & Accessoires">Kleding & Accessoires</a>
     <a href="categorie.html?cat=Uitzet">Koken, Bakken & Thuis</a>
-    <a href="categorie.html?cat=Sport">Sport & Buiten</a>
+    <a href="categorie.html?cat=Sport & Buiten">Sport & Buiten</a>
     <a href="categorie.html?cat=Overig">Overig</a>
   </nav>
 </header>
@@ -37,20 +75,11 @@
   <div id="item-container" class="grid"></div>
 </main>
 
-<!-- Firebase scripts -->
+<!-- Firebase compat libraries -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-<script>
-  // Haal categorie op uit de URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const currentCategory = urlParams.get('cat') || "Alles";
-
-  // Zet de categorie-titel bovenaan
-  document.getElementById("category-title").textContent = currentCategory;
-</script>
-
-<!-- Jouw script.js met Firebase & "afstrepen"-functionaliteit -->
-<script src="script.js"></script>
+<!-- Script voor categorie pagina -->
+<script src="categorie-script.js"></script>
 </body>
 </html>
