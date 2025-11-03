@@ -92,9 +92,12 @@ async function runHome() {
 
   container.innerHTML = "Even laden...";
   const all = await fetchAllItems();
-  const favs = all.filter(i => i.favorite === true);
-  const pick = favs.length ? shufflePick(favs, 3) : all.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)).slice(0, 3);
-  renderItems(container, pick);
+  // Verberg privé-items
+  const visible = all.filter(i => !i.private);
+  const favs = visible.filter(i => i.favorite === true);
+  const pick = favs.length ? shufflePick(favs, 3) : visible.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)).slice(0, 3);
+renderItems(container, pick);
+
 }
 
 async function runAllItems() {
@@ -102,7 +105,7 @@ async function runAllItems() {
   if (!container) return;
 
   container.innerHTML = "Even laden...";
-  let all = await fetchAllItems();
+  let all = (await fetchAllItems()).filter(i => !i.private);
 
   // filters
   const categorySelect = document.getElementById("categoryFilter");
@@ -132,7 +135,7 @@ async function runCategory(cat) {
   if (!container) return;
 
   container.innerHTML = "Even laden...";
-  let all = await fetchAllItems();
+  let all = (await fetchAllItems()).filter(i => !i.private);
   let list = all.filter(i => i.category === cat);
 
   // prijsfilters
