@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Verlanglijst – Home</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <header>
@@ -25,119 +25,22 @@
   <main>
     <section>
       <h2>Welkom!</h2>
-      <p>
-        Heyhoi, wat gezellig dat je cadeau-inspiratie op komt doen. 
-        Ik houd mijn verlanglijstje al een aantal jaar lang het hele jaar door bij, 
-        en dus is het ellenlang geworden. 
-      </p>
-      <p style="color: #F59B3B;"><em>Je kunt de lijst bekijken per categorie en cadeaus filteren op prijs.</em></p>
-      <p style="color: #3B95F5;"><em>Klik op een item om de link naar het product te volgen.</em></p>
-      <p style="color: #F59B3B;"><em>Items die ik extra leuk vind, zijn gehighlight.</em></p>
+      <p>Leuk dat je inspiratie op komt doen. Bekijk per categorie en filter op prijs. Items die ik extra leuk vind, zijn gehighlight.</p>
     </section>
 
     <section>
       <h2>Favorieten</h2>
-      <div id="item-container"></div>
+      <div id="item-container" class="grid"></div>
     </section>
 
-    <section style="margin-top: 3rem; text-align: center;">
-      <a href="admin.html" style="
-          display: inline-block;
-          padding: 0.8rem 1.5rem;
-          background-color: #2563eb;
-          color: white;
-          border-radius: 8px;
-          font-weight: bold;
-          text-decoration: none;
-          transition: background-color 0.2s;
-      "
-      onmouseover="this.style.backgroundColor='#1d4ed8';" 
-      onmouseout="this.style.backgroundColor='#2563eb';">
-        Adminpagina
-      </a>
+    <section style="text-align:center;margin-top:2rem;">
+      <a href="admin.html" class="home" style="padding:.8rem 1.2rem;display:inline-block;border-radius:8px;color:#fff;background:#2563eb;text-decoration:none;">Adminpagina</a>
     </section>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
-
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyCnDzhefAQWgoShNY2geSFwxTzNwqUqvTU",
-      authDomain: "verlanglijst-12015.firebaseapp.com",
-      databaseURL: "https://verlanglijst-12015-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "verlanglijst-12015",
-      storageBucket: "verlanglijst-12015.appspot.com",
-      messagingSenderId: "512971362808",
-      appId: "1:512971362808:web:b16ec8341ec4fbe795460d"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    // Confetti bij openen
-    document.addEventListener("DOMContentLoaded", () => {
-      confetti({ particleCount: 70, angle: 60, spread: 60, origin: { x: 0, y: 0.6 } });
-      confetti({ particleCount: 70, angle: 120, spread: 60, origin: { x: 1, y: 0.6 } });
-    });
-
-    async function loadHomeItems() {
-      const container = document.getElementById("item-container");
-      container.innerHTML = "Even laden...";
-
-      try {
-        const dbRef = ref(db, "items");
-        onValue(dbRef, (snapshot) => {
-          const itemsByCategory = snapshot.val() || {};
-          let allItems = Object.entries(itemsByCategory).flatMap(([category, items]) =>
-            items.map(i => ({ ...i, category }))
-          );
-
-          // Filter alleen favorieten
-          let favoriteItems = allItems.filter(i => i.favorite);
-
-          // Shuffle en neem 3 random items
-          for (let i = favoriteItems.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [favoriteItems[i], favoriteItems[j]] = [favoriteItems[j], favoriteItems[i]];
-          }
-          favoriteItems = favoriteItems.slice(0, 3);
-
-          container.innerHTML = "";
-
-          favoriteItems.forEach(i => {
-            const card = document.createElement("div");
-            card.className = "preview-card favorite";
-
-            if (i.image) {
-              const img = document.createElement("img");
-              img.src = i.image;
-              img.alt = i.title;
-              card.appendChild(img);
-            }
-
-            const info = document.createElement("div");
-            info.innerHTML = `
-              <h3>${i.title}</h3>
-              <p>💶 €${i.price.toFixed(2)}</p>
-              <a href="${i.link}" target="_blank" style="color:#2563eb;">Bekijk product</a>
-              <p style="font-size:0.85rem;color:#AAA;margin-top:.3rem;">Categorie: ${i.category}</p>
-            `;
-            card.appendChild(info);
-            container.appendChild(card);
-          });
-        });
-
-      } catch (error) {
-        console.error(error);
-        container.innerHTML = "<p>Fout bij het laden van de items.</p>";
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", loadHomeItems);
+  <script>
+    window.HOME_PAGE = true;
   </script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
