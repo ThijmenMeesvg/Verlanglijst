@@ -135,6 +135,7 @@
       <option value="done">Afgestreept</option>
       <option value="notdone" selected>Niet-afgestreept</option>
       <option value="favorite">Favorieten</option>
+      <option value="private">Privé</option>
     </select>
 
     <label for="dateSort">Datum:</label>
@@ -469,6 +470,7 @@ function renderList(){
     if (f === "done")     arr = arr.filter(i => i.done);
     if (f === "notdone")  arr = arr.filter(i => !i.done);
     if (f === "favorite") arr = arr.filter(i => i.favorite);
+    if (f === "private")  arr = arr.filter(i => i.private);
 
     if (s === "newest") arr.sort((a,b) => new Date(b.dateAdded) - new Date(a.dateAdded));
     if (s === "oldest") arr.sort((a,b) => new Date(a.dateAdded) - new Date(b.dateAdded));
