@@ -1,46 +1,59 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Verlanglijst – Home</title>
+  <title>Verlanglijst – Alle items</title>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <header>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="favorieten.html">Over Mij</a>
-      <a href="alle-items.html">Alles</a>
-      <a href="categorie.html?cat=Boeken">Boeken</a>
-      <a href="categorie.html?cat=Spelletjes">Spelletjes</a>
-      <a href="categorie.html?cat=Muziek">Muziek</a>
-      <a href="categorie.html?cat=Kleding & Accessoires">Kleding & Accessoires</a>
-      <a href="categorie.html?cat=Uitzet">Koken, Bakken & Thuis</a>
-      <a href="categorie.html?cat=Sport & Buiten">Sport & Buiten</a>
-      <a href="categorie.html?cat=Overig">Overig</a>
-    </nav>
-  </header>
+<header>
+  <h1>Mijn Verlanglijst</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="favorieten.html">Over Mij</a>
+    <a href="alle-items.html">Alles</a>
+    <a href="categorie.html?cat=Boeken">Boeken</a>
+    <a href="categorie.html?cat=Spelletjes">Spelletjes</a>
+    <a href="categorie.html?cat=Muziek">Muziek</a>
+    <a href="categorie.html?cat=Kleding & Accessoires">Kleding & Accessoires</a>
+    <a href="categorie.html?cat=Uitzet">Koken, Bakken & Thuis</a>
+    <a href="categorie.html?cat=Sport & Buiten">Sport & Buiten</a>
+    <a href="categorie.html?cat=Overig">Overig</a>
+  </nav>
+</header>
 
-  <main>
-    <section>
-      <h2>Welkom!</h2>
-      <p>Leuk dat je inspiratie op komt doen. Bekijk per categorie en filter op prijs. Items die ik extra leuk vind, zijn gehighlight.</p>
-    </section>
+<main>
+  <h2>Alle items</h2>
 
-    <section>
-      <h2>Favorieten</h2>
-      <div id="item-container" class="grid"></div>
-    </section>
+  <div id="filters">
+    <label for="categoryFilter">Categorie:</label>
+    <select id="categoryFilter">
+      <option value="">Alles</option>
+      <option>Boeken</option>
+      <option>Spelletjes</option>
+      <option>Muziek</option>
+      <option>Kleding & Accessoires</option>
+      <option>Uitzet</option>
+      <option>Sport & Buiten</option>
+      <option>Overig</option>
+    </select>
 
-    <section style="text-align:center;margin-top:2rem;">
-      <a href="admin.html" class="home" style="padding:.8rem 1.2rem;display:inline-block;border-radius:8px;color:#fff;background:#2563eb;text-decoration:none;">Adminpagina</a>
-    </section>
-  </main>
+    <label for="minPrice">Min prijs (€):</label>
+    <input id="minPrice" type="number" min="0" step="0.01"/>
 
-  <script>
-    window.HOME_PAGE = true;
-  </script>
-  <script type="module" src="script.js"></script>
+    <label for="maxPrice">Max prijs (€):</label>
+    <input id="maxPrice" type="number" min="0" step="0.01"/>
+
+    <button id="applyFilters">Filter toepassen</button>
+  </div>
+
+  <div id="item-container" class="grid"></div>
+</main>
+
+<script>
+  window.ALL_ITEMS_PAGE = true;
+</script>
+<script type="module" src="script.js"></script>
 </body>
 </html>
