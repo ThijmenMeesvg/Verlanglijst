@@ -1,38 +1,48 @@
-+<!DOCTYPE html>
-+<html lang="nl">
-+<head>
-+  <meta charset="UTF-8" />
-+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-+  <title>Privé verlanglijst</title>
-+  <link rel="stylesheet" href="style.css" />
-+</head>
-+<body>
-+  <main class="private-main">
-+    <section class="private-card" id="private-gate">
-+      <h1>Privé verlanglijst</h1>
-+      <p>Vul het wachtwoord in om je verborgen items te bekijken.</p>
-+      <form id="private-login" class="private-form">
-+        <input type="password" id="private-password" placeholder="Wachtwoord" autocomplete="current-password" required />
-+        <button type="submit">Ontgrendelen</button>
-+      </form>
-+      <p id="private-error" role="alert"></p>
-     </section>
-+
-+    <section class="private-card hidden" id="private-content">
-+      <h2>Mijn privé-items</h2>
-+      <p>Onderstaande lijst toont alleen items die als privé zijn gemarkeerd.</p>
-+      <div id="private-items"></div>
-+    </section>
-+  </main>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privé verlanglijst</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="private-main">
+    <section class="private-card" id="private-gate">
+      <h1>Privé verlanglijst</h1>
+      <p>Vul het wachtwoord in om je verborgen items te bekijken.</p>
+      <form id="private-login" class="private-form">
+        <input
+          type="password"
+          id="private-password"
+          placeholder="Wachtwoord"
+          autocomplete="current-password"
+          required
+        />
+        <button type="submit">Ontgrendelen</button>
+      </form>
+      <p id="private-error" role="alert"></p>
+    </section>
 
-     <section style="text-align:center;margin-top:2rem;">
-     <a href="admin.html" class="home" style="padding:.8rem 1.2rem;display:inline-block;border-radius:8px;color:#fff;background:#2563eb;text-decoration:none;">Adminpagina</a>
-+
-+  <script>
-+    window.PRIVATE_PAGE = true;
-+    window.PRIVATE_PASSWORD = "1201"; 
-+  </script>
-+  <script type="module" src="script.js"></script>
-     
-+</body>
-+</html>
+    <section class="private-card hidden" id="private-content">
+      <h2>Mijn privé-items</h2>
+      <p>Onderstaande lijst toont alleen items die als privé zijn gemarkeerd.</p>
+      <div id="private-items"></div>
+    </section>
+
+    <section style="text-align:center;margin-top:2rem;">
+      <a
+        href="admin.html"
+        class="home"
+        style="padding:.8rem 1.2rem;display:inline-block;border-radius:8px;color:#fff;background:#2563eb;text-decoration:none;"
+      >Adminpagina</a>
+    </section>
+  </main>
+
+  <script>
+    window.PRIVATE_PAGE = true;
+    window.PRIVATE_PASSWORD = "1201"; 
+  </script>
+  <script type="module" src="script.js"></script>
+</body>
+</html>
