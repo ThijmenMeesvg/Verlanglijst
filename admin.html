@@ -577,7 +577,7 @@ function startEdit(cat, key) {
     // Als de categorie veranderd is → verplaats het item
     if (nc !== cat) {
       const newRef = push(ref(db, `/${nc}`));
-      await set(newRef, { ...i, title: nt, price: np, link: nl, image: ni, favorite: nf, done: nd });
+      await set(newRef, { ...i, title: nt, price: np, link: nl, image: ni, favorite: nf, private: npv, done: nd });
       await remove(ref(db, `/${cat}/${key}`));
       showSuccess(`✅ Item verplaatst naar ${nc}`);
     } else {
