@@ -25,6 +25,19 @@
 
 <main>
   <h2 id="category-title">Categorie</h2>
+<!-- Snelle facts (verstopt tot juiste categorie) -->
+<section id="quick-facts" class="hidden">
+   <div class="grid-2">
+    <div class="card">
+      <h3><span class="icon">🧥</span> Maten</h3>
+      <div>
+        <span class="pill">T-shirt: L</span>
+        <span class="pill">Broek: L / XL</span>
+        <span class="pill">Schoen: 40 / 41</span>
+      </div>
+    </div>
+  </div>
+</section>
 
   <div id="filters">
     <label for="minPrice">Min prijs (€):</label>
@@ -43,6 +56,15 @@
   const cat = p.get("cat") || "Boeken";
   document.getElementById("category-title").textContent = cat;
   window.CURRENT_CATEGORY = cat;
+  // Toon "Snelle facts" alleen bij Kleding & Accessoires
+const quickFacts = document.getElementById("quick-facts");
+
+// We controleren op beide mogelijke schrijfwijzen (met en zonder %20)
+if (cat === "Kleding & Accessoires" || cat === "Kleding & Accesoires") {
+  quickFacts.classList.remove("hidden");
+} else {
+  quickFacts.classList.add("hidden");
+}
 </script>
 
 <script type="module" src="script.js"></script>
