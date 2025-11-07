@@ -153,14 +153,17 @@ async function runCategory(cat) {
 
   applyBtn?.addEventListener("click", updateView);
   updateView();
-}
-// ------- Privépagina (login + private items) -------
+  }
+// ------- Privépagina (login + private items in grid) -------
 async function runPrivatePage() {
   const gate = document.getElementById("private-gate");
   const content = document.getElementById("private-content");
   const form = document.getElementById("private-login");
   const error = document.getElementById("private-error");
-  const listContainer = document.getElementById("private-items");
+
+  // containers voor de grid
+  const cadeauContainer = document.getElementById("cadeau-items");
+  const thijmenContainer = document.getElementById("thijmen-items");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -170,19 +173,31 @@ async function runPrivatePage() {
       return;
     }
 
-    // Verberg login, toon inhoud
+    // verberg login, toon inhoud
     gate.classList.add("hidden");
     content.classList.remove("hidden");
     error.textContent = "";
 
-    // Haal items op uit Firebase
+    // haal items op uit Firebase
     const allItems = await fetchAllItems();
     const privateItems = allItems.filter(i => i.private === true);
 
-    if (!privateItems.length) {
-      listContainer.innerHTML = "<p>Geen privé-items gevonden.</p>";
+    // splits op categorie
+    const cadeauItems = privateItems.filter(i => i.category === "Cadeaus");
+    const thijmenItems = privateItems.filter(i => i.category === "Voor Thijmen");
+
+    // toon cadeaus links
+    if (!cadeauItems.length) {
+      cadeauContainer.innerHTML = "<p>Geen cadeaus gevonden.</p>";
     } else {
-      renderItems(listContainer, privateItems);
+      renderItems(cadeauContainer, cadeauItems);
+    }
+
+    // toon voor mezelf rechts
+    if (!thijmenItems.length) {
+      thijmenContainer.innerHTML = "<p>Geen persoonlijke items gevonden.</p>";
+    } else {
+      renderItems(thijmenContainer, thijmenItems);
     }
   });
 }
