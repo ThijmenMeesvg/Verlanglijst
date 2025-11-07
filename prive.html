@@ -24,11 +24,23 @@
       <p id="private-error" role="alert"></p>
     </section>
 
-    <section class="private-card hidden" id="private-content">
+   <section class="private-card hidden" id="private-content">
       <h2>Mijn privé-items</h2>
-      <p>Onderstaande lijst toont alleen items die als privé zijn gemarkeerd.</p>
-      <div id="private-items"></div>
+      <p>Overzicht van cadeaus en persoonlijke items.</p>
+    
+      <div class="private-grid">
+        <div class="private-column cadeau-col">
+          <h3>🎁 Cadeaus</h3>
+          <div id="cadeau-items" class="grid"></div>
+        </div>
+    
+        <div class="private-column thijmen-col">
+          <h3>🧍 Voor mezelf</h3>
+          <div id="thijmen-items" class="grid"></div>
+        </div>
+      </div>
     </section>
+
 
     <section style="text-align:center;margin-top:2rem;">
       <a
