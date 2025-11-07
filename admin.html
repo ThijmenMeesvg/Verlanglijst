@@ -658,6 +658,7 @@ let latestData = {};
 onValue(ref(db,"/"), (snap) => {
   latestData = snap.val() || {};
   updateCategoryFilter();
+  renderList();
 });
 
 function updateCategoryFilter(){
@@ -752,16 +753,21 @@ function renderList(){
     };
   });
 
-itemList.querySelectorAll(".del-btn").forEach(btn => {
-  btn.onclick = async () => {
-    const { cat, key } = btn.dataset;
-    if (confirm("Verwijderen?")) {
-      await remove(ref(db, `/${cat}/${key}`));
-      showSuccess("🗑️ Item verwijderd.");
-      setTimeout(() => renderList(), 800);
-    }
-  };
-});
+  itemList.querySelectorAll(".del-btn").forEach(btn => {
+    btn.onclick = async () => {
+      const { cat, key } = btn.dataset;
+      if (confirm("Verwijderen?")) {
+        await remove(ref(db, `/${cat}/${key}`));
+        showSuccess("🗑️ Item verwijderd.");
+        setTimeout(() => renderList(), 800);
+      }
+    };
+  });
+
+  // Bewerken
+  itemList.querySelectorAll(".edit-btn").forEach(btn => {
+    btn.onclick = () => startEdit(btn.dataset.cat, btn.dataset.key);
+  });
 }
 
 /* ================================
