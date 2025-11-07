@@ -642,16 +642,20 @@ document.getElementById("addItemBtn").onclick = async () => {
     );
     if (dup) return showError(`⚠️ Dit product staat al in de categorie "${c}".`);
 
-   const item = {
+ // zet automatisch private = true bij Cadeaus of Voor Thijmen
+const isPrivateCat = c === "Cadeaus" || c === "Voor Thijmen";
+
+const item = {
   title: titleEl.value || "Onbekend product",
   price: priceEl.value ? parseFloat(priceEl.value) : 0,
   link,
   favorite: favEl.checked,
-  private: document.getElementById("privateForm").checked || false,
+  private: isPrivateCat ? true : document.getElementById("privateForm").checked || false,
   dateAdded: dateEl.value || new Date().toISOString().slice(0,10),
   image: imageEl.value || "",
   done: false
 };
+
 
     const newRef = await push(ref(db, `/${c}`), item);
 
