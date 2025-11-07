@@ -435,44 +435,87 @@ const clearMsg = () => { errBox.style.display="none"; okBox.style.display="none"
 const setLoading = (b) => spin.style.display = b ? "flex" : "none";
 
 /* ================================
-   Tijdelijke links
+   Tijdelijke links (gesynchroniseerd via Firebase)
 ================================ */
 const tempLinks = document.getElementById("tempLinks");
 const rememberLinksBtn = document.getElementById("rememberLinksBtn");
 const clearLinksBtn = document.getElementById("clearLinksBtn");
 const savedLinksList = document.getElementById("savedLinksList");
 
-function renderSavedLinks() {
+async function renderSavedLinks() {
   savedLinksList.innerHTML = "";
-  const saved = JSON.parse(localStorage.getItem("tempLinks") || "[]");
-  saved.forEach((link, idx) => {
-    const div = document.createElement("div");
-    div.className = "link-item";
-    div.innerHTML = `
-      <span>${link}</span>
-      <div class="link-buttons">
-        <button style="background:#2563eb;color:#fff;" onclick="navigator.clipboard.writeText('${link}')">📋</button>
-        <button style="background:#ef4444;color:#fff;" onclick="(function(){const s=JSON.parse(localStorage.getItem('tempLinks')||'[]');s.splice(${idx},1);localStorage.setItem('tempLinks',JSON.stringify(s));})(),(function(){(${renderSavedLinks.toString()})()})()">❌</button>
-      </div>`;
-    savedLinksList.appendChild(div);
-  });
+  try {
+    const snap = await get(ref(db, "/tempLinks"));
+    const data = snap.val() || {};
+    const saved = Object.values(data); // array van links
+
+    if (!saved.length) {
+      savedLinksList.innerHTML = "<p>Geen tijdelijke links opgeslagen.</p>";
+      return;
+    }
+
+    saved.forEach((link) => {
+      const div = document.createElement("div");
+      div.className = "link-item";
+      div.innerHTML = `
+        <span>${link}</span>
+        <div class="link-buttons">
+          <button style="background:#2563eb;color:#fff;" onclick="navigator.clipboard.writeText('${link}')">📋</button>
+          <button style="background:#ef4444;color:#fff;" data-link="${link}" class="temp-del">❌</button>
+        </div>
+      `;
+      savedLinksList.appendChild(div);
+    });
+
+    // verwijderknoppen koppelen
+    savedLinksList.querySelectorAll(".temp-del").forEach(btn => {
+      btn.onclick = () => deleteTempLink(btn.dataset.link);
+    });
+
+  } catch (e) {
+    showError("❌ Kon tijdelijke links niet laden: " + e.message);
+  }
 }
-rememberLinksBtn.onclick = () => {
-  const links = tempLinks.value.split("\n").map(l=>l.trim()).filter(Boolean);
-  if (!links.length) return;
-  const saved = JSON.parse(localStorage.getItem("tempLinks") || "[]");
-  links.forEach(l => { if (!saved.includes(l)) saved.push(l); });
-  localStorage.setItem("tempLinks", JSON.stringify(saved));
-  tempLinks.value = "";
-  renderSavedLinks();
-};
-clearLinksBtn.onclick = () => {
-  if (confirm("Alle tijdelijke links verwijderen?")) {
-    localStorage.removeItem("tempLinks");
-    tempLinks.value = "";
+
+async function deleteTempLink(link) {
+  try {
+    const snap = await get(ref(db, "/tempLinks"));
+    const data = snap.val() || {};
+    const key = Object.keys(data).find(k => data[k] === link);
+    if (key) await remove(ref(db, `/tempLinks/${key}`));
+    showSuccess("🗑️ Link verwijderd.");
     renderSavedLinks();
+  } catch (e) {
+    showError("❌ Verwijderen mislukt: " + e.message);
+  }
+}
+
+rememberLinksBtn.onclick = async () => {
+  const links = tempLinks.value.split("\n").map(l => l.trim()).filter(Boolean);
+  if (!links.length) return;
+  try {
+    for (const l of links) {
+      await push(ref(db, "/tempLinks"), l);
+    }
+    tempLinks.value = "";
+    showSuccess("✅ Links opgeslagen.");
+    renderSavedLinks();
+  } catch (e) {
+    showError("❌ Opslaan mislukt: " + e.message);
   }
 };
+
+clearLinksBtn.onclick = async () => {
+  if (!confirm("Alle tijdelijke links in Firebase verwijderen?")) return;
+  try {
+    await remove(ref(db, "/tempLinks"));
+    renderSavedLinks();
+  } catch (e) {
+    showError("❌ Opschonen mislukt: " + e.message);
+  }
+};
+
+// initial load
 renderSavedLinks();
 
 /* ================================
