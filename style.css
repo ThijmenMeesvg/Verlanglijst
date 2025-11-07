@@ -411,4 +411,42 @@ footer {
 .icon {
   font-size: 1.2rem;
 }
+/* --- Layout voor privépagina in grid --- */
+.private-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  align-items: start;
+  margin-top: 1.5rem;
+}
+
+.private-column {
+  background-color: #2C2C2C;
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.private-column h3 {
+  color: #FFD369;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.private-column .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+/* Accentkleuren per kolom */
+.cadeau-col {
+  border: 2px solid rgba(255, 100, 100, 0.6);
+  box-shadow: 0 0 18px rgba(255, 100, 100, 0.25);
+}
+
+.thijmen-col {
+  border: 2px solid rgba(100, 150, 255, 0.6);
+  box-shadow: 0 0 18px rgba(100, 150, 255, 0.25);
+}
 
