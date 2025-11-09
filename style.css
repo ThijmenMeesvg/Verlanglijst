@@ -360,3 +360,75 @@ footer {
 .hidden {
   display: none !important;
 }
+/* ================================
+   Verbeterde Filters op alle-items.html
+================================ */
+#filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  background-color: #2C2C2C;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin: 2rem auto;
+  max-width: 800px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+#filters label {
+  color: #FFD369;
+  font-weight: 600;
+  margin-right: 0.3rem;
+}
+
+#filters input,
+#filters select {
+  background-color: #1E1E1E;
+  color: #FFD369;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+  font-size: 1rem;
+  min-width: 100px;
+  transition: all 0.3s ease;
+}
+
+#filters input:focus,
+#filters select:focus {
+  border-color: #FF8C42;
+  outline: none;
+  box-shadow: 0 0 8px rgba(255, 140, 66, 0.4);
+}
+
+#filters button {
+  background-color: #FF8C42;
+  color: #1E1E1E;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#filters button:hover {
+  background-color: #FFD369;
+  transform: translateY(-2px);
+}
+
+/* Responsive layout voor filters */
+@media (max-width: 600px) {
+  #filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  #filters label {
+    margin: 0.5rem 0 0.2rem;
+  }
+}
+
+
+
