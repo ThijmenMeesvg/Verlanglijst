@@ -7,6 +7,9 @@ body {
   background-color: #1E1E1E;
   color: #EDEDED;
   line-height: 1.6;
+  overflow-x: hidden;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* ================================
@@ -125,138 +128,75 @@ section p {
 ================================ */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.item {
+/* Elke itembox */
+.item,
+.preview-card {
   background-color: #262626;
   border-radius: 12px;
   padding: 20px;
-  text-align: center;
+  text-align: left;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   transition: transform 0.2s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  max-width: 100%;
 }
 
-.item:hover {
+.item:hover,
+.preview-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 6px 20px rgba(255, 140, 66, 0.4);
 }
 
-.item a {
+.item a,
+.preview-card a {
   text-decoration: none;
   color: #FFD369;
   font-weight: bold;
-  display: block;
+  display: inline-block;
   margin-bottom: 8px;
   transition: color 0.3s;
+  overflow-wrap: break-word;
 }
 
-.item a:hover {
+.item a:hover,
+.preview-card a:hover {
   color: #FF8C42;
 }
 
-.item p {
+.item p,
+.preview-card p {
   margin: 0;
   font-size: 0.95rem;
   color: #EDEDED;
+  overflow-wrap: break-word;
+}
+
+/* ================================
+   Afbeeldingen in kaarten
+================================ */
+.preview-card img,
+.item img {
+  width: 100%;
+  max-width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  margin-bottom: 0.8rem;
 }
 
 /* ================================
    Favorieten
 ================================ */
-.item.favorite {
-  border: 2px solid #FF8C42;
-  box-shadow: 0 0 20px rgba(255, 140, 66, 0.4);
-  background-color: #2E2A25;
-}
-
-/* ================================
-   Filters
-================================ */
-#filters {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-#filters label {
-  margin: 0 10px;
-  font-weight: 600;
-}
-
-#filters input {
-  width: 80px;
-  padding: 6px;
-  border-radius: 6px;
-  border: 1px solid #555;
-  background-color: #1E1E1E;
-  color: #FFD369;
-}
-
-#applyPriceFilter {
-  background-color: #FF8C42;
-  color: #1E1E1E;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-#applyPriceFilter:hover {
-  background-color: #FFD369;
-  transform: scale(1.05);
-}
-
-/* ================================
-   Preview-kaarten
-================================ */
-.preview-card {
-  margin-top: 1rem;
-  padding: 1rem;
-  border: 1px solid #333;
-  border-radius: 10px;
-  background: #262626;
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  transition: transform 0.2s ease, box-shadow 0.3s ease, opacity 0.3s ease;
-}
-
-.preview-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 18px rgba(255, 140, 66, 0.3);
-}
-
-.preview-card img {
-  width: 100px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.preview-card h3 {
-  margin: 0 0 0.3rem 0;
-  color: #FFD369;
-}
-
-.preview-card p {
-  margin: 0;
-  font-size: 0.95rem;
-  color: #EDEDED;
-}
-
-.preview-card a {
-  color: #FF8C42;
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.preview-card a:hover {
-  color: #FFD369;
-}
-
-/* Favorietenvariant */
+.item.favorite,
 .preview-card.favorite {
   border: 2px solid #FF8C42;
   box-shadow: 0 0 20px rgba(255, 140, 66, 0.4);
@@ -267,7 +207,7 @@ section p {
    Afgestreepte items
 ================================ */
 .preview-card.done {
-  opacity: 0.5;
+  opacity: 0.6;
   filter: grayscale(80%);
   pointer-events: none;
 }
@@ -283,13 +223,12 @@ section p {
 }
 
 /* ================================
-   Buttons
+   Knoppen
 ================================ */
+button,
 .strike-btn {
-  margin-top: 8px;
-  padding: 6px 12px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: #FF8C42;
   color: #1E1E1E;
   font-weight: bold;
@@ -297,9 +236,10 @@ section p {
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
+button:hover,
 .strike-btn:hover {
   background-color: #FFD369;
-  transform: scale(1.05);
+  transform: translateY(-1px);
 }
 
 /* ================================
@@ -313,17 +253,6 @@ footer {
   padding: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 0.9rem;
-}
-
-/* ================================
-   Responsief gedrag
-================================ */
-@media (max-width: 600px) {
-  header h1 { font-size: 1.6rem; }
-  header nav { gap: 12px; }
-  section { padding: 15px; }
-  .item { padding: 15px; }
-  .hero h2 { font-size: 1.8rem; }
 }
 
 /* ================================
@@ -343,7 +272,6 @@ footer {
   padding: 1rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.4);
   overflow: hidden;
-  word-wrap: break-word;
   box-sizing: border-box;
 }
 
@@ -353,7 +281,7 @@ footer {
   margin-bottom: 1rem;
 }
 
-/* Categorieaccenten */
+/* Accentkleuren voor categorieën */
 .cadeau-col {
   border: 2px solid rgba(255, 100, 100, 0.6);
   box-shadow: 0 0 18px rgba(255, 100, 100, 0.25);
@@ -367,28 +295,27 @@ footer {
 /* Grid in privékolommen */
 .private-column .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: 1fr;
   gap: 1rem;
   width: 100%;
-  box-sizing: border-box;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
-/* Fix voor preview-kaarten binnen privékolommen */
+/* Privé-preview-kaarten */
 .private-column .preview-card {
-  max-width: 100%;
-  box-sizing: border-box;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  padding: 1rem;
-  border-radius: 10px;
   background: #262626;
   border: 1px solid #333;
-  color: #EDEDED;
+  border-radius: 10px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .private-column .preview-card img {
@@ -402,20 +329,29 @@ footer {
 .private-column .preview-card h3,
 .private-column .preview-card p,
 .private-column .preview-card a {
-  word-wrap: break-word;
   overflow-wrap: break-word;
+  word-break: break-word;
   max-width: 100%;
 }
 
-.private-column .preview-card a {
-  display: inline-block;
-  color: #FF8C42;
-  text-decoration: none;
-  font-weight: bold;
-}
+/* ================================
+   Responsief gedrag
+================================ */
+@media (max-width: 900px) {
+  .preview-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-.private-column .preview-card a:hover {
-  color: #FFD369;
+  .preview-card img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 0.6rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ================================
@@ -424,44 +360,3 @@ footer {
 .hidden {
   display: none !important;
 }
-/* ==== Fix: kaarten mogen nooit “uit de box” vallen ==== */
-.preview-card,
-.preview-card * {
-  max-width: 100%;
-  overflow-wrap: break-word;
-  word-break: break-word;
-}
-
-/* Zorg dat flex niet forceert dat content eruit duwt */
-.preview-card {
-  box-sizing: border-box;
-  display: flex;            /* je had dit al */
-  align-items: center;      /* je had dit al */
-}
-
-/* Afbeelding krimpt niet negatief, maar mag ook niet duwen */
-.preview-card img {
-  flex-shrink: 0;
-}
-
-/* Titels/links breken altijd netjes af */
-.preview-card h3,
-.preview-card p,
-.preview-card a {
-  overflow-wrap: break-word;
-  word-break: break-word;
-}
-
-/* Op smallere breedtes: stack layout zodat er nooit horizontale overflow is */
-@media (max-width: 700px) {
-  .preview-card {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .preview-card img {
-    width: 100%;
-    height: auto;
-    margin-bottom: 0.6rem;
-  }
-}
-
