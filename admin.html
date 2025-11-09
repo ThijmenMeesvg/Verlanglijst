@@ -279,9 +279,32 @@
     background: rgba(255, 140, 66, 0.2) !important;
     transition: background 1.5s ease;
   }
+  /* Scroll naar boven knop - meebewegend */
+#scrollTopBtn {
+  position: absolute;
+  right: 30px;
+  background-color: #2C2C2C;
+  color: #FFD369;
+  border: none;
+  border-radius: 50%;
+  padding: 0.8rem 1rem;
+  font-size: 1.3rem;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  display: none;
+  transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
+  z-index: 999;
+}
+
+#scrollTopBtn:hover {
+  background-color: #FF8C42;
+  color: #1E1E1E;
+  transform: translateY(-3px);
+}
 </style>
 
 </head>
+  <button id="scrollTopBtn" title="Naar boven">▲</button>
 <body>
 
 <div class="top-links">
@@ -886,6 +909,45 @@ function startEdit(cat, key) {
       setTimeout(() => renderList(), 800);
     }
   };
+  // ================================
+// Scroll naar boven knop (meebewegend effect)
+// ================================
+const scrollTopBtn = document.createElement("button");
+scrollTopBtn.id = "scrollTopBtn";
+scrollTopBtn.textContent = "▲";
+scrollTopBtn.title = "Naar boven";
+document.body.appendChild(scrollTopBtn);
+
+let targetY = 0;
+let currentY = 0;
+let ticking = false;
+
+function animateButton() {
+  currentY += (targetY - currentY) * 0.1;
+  scrollTopBtn.style.top = currentY + "px";
+  if (Math.abs(targetY - currentY) > 0.5) requestAnimationFrame(animateButton);
+}
+
+window.addEventListener("scroll", () => {
+  const scrollY = window.scrollY || document.documentElement.scrollTop;
+  targetY = scrollY + window.innerHeight - 100; // altijd ~100px van onderkant
+
+  if (!ticking) {
+    requestAnimationFrame(animateButton);
+    ticking = true;
+    setTimeout(() => (ticking = false), 200);
+  }
+
+  if (scrollY > 300) {
+    scrollTopBtn.style.display = "block";
+  } else {
+    scrollTopBtn.style.display = "none";
+  }
+});
+
+scrollTopBtn.onclick = () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
 }
 </script>
 </body>
