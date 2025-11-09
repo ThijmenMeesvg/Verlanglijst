@@ -279,7 +279,7 @@
     background: rgba(255, 140, 66, 0.2) !important;
     transition: background 1.5s ease;
   }
-  /* Scroll naar boven knop - meebewegend */
+/* Scroll naar boven knop - klein rond knopje dat meebeweegt */
 #scrollTopBtn {
   position: absolute;
   right: 30px;
@@ -287,8 +287,11 @@
   color: #FFD369;
   border: none;
   border-radius: 50%;
-  padding: 0.8rem 1rem;
+  width: 48px;
+  height: 48px;
   font-size: 1.3rem;
+  line-height: 48px; /* zorgt dat de pijl gecentreerd is */
+  text-align: center;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(0,0,0,0.4);
   display: none;
@@ -301,6 +304,7 @@
   color: #1E1E1E;
   transform: translateY(-3px);
 }
+
 </style>
 
 </head>
