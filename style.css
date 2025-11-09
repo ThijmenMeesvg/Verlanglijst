@@ -449,4 +449,37 @@ footer {
   border: 2px solid rgba(100, 150, 255, 0.6);
   box-shadow: 0 0 18px rgba(100, 150, 255, 0.25);
 }
+/* --- Fix voor items die buiten de box vallen op privépagina --- */
+.private-column {
+  overflow: hidden;
+  word-wrap: break-word;
+  box-sizing: border-box;
+}
+
+.private-column .grid {
+  display: grid;
+  grid-template-columns: 1fr; /* één item per rij, zodat niks uitsteekt */
+  gap: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.private-column .preview-card {
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  padding: 1rem;
+  border-radius: 10px;
+  background: #262626;
+  border: 1px solid #333;
+  color: #EDEDED;
+}
+
+.private-column .preview-card img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
 
