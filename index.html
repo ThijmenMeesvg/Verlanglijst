@@ -1,34 +1,77 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mijn Verlanglijst</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* Kleinere, compacte intro-kaart i.p.v. grote hero */
+    .intro-section {
+      max-width: 900px;
+      margin: 30px auto 20px auto;
+      background-color: #2C2C2C;
+      padding: 18px 22px;
+      border-radius: 14px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+    }
+
+    .intro-section h2 {
+      margin: 0 0 8px 0;
+      font-size: 1.6rem;
+      color: #FFD369;
+      text-align: left;
+    }
+
+    .intro-section p {
+      margin: 0;
+      font-size: 0.98rem;
+      color: #EDEDED;
+    }
+
+    /* Titel boven favorieten */
+    .favorites-header {
+      text-align: center;
+      margin-top: 25px;
+      margin-bottom: 10px;
+      color: #FFD369;
+    }
+
+    /* Confetti canvas */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+    }
+  </style>
 </head>
-
 <body>
-
 <header>
   <h1>Mijn Verlanglijst</h1>
   <nav>
     <a href="index.html">Home</a>
-    <a href="alle-items.html">Verlanglijstje</a>
+    <a href="alle-items.html">Alles</a>
   </nav>
 </header>
 
 <main>
-
-  <!-- Hero sectie -->
-  <section class="hero">
-    <h2>Welkom!</h2>
-    <p>Ik heb deze website gebouwd om mijn eeuwig groeiende verlanglijstje makkelijk en overzichtelijk bij te houden. Hopelijk geniet jij er net zo van als dat ik dat doe.</p>
-    <p>Bekijk mijn lijstje, filter op categorie of prijs, en streep items die je koopt af. Favorieten hebben een gouden randje.</p>
+  <!-- Compact welkomstblok -->
+  <section class="intro-section">
+    <h2>Welkom op mijn verlanglijst</h2>
+    <p>
+      Op deze pagina vind je een selectie van mijn favorieten. 
+      Gebruik de “Alles”-pagina om het volledige overzicht te zien, of het admin-gedeelte om de lijst te beheren.
+    </p>
   </section>
 
-  <!-- Favorieten (max 3) -->
+  <!-- Favorieten (max 3, direct in beeld) -->
   <section>
-    <h2>Favorieten</h2>
+    <h2 class="favorites-header">Favorieten</h2>
     <div id="item-container" class="grid"></div>
   </section>
 
@@ -47,14 +90,17 @@
       Admin
     </button>
   </section>
-
 </main>
 
 <footer>
   Gemaakt met ❤️ door Thijmen
 </footer>
 
+<!-- Confetti canvas -->
+<canvas id="confetti-canvas"></canvas>
+
 <script>
+  // Flag voor script.js (homepagina)
   window.HOME_PAGE = true;
 
   // Admin-wachtwoord pop-up
@@ -67,8 +113,95 @@
       alert("Onjuist wachtwoord.");
     }
   });
+
+  // ============================
+  // Confetti bij laden van de site
+  // ============================
+  (function () {
+    const canvas = document.getElementById("confetti-canvas");
+    const ctx = canvas.getContext("2d");
+
+    let W = window.innerWidth;
+    let H = window.innerHeight;
+    canvas.width  = W;
+    canvas.height = H;
+
+    window.addEventListener("resize", () => {
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width  = W;
+      canvas.height = H;
+    });
+
+    const colors = ["#FFD369", "#FF8C42", "#f97373", "#60a5fa", "#A7F3D0"];
+    const confettiCount = 160;
+    const confettis = [];
+
+    for (let i = 0; i < confettiCount; i++) {
+      confettis.push({
+        x: Math.random() * W,
+        y: Math.random() * H - H,
+        r: 4 + Math.random() * 4,
+        d: Math.random() * confettiCount,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        tilt: Math.random() * 10 - 10,
+        tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+        tiltAngle: 0
+      });
+    }
+
+    let animationFrame;
+    let startTime = null;
+    const duration = 4000; // 4 seconden confetti
+
+    function draw(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+
+      ctx.clearRect(0, 0, W, H);
+
+      confettis.forEach((c, index) => {
+        c.tiltAngle += c.tiltAngleIncremental;
+        c.y += (Math.cos(c.d) + 1 + c.r / 2) * 0.8;
+        c.x += Math.sin(0.01 * c.d);
+
+        c.tilt = Math.sin(c.tiltAngle) * 12;
+
+        // Herpositioneer als ze buiten beeld vallen
+        if (c.y > H) {
+          c.y = -10;
+          c.x = Math.random() * W;
+        }
+
+        ctx.beginPath();
+        ctx.lineWidth = c.r;
+        ctx.strokeStyle = c.color;
+        ctx.moveTo(c.x + c.tilt + c.r / 2, c.y);
+        ctx.lineTo(c.x + c.tilt, c.y + c.r * 2);
+        ctx.stroke();
+      });
+
+      if (progress < duration) {
+        animationFrame = requestAnimationFrame(draw);
+      } else {
+        // Laat canvas nog kort staan en fade dan uit
+        canvas.style.transition = "opacity 0.6s ease";
+        canvas.style.opacity = "0";
+        setTimeout(() => {
+          cancelAnimationFrame(animationFrame);
+          ctx.clearRect(0, 0, W, H);
+        }, 700);
+      }
+    }
+
+    // Start animatie zodra DOM geladen is
+    window.addEventListener("load", () => {
+      canvas.style.opacity = "1";
+      animationFrame = requestAnimationFrame(draw);
+    });
+  })();
 </script>
+
 <script type="module" src="script.js"></script>
 </body>
 </html>
-
