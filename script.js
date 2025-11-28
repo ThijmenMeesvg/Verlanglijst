@@ -16,7 +16,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// ------- Helpers -------
+// ================================
+// Helpers
+// ================================
 async function fetchAllItems() {
   const snap = await get(ref(db, "/"));
   const root = snap.val() || {}; // { Boeken: {key: item}, Muziek: {...}, ... }
@@ -38,55 +40,57 @@ function renderItems(container, items) {
   }
 
   container.innerHTML = items.map(i => `
-    <div class="preview-card${i.favorite ? " favorite" : ""} ${i.done ? "done" : ""}" 
-         data-key="${i.key}" data-category="${i.category}">
+    <div 
+      class="preview-card${i.favorite ? " favorite" : ""} ${i.done ? "done" : ""}" 
+      data-key="${i.key}" 
+      data-category="${i.category}"
+    >
       ${i.image ? `<img src="${i.image}" alt="${i.title}">` : ""}
       <div>
         <h3>${i.title}</h3>
         <p>💶 €${(i.price ?? 0).toFixed(2)}</p>
         <a href="${i.link}" target="_blank" style="color:#2563eb;">Bekijk product</a>
         <p style="font-size:0.9rem;color:#555;margin-top:.4rem;">Categorie: ${i.category}</p>
-       <button 
-        class="strike-btn"
-        data-key="${i.key}"
-        data-category="${i.category}"
-        data-title="${(i.title || "").replace(/"/g, '&quot;')}"
-        ${i.done ? "disabled" : ""}
-      >
-        ${i.done ? "Afgestreept" : "Afstrepen"}
-      </button>
+        <button 
+          class="strike-btn"
+          data-key="${i.key}"
+          data-category="${i.category}"
+          data-title="${(i.title || "").replace(/"/g, '&quot;')}"
+          ${i.done ? "disabled" : ""}
+        >
+          ${i.done ? "Afgestreept" : "Afstrepen"}
+        </button>
       </div>
     </div>
   `).join("");
 
- // koppel “Afstrepen” met undo-actie
-container.querySelectorAll(".strike-btn").forEach(btn => {
-  btn.addEventListener("click", async (e) => {
-    const b = e.currentTarget;
-    if (b.disabled) return; // al afgestreept
+  // “Afstrepen” + undo-koppeling
+  container.querySelectorAll(".strike-btn").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      const b = e.currentTarget;
+      if (b.disabled) return; // al afgestreept
 
-    const card     = b.closest(".preview-card");
-    const key      = b.dataset.key || card.dataset.key;
-    const category = b.dataset.category || card.dataset.category;
-    const title    = b.dataset.title || card.querySelector("h3")?.textContent || "Item";
+      const card     = b.closest(".preview-card");
+      const key      = b.dataset.key || card.dataset.key;
+      const category = b.dataset.category || card.dataset.category;
+      const title    = b.dataset.title || card.querySelector("h3")?.textContent || "Item";
 
-    try {
-      // Markeer als done in Firebase
-      await update(ref(db, `/${category}/${key}`), { done: true });
+      try {
+        // Markeer als done in Firebase
+        await update(ref(db, `/${category}/${key}`), { done: true });
 
-      // UI bijwerken
-      card.classList.add("done");
-      b.textContent = "Afgestreept";
-      b.disabled = true;
+        // UI bijwerken
+        card.classList.add("done");
+        b.textContent = "Afgestreept";
+        b.disabled = true;
 
-      // Undo-balk tonen voor deze actie
-      showUndo(title, category, key);
-    } catch (err) {
-      console.error("Afstrepen mislukt:", err);
-    }
+        // Undo-balk tonen voor deze actie
+        showUndo(title, category, key);
+      } catch (err) {
+        console.error("Afstrepen mislukt:", err);
+      }
+    });
   });
-});
-
 }
 
 function applyPriceFilter(list, min, max) {
@@ -97,7 +101,6 @@ function applyPriceFilter(list, min, max) {
 }
 
 function shufflePick(arr, n = 3) {
-  // Fisher-Yates
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -105,6 +108,7 @@ function shufflePick(arr, n = 3) {
   }
   return a.slice(0, n);
 }
+
 // ================================
 // Undo-afstrepen (geldt voor deze sessie / pagina)
 // ================================
@@ -126,10 +130,24 @@ function ensureUndoBar() {
     const undoBtn = bar.querySelector("#undoBtn");
     undoBtn.addEventListener("click", async () => {
       if (!lastDoneAction) return;
+      const { cat, key } = lastDoneAction;
+
       try {
-        const { cat, key } = lastDoneAction;
-        // done weer op false zetten in Firebase
+        // done weer op false in Firebase
         await update(ref(db, `/${cat}/${key}`), { done: false });
+
+        // UI óók terugzetten
+        const card = document.querySelector(
+          `.preview-card[data-category="${cat}"][data-key="${key}"]`
+        );
+        if (card) {
+          card.classList.remove("done");
+          const strike = card.querySelector(".strike-btn");
+          if (strike) {
+            strike.disabled = false;
+            strike.textContent = "Afstrepen";
+          }
+        }
       } catch (e) {
         console.error("Undo mislukt:", e);
       } finally {
@@ -158,10 +176,13 @@ function showUndo(title, cat, key) {
   }, 30000);
 }
 
-// ------- Pagina-entrypoints -------
-
+// ================================
+// Pagina-entrypoints
+// ================================
 async function runHome() {
   const container = document.getElementById("item-container");
+  if (!container) return;
+
   let items = await fetchAllItems();
 
   // alleen publieke items
@@ -225,15 +246,14 @@ async function runCategory(cat) {
 
   applyBtn?.addEventListener("click", updateView);
   updateView();
-  }
-// ------- Privépagina (login + private items in grid) -------
+}
+
 async function runPrivatePage() {
   const gate = document.getElementById("private-gate");
   const content = document.getElementById("private-content");
   const form = document.getElementById("private-login");
   const error = document.getElementById("private-error");
 
-  // containers voor de grid
   const cadeauContainer = document.getElementById("cadeau-items");
   const thijmenContainer = document.getElementById("thijmen-items");
 
@@ -245,27 +265,22 @@ async function runPrivatePage() {
       return;
     }
 
-    // verberg login, toon inhoud
     gate.classList.add("hidden");
     content.classList.remove("hidden");
     error.textContent = "";
 
-    // haal items op uit Firebase
     const allItems = await fetchAllItems();
     const privateItems = allItems.filter(i => i.private === true);
 
-    // splits op categorie
     const cadeauItems = privateItems.filter(i => i.category === "Cadeaus");
     const thijmenItems = privateItems.filter(i => i.category === "Voor Thijmen");
 
-    // toon cadeaus links
     if (!cadeauItems.length) {
       cadeauContainer.innerHTML = "<p>Geen cadeaus gevonden.</p>";
     } else {
       renderItems(cadeauContainer, cadeauItems);
     }
 
-    // toon voor mezelf rechts
     if (!thijmenItems.length) {
       thijmenContainer.innerHTML = "<p>Geen persoonlijke items gevonden.</p>";
     } else {
@@ -273,7 +288,8 @@ async function runPrivatePage() {
     }
   });
 }
-// ------- Router op basis van flags die we in HTML zetten -------
+
+// Router op basis van flags uit de HTML
 if (window.HOME_PAGE) {
   runHome();
 } else if (window.ALL_ITEMS_PAGE) {
