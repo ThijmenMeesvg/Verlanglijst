@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin overzicht</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .admin-menu-wrapper {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #2C2C2C;
+      border-radius: 14px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+      text-align: center;
+    }
+    .admin-menu-wrapper h1 {
+      margin-top: 0;
+    }
+    .admin-menu-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .admin-menu-buttons a {
+      display: inline-block;
+      text-decoration: none;
+      padding: 0.8rem 1.2rem;
+      border-radius: 10px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .btn-generator {
+      background-color: #FF8C42;
+      color: #1E1E1E;
+    }
+    .btn-cadeaus {
+      background-color: #f97373;
+      color: #1E1E1E;
+    }
+    .btn-thijmen {
+      background-color: #60a5fa;
+      color: #1E1E1E;
+    }
+    .admin-menu-buttons a:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+    }
+    .back-link {
+      display:inline-block;
+      margin-top:1.5rem;
+      color:#FFD369;
+      text-decoration:none;
+      font-weight:500;
+    }
+    .back-link:hover {
+      color:#FF8C42;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Admin overzicht</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="alle-items.html">Alles</a>
+  </nav>
+</header>
+
+<main>
+  <section class="admin-menu-wrapper">
+    <h1>Beheer</h1>
+    <p>Kies wat je wilt beheren:</p>
+
+    <div class="admin-menu-buttons">
+      <a href="admin.html" class="btn-generator">🔧 Generator / Admin</a>
+      <a href="prive.html?view=cadeaus" class="btn-cadeaus">🎁 Cadeaus voor anderen</a>
+      <a href="prive.html?view=thijmen" class="btn-thijmen">🧍 Voor Thijmen</a>
+    </div>
+
+    <a class="back-link" href="index.html">← Terug naar de site</a>
+  </section>
+</main>
+
+<script>
+  // Extra beveiliging: als iemand direct naar backend.html surft
+  if (sessionStorage.getItem("adminAuth") !== "1") {
+    const pwd = prompt("Voer admin-wachtwoord in:");
+    if (pwd === "verlanglijst") {
+      sessionStorage.setItem("adminAuth","1");
+    } else {
+      alert("Onjuist wachtwoord.");
+      window.location.href = "index.html";
+    }
+  }
+</script>
+
+</body>
+</html>
