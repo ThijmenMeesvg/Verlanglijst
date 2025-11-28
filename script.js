@@ -209,20 +209,27 @@ async function runAllItems() {
   const minEl = document.getElementById("minPrice");
   const maxEl = document.getElementById("maxPrice");
   const applyBtn = document.getElementById("applyFilters");
-
+ 
   function updateView() {
     let list = all.slice();
     const cat = categorySelect?.value || "";
     const min = minEl?.value ? parseFloat(minEl.value) : null;
     const max = maxEl?.value ? parseFloat(maxEl.value) : null;
-
+  
     if (cat) list = list.filter(i => i.category === cat);
     list = applyPriceFilter(list, min, max);
-    list.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
-
+  
+    // eerst niet-afgestreept, dan afgestreept; binnen die groep: nieuwste eerst
+    list.sort((a, b) => {
+      const ad = !!a.done;
+      const bd = !!b.done;
+      if (ad !== bd) return ad - bd;       // false (0) komt boven true (1)
+      return new Date(b.dateAdded) - new Date(a.dateAdded);
+    });
+  
     renderItems(container, list);
   }
-
+  
   applyBtn?.addEventListener("click", updateView);
   updateView();
 }
