@@ -190,6 +190,10 @@ async function runHome() {
 
   // favorieten die NIET afgestreept zijn
   const favorites = items.filter(i => i.favorite && !i.done);
+
+  // pak maximaal 3 random favorieten
+  const selected = shufflePick(favorites, 3);
+  
   renderItems(container, favorites);
 }
 
