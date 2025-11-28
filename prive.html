@@ -5,38 +5,104 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Privé verlanglijst</title>
   <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* Top navigatie – zelfde als admin en backend */
+    .top-links {
+      text-align: center;
+      margin-bottom: 1rem;
+      margin-top: 1rem;
+    }
+
+    .top-links a,
+    .top-links button {
+      display: inline-block;
+      padding: .5rem 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      margin: 0 .3rem .3rem;
+      border: none;
+      cursor: pointer;
+    }
+
+    .home        { background: #FF8C42; color: #1E1E1E; }
+    .private-link{ background: #3b82f6; color: #fff; }
+    .firebase    { background: #FFD369; color: #1E1E1E; }
+    .github      { background: #10b981; color: #fff; }
+
+    /* Kaart achtergrond */
+    .private-card {
+      background: #2C2C2C;
+      padding: 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+      border-radius: 14px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+    }
+
+    .private-card h1 {
+      color: #FFD369;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .private-card p {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #EDEDED;
+    }
+
+    /* Items grid */
+    .private-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+    }
+  </style>
 </head>
+
 <body>
-  <main class="private-main">
-    <section class="private-card" id="private-content">
-      <h1 id="private-title">Privé verlanglijst</h1>
-      <p id="private-description">Privé-items uit mijn verlanglijst.</p>
 
-      <div id="private-items" class="grid"></div>
-    </section>
+<!-- Top navigatie -->
+<div class="top-links">
+  <a href="index.html" class="home">🏠 Home</a>
+  <a href="backend.html" class="private-link">🛠️ Beheer</a>
+  <a href="https://console.firebase.google.com/project/verlanglijst-12015/database/verlanglijst-12015-default-rtdb/data"
+     target="_blank" class="firebase">🌐 Firebase Console</a>
+  <a href="https://github.com/ThijmenMeesvg/Verlanglijst"
+     target="_blank" class="github">💻 GitHub Repo</a>
+</div>
 
-    <section style="text-align:center;margin-top:2rem;">
-      <a
-        href="index.html"
-        class="home"
-        style="padding:.8rem 1.2rem;display:inline-block;border-radius:8px;color:#fff;background:#ff8c42;text-decoration:none;margin-right:.5rem;"
-      >
-        🏠 Terug naar Home
-      </a>
+<main class="private-main">
 
-      <a
-        href="backend.html"
-        class="home"
-        style="padding:.8rem 1.2rem;display:inline-block;border-radius:8px;color:#fff;background:#2563eb;text-decoration:none;"
-      >
-        Terug naar admin overzicht
-      </a>
-    </section>
-  </main>
+  <section class="private-card" id="private-content">
+    <h1 id="private-title">Privé verlanglijst</h1>
+    <p id="private-description">Privé-items uit mijn verlanglijst.</p>
 
-  <script>
-    window.PRIVATE_PAGE = true;
-  </script>
-  <script type="module" src="script.js"></script>
+    <div id="private-items" class="private-grid"></div>
+  </section>
+
+  <section style="text-align:center;margin-top:2rem;">
+    <a href="index.html"
+      class="home"
+      style="padding:.8rem 1.2rem;display:inline-block;border-radius:8px;color:#fff;background:#ff8c42;text-decoration:none;margin-right:.5rem;">
+      🏠 Terug naar Home
+    </a>
+
+    <a href="backend.html"
+      class="home"
+      style="padding:.8rem 1.2rem;display:inline-block;border-radius:8px;color:#fff;background:#2563eb;text-decoration:none;">
+      Terug naar admin overzicht
+    </a>
+  </section>
+
+</main>
+
+<script>
+  window.PRIVATE_PAGE = true;
+</script>
+<script type="module" src="script.js"></script>
+
 </body>
 </html>
