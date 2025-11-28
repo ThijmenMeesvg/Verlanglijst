@@ -88,16 +88,14 @@ function shufflePick(arr, n = 3) {
 
 async function runHome() {
   const container = document.getElementById("item-container");
-  if (!container) return;
+  let items = await fetchAllItems();
 
-  container.innerHTML = "Even laden...";
-  const all = await fetchAllItems();
-  // Verberg privé-items
-  const visible = all.filter(i => !i.private);
-  const favs = visible.filter(i => i.favorite === true);
-  const pick = favs.length ? shufflePick(favs, 3) : visible.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)).slice(0, 3);
-renderItems(container, pick);
+  // alleen publieke items
+  items = items.filter(i => !i.private);
 
+  // favorieten die NIET afgestreept zijn
+  const favorites = items.filter(i => i.favorite && !i.done);
+  renderItems(container, favorites);
 }
 
 async function runAllItems() {
