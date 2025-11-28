@@ -260,21 +260,43 @@ async function runCategory(cat) {
 }
 
 async function runPrivatePage() {
-  const gate = document.getElementById("private-gate");
-  const content = document.getElementById("private-content");
-  const form = document.getElementById("private-login");
-  const error = document.getElementById("private-error");
+  const container = document.getElementById("private-items");
+  const titleEl   = document.getElementById("private-title");
+  const descEl    = document.getElementById("private-description");
+  if (!container || !titleEl || !descEl) return;
 
-  const cadeauContainer = document.getElementById("cadeau-items");
-  const thijmenContainer = document.getElementById("thijmen-items");
+  // Lees ?view=... uit de URL
+  const params = new URLSearchParams(location.search);
+  const viewRaw = params.get("view") || "cadeaus"; // standaard: cadeaus
+  const view = viewRaw.toLowerCase();
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const entered = document.getElementById("private-password").value.trim();
-    if (entered !== window.PRIVATE_PASSWORD) {
-      error.textContent = "❌ Onjuist wachtwoord.";
-      return;
-    }
+  let categoryName;
+  if (view === "thijmen") {
+    categoryName = "Voor Thijmen";
+    titleEl.textContent = "Privé – Voor Thijmen";
+    descEl.textContent  = "Privé-items die voor mijzelf bedoeld zijn.";
+  } else {
+    // alles wat niet expliciet 'thijmen' is, behandelen als cadeaus
+    categoryName = "Cadeaus";
+    titleEl.textContent = "Privé – Cadeaus";
+    descEl.textContent  = "Cadeaus die ik voor anderen wil kopen.";
+  }
+
+  // Haal alle items op
+  const allItems = await fetchAllItems();
+
+  // Filter: alleen privé + juiste categorie
+  const privateItems = allItems.filter(
+    i => i.private === true && i.category === categoryName
+  );
+
+  if (!privateItems.length) {
+    container.innerHTML = "<p>Geen items gevonden in deze lijst.</p>";
+  } else {
+    renderItems(container, privateItems);
+  }
+}
+
 
     gate.classList.add("hidden");
     content.classList.remove("hidden");
