@@ -46,25 +46,47 @@ function renderItems(container, items) {
         <p>💶 €${(i.price ?? 0).toFixed(2)}</p>
         <a href="${i.link}" target="_blank" style="color:#2563eb;">Bekijk product</a>
         <p style="font-size:0.9rem;color:#555;margin-top:.4rem;">Categorie: ${i.category}</p>
-        <button class="strike-btn">${i.done ? "Afgestreept" : "Afstrepen"}</button>
+       <button 
+        class="strike-btn"
+        data-key="${i.key}"
+        data-category="${i.category}"
+        data-title="${(i.title || "").replace(/"/g, '&quot;')}"
+        ${i.done ? "disabled" : ""}
+      >
+        ${i.done ? "Afgestreept" : "Afstrepen"}
+      </button>
       </div>
     </div>
   `).join("");
 
-  // koppel “Afstrepen”
-  container.querySelectorAll(".strike-btn").forEach(btn => {
-    btn.addEventListener("click", async (e) => {
-      const card = e.currentTarget.closest(".preview-card");
-      const key = card.dataset.key;
-      const category = card.dataset.category;
+ // koppel “Afstrepen” met undo-actie
+container.querySelectorAll(".strike-btn").forEach(btn => {
+  btn.addEventListener("click", async (e) => {
+    const b = e.currentTarget;
+    if (b.disabled) return; // al afgestreept
 
-      const newDone = !card.classList.contains("done");
-      await update(ref(db, `/${category}/${key}`), { done: newDone });
+    const card     = b.closest(".preview-card");
+    const key      = b.dataset.key || card.dataset.key;
+    const category = b.dataset.category || card.dataset.category;
+    const title    = b.dataset.title || card.querySelector("h3")?.textContent || "Item";
 
-      card.classList.toggle("done", newDone);
-      e.currentTarget.textContent = newDone ? "Afgestreept" : "Afstrepen";
-    });
+    try {
+      // Markeer als done in Firebase
+      await update(ref(db, `/${category}/${key}`), { done: true });
+
+      // UI bijwerken
+      card.classList.add("done");
+      b.textContent = "Afgestreept";
+      b.disabled = true;
+
+      // Undo-balk tonen voor deze actie
+      showUndo(title, category, key);
+    } catch (err) {
+      console.error("Afstrepen mislukt:", err);
+    }
   });
+});
+
 }
 
 function applyPriceFilter(list, min, max) {
@@ -82,6 +104,58 @@ function shufflePick(arr, n = 3) {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a.slice(0, n);
+}
+// ================================
+// Undo-afstrepen (geldt voor deze sessie / pagina)
+// ================================
+let lastDoneAction = null;
+let undoTimeout = null;
+
+function ensureUndoBar() {
+  let bar = document.getElementById("undoBar");
+  if (!bar) {
+    bar = document.createElement("div");
+    bar.id = "undoBar";
+    bar.className = "hidden";
+    bar.innerHTML = `
+      <span id="undoText"></span>
+      <button type="button" id="undoBtn">Ongedaan maken</button>
+    `;
+    document.body.appendChild(bar);
+
+    const undoBtn = bar.querySelector("#undoBtn");
+    undoBtn.addEventListener("click", async () => {
+      if (!lastDoneAction) return;
+      try {
+        const { cat, key } = lastDoneAction;
+        // done weer op false zetten in Firebase
+        await update(ref(db, `/${cat}/${key}`), { done: false });
+      } catch (e) {
+        console.error("Undo mislukt:", e);
+      } finally {
+        lastDoneAction = null;
+        bar.classList.add("hidden");
+      }
+    });
+  }
+  return bar;
+}
+
+function showUndo(title, cat, key) {
+  const bar = ensureUndoBar();
+  lastDoneAction = { title, cat, key };
+
+  const textEl = bar.querySelector("#undoText");
+  textEl.textContent = `"${title}" afgestreept.`;
+
+  bar.classList.remove("hidden");
+
+  if (undoTimeout) clearTimeout(undoTimeout);
+  // na 30 seconden verdwijnt de undo-optie
+  undoTimeout = setTimeout(() => {
+    lastDoneAction = null;
+    bar.classList.add("hidden");
+  }, 30000);
 }
 
 // ------- Pagina-entrypoints -------
