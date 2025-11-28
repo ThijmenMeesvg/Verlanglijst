@@ -56,7 +56,7 @@ header nav a:hover {
 }
 
 /* ================================
-   Hero / Welkom-sectie
+   Hero / Welkom-sectie (home)
 ================================ */
 .hero {
   display: flex;
@@ -124,7 +124,7 @@ section p {
 }
 
 /* ================================
-   Grid & Items
+   Grid & Items (home, categorie, alle-items, privé)
 ================================ */
 .grid {
   display: grid;
@@ -134,7 +134,7 @@ section p {
   box-sizing: border-box;
 }
 
-/* Elke itembox */
+/* Elke itembox / kaart */
 .item,
 .preview-card {
   background-color: #262626;
@@ -146,6 +146,7 @@ section p {
   box-sizing: border-box;
   overflow-wrap: break-word;
   word-wrap: break-word;
+  word-break: break-word;
   max-width: 100%;
 }
 
@@ -164,6 +165,7 @@ section p {
   margin-bottom: 8px;
   transition: color 0.3s;
   overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .item a:hover,
@@ -177,6 +179,7 @@ section p {
   font-size: 0.95rem;
   color: #EDEDED;
   overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* ================================
@@ -223,7 +226,7 @@ section p {
 }
 
 /* ================================
-   Knoppen
+   Knoppen (algemeen + afstrepen)
 ================================ */
 button,
 .strike-btn {
@@ -243,125 +246,7 @@ button:hover,
 }
 
 /* ================================
-   Footer
-================================ */
-footer {
-  margin-top: 60px;
-  background: linear-gradient(to bottom, #2C2C2C, #1E1E1E);
-  color: #EDEDED;
-  text-align: center;
-  padding: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.9rem;
-}
-
-/* ================================
-   Privépagina layout
-================================ */
-.private-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2rem;
-  align-items: start;
-  margin-top: 1.5rem;
-}
-
-.private-column {
-  background-color: #2C2C2C;
-  border-radius: 14px;
-  padding: 1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-.private-column h3 {
-  color: #FFD369;
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-/* Accentkleuren voor categorieën */
-.cadeau-col {
-  border: 2px solid rgba(255, 100, 100, 0.6);
-  box-shadow: 0 0 18px rgba(255, 100, 100, 0.25);
-}
-
-.thijmen-col {
-  border: 2px solid rgba(100, 150, 255, 0.6);
-  box-shadow: 0 0 18px rgba(100, 150, 255, 0.25);
-}
-
-/* Grid in privékolommen */
-.private-column .grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  width: 100%;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-/* Privé-preview-kaarten */
-.private-column .preview-card {
-  background: #262626;
-  border: 1px solid #333;
-  border-radius: 10px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-  box-sizing: border-box;
-  max-width: 100%;
-  overflow-wrap: break-word;
-  word-break: break-word;
-}
-
-.private-column .preview-card img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  object-fit: cover;
-  margin-bottom: 0.8rem;
-}
-
-.private-column .preview-card h3,
-.private-column .preview-card p,
-.private-column .preview-card a {
-  overflow-wrap: break-word;
-  word-break: break-word;
-  max-width: 100%;
-}
-
-/* ================================
-   Responsief gedrag
-================================ */
-@media (max-width: 900px) {
-  .preview-card {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .preview-card img {
-    width: 100%;
-    height: auto;
-    margin-bottom: 0.6rem;
-  }
-
-  .grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ================================
-   Verborgen elementen
-================================ */
-.hidden {
-  display: none !important;
-}
-/* ================================
-   Verbeterde Filters op alle-items.html
+   Filters op alle-items.html
 ================================ */
 #filters {
   display: flex;
@@ -429,6 +314,188 @@ footer {
     margin: 0.5rem 0 0.2rem;
   }
 }
+
+/* ================================
+   Quick facts (categorie Kleding & Accessoires)
+================================ */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background-color: #262626;
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.card h3 {
+  margin: 0 0 10px;
+  color: #FFD369;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.card .icon {
+  font-size: 1.3rem;
+}
+
+.pill {
+  display: inline-block;
+  background-color: #1E1E1E;
+  border-radius: 999px;
+  padding: 6px 12px;
+  margin: 4px 4px 0 0;
+  font-size: 0.9rem;
+  color: #FFD369;
+  border: 1px solid rgba(255, 211, 105, 0.4);
+}
+
+/* ================================
+   Privépagina – layout & login kaart
+================================ */
+.private-main {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 16px 40px;
+}
+
+.private-card {
+  background-color: #2C2C2C;
+  border-radius: 14px;
+  padding: 24px 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  margin-bottom: 24px;
+}
+
+.private-card h1,
+.private-card h2 {
+  text-align: center;
+  color: #FFD369;
+  margin-top: 0;
+}
+
+.private-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.private-form input[type="password"] {
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background-color: #1E1E1E;
+  color: #FFD369;
+}
+
+.private-form button {
+  align-self: center;
+  min-width: 160px;
+}
+
+#private-error {
+  margin-top: 0.5rem;
+  color: #fca5a5;
+  text-align: center;
+}
+
+/* ================================
+   Privépagina – 2 kolommen (cadeaus / voor Thijmen)
+================================ */
+.private-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  align-items: start;
+  margin-top: 1.5rem;
+}
+
+.private-column {
+  background-color: #2C2C2C;
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.private-column h3 {
+  color: #FFD369;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Accentkleuren voor categorieën */
+.cadeau-col {
+  border: 2px solid rgba(255, 100, 100, 0.6);
+  box-shadow: 0 0 18px rgba(255, 100, 100, 0.25);
+}
+
+.thijmen-col {
+  border: 2px solid rgba(100, 150, 255, 0.6);
+  box-shadow: 0 0 18px rgba(100, 150, 255, 0.25);
+}
+
+/* Grid in privékolommen */
+.private-column .grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Privé-preview-kaarten specifiek */
+.private-column .preview-card {
+  background: #262626;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.private-column .preview-card img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 0.8rem;
+}
+
+.private-column .preview-card h3,
+.private-column .preview-card p,
+.private-column .preview-card a {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+/* ================================
+   Footer
+================================ */
+footer {
+  margin-top: 60px;
+  background: linear-gradient(to bottom, #2C2C2C, #1E1E1E);
+  color: #EDEDED;
+  text-align: center;
+  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.9rem;
+}
+
 /* ================================
    Undo-balk voor afstrepen
 ================================ */
@@ -471,6 +538,29 @@ footer {
   transform: translateY(-1px);
 }
 
+/* ================================
+   Verborgen elementen
+================================ */
+.hidden {
+  display: none !important;
+}
 
+/* ================================
+   Responsief gedrag algemeen
+================================ */
+@media (max-width: 900px) {
+  .preview-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
+  .preview-card img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 0.6rem;
+  }
 
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
