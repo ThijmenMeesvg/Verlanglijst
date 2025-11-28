@@ -31,6 +31,22 @@
     <div id="item-container" class="grid"></div>
   </section>
 
+  <!-- Admin-knop onderaan -->
+  <section style="text-align:center;margin-top:2rem;">
+    <button id="openAdmin" style="
+      display:inline-block;
+      padding:.8rem 1.2rem;
+      border-radius:8px;
+      border:none;
+      background:#444;
+      color:#FFD369;
+      font-weight:bold;
+      cursor:pointer;
+    ">
+      Admin
+    </button>
+  </section>
+
 </main>
 
 <footer>
@@ -39,8 +55,19 @@
 
 <script>
   window.HOME_PAGE = true;
+
+  // Admin-wachtwoord pop-up
+  document.getElementById("openAdmin")?.addEventListener("click", () => {
+    const pwd = prompt("Voer admin-wachtwoord in:");
+    if (pwd === "verlanglijst") {
+      sessionStorage.setItem("adminAuth", "1");
+      window.location.href = "backend.html";
+    } else if (pwd !== null) {
+      alert("Onjuist wachtwoord.");
+    }
+  });
 </script>
 <script type="module" src="script.js"></script>
-
 </body>
 </html>
+
