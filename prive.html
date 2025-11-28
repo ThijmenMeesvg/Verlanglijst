@@ -8,6 +8,7 @@
 </head>
 <body>
   <main class="private-main">
+    <!-- Login-kaart -->
     <section class="private-card" id="private-gate">
       <h1>Privé verlanglijst</h1>
       <p>Vul het wachtwoord in om je verborgen items te bekijken.</p>
@@ -24,16 +25,17 @@
       <p id="private-error" role="alert"></p>
     </section>
 
-   <section class="private-card hidden" id="private-content">
+    <!-- Inhoud na ontgrendelen -->
+    <section class="private-card hidden" id="private-content">
       <h2>Mijn privé-items</h2>
       <p>Overzicht van cadeaus en persoonlijke items.</p>
-    
+
       <div class="private-grid">
         <div class="private-column cadeau-col">
           <h3>🎁 Cadeaus</h3>
           <div id="cadeau-items" class="grid"></div>
         </div>
-    
+
         <div class="private-column thijmen-col">
           <h3>🧍 Voor mezelf</h3>
           <div id="thijmen-items" class="grid"></div>
@@ -41,25 +43,29 @@
       </div>
     </section>
 
-
+    <!-- Navigatie terug -->
     <section style="text-align:center;margin-top:2rem;">
       <a
         href="index.html"
         class="home"
         style="padding:.8rem 1.2rem;display:inline-block;border-radius:8px;color:#fff;background:#ff8c42;text-decoration:none;margin-right:.5rem;"
-      >🏠 Terug naar Home</a>
-    
+      >
+        🏠 Terug naar Home
+      </a>
+
       <a
         href="admin.html"
         class="home"
         style="padding:.8rem 1.2rem;display:inline-block;border-radius:8px;color:#fff;background:#2563eb;text-decoration:none;"
-      >Adminpagina</a>
+      >
+        Adminpagina
+      </a>
     </section>
   </main>
 
   <script>
     window.PRIVATE_PAGE = true;
-    window.PRIVATE_PASSWORD = "1201"; 
+    window.PRIVATE_PASSWORD = "1201";
   </script>
   <script type="module" src="script.js"></script>
 </body>
