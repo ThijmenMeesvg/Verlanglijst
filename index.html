@@ -1,39 +1,47 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Verlanglijst – Home</title>
+  <title>Mijn Verlanglijst</title>
   <link rel="stylesheet" href="style.css"/>
 </head>
+
 <body>
-  <header>
-    <nav>
-      <a href="index.html">Home</a>
-       <a href="alle-items.html">Alles</a>
-        </nav>
-  </header>
 
-  <main>
-    <section>
-      <h2>Welkom!</h2>
-      <p>Leuk dat je inspiratie op komt doen. Bekijk per categorie en filter op prijs. Items die ik extra leuk vind, zijn gehighlight.</p>
-      <p>Vergeet je items niet af te strepen, zo voorkom je dat je hetzelfde koopt als een ander.</p>
-    </section>
+<header>
+  <h1>Mijn Verlanglijst</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="alle-items.html">Alles</a>
+    <a href="prive.html">Privé</a>
+  </nav>
+</header>
 
-    <section>
-      <h2>Favorieten</h2>
-      <div id="item-container" class="grid"></div>
-    </section>
+<main>
 
-    <section style="text-align:center;margin-top:2rem;">
-      <a href="prive.html" class="home" style="padding:.8rem 1.2rem;display:inline-block;border-radius:8px;color:#fff;background:#2563eb;text-decoration:none;">Adminpagina</a>
-    </section>
-  </main>
+  <!-- Hero sectie -->
+  <section class="hero">
+    <h2>Welkom!</h2>
+    <p>Hier vind je mijn favoriete items — een kleine selectie die ik handig vind om te delen.</p>
+  </section>
 
-  <script>
-    window.HOME_PAGE = true;
-  </script>
-  <script type="module" src="script.js"></script>
+  <!-- Favorieten (max 3) -->
+  <section>
+    <h2>Favorieten</h2>
+    <div id="item-container" class="grid"></div>
+  </section>
+
+</main>
+
+<footer>
+  Gemaakt met ❤️ door Thijmen
+</footer>
+
+<script>
+  window.HOME_PAGE = true;
+</script>
+<script type="module" src="script.js"></script>
+
 </body>
 </html>
