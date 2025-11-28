@@ -6,63 +6,11 @@
   <title>Admin overzicht</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    .admin-menu-wrapper {
-      max-width: 600px;
-      margin: 40px auto;
-      padding: 20px;
-      background-color: #2C2C2C;
-      border-radius: 14px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.6);
-      text-align: center;
-    }
-    .admin-menu-wrapper h1 {
-      margin-top: 0;
-    }
-    .admin-menu-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin-top: 1.5rem;
-    }
-    .admin-menu-buttons a {
-      display: inline-block;
-      text-decoration: none;
-      padding: 0.8rem 1.2rem;
-      border-radius: 10px;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-    .btn-generator {
-      background-color: #FF8C42;
-      color: #1E1E1E;
-    }
-    .btn-cadeaus {
-      background-color: #f97373;
-      color: #1E1E1E;
-    }
-    .btn-thijmen {
-      background-color: #60a5fa;
-      color: #1E1E1E;
-    }
-    .admin-menu-buttons a:hover {
-      transform: translateY(-2px);
-      filter: brightness(1.1);
-    }
-    .back-link {
-      display:inline-block;
-      margin-top:1.5rem;
-      color:#FFD369;
-      text-decoration:none;
-      font-weight:500;
-    }
-    .back-link:hover {
-      color:#FF8C42;
-    }
-        .top-links {
+    /* Bovenste knoppenbalk – zelfde stijl als admin */
+    .top-links {
       text-align: center;
       margin-bottom: 1rem;
+      margin-top: 1rem;
     }
 
     .top-links a,
@@ -77,42 +25,129 @@
       cursor: pointer;
     }
 
-    .home    { background: #FF8C42; color: #1E1E1E; }
-    .firebase{ background: #FFD369; color: #1E1E1E; }
-    .github  { background: #10b981; color: #fff; }
-    .logout  { background: #ef4444; color: #fff; }
-    .private-link { background:#3b82f6; color:#fff; }
+    .home        { background: #FF8C42; color: #1E1E1E; }
+    .private-link{ background: #3b82f6; color: #fff; }
+    .firebase    { background: #FFD369; color: #1E1E1E; }
+    .github      { background: #10b981; color: #fff; }
+    .logout      { background: #ef4444; color: #fff; }
+
+    /* Kaart in het midden met de drie backend-knoppen */
+    .admin-menu-wrapper {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #2C2C2C;
+      border-radius: 14px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+      text-align: center;
+    }
+
+    .admin-menu-wrapper h1 {
+      margin-top: 0;
+      color: #FFD369;
+    }
+
+    .admin-menu-wrapper p {
+      color: #EDEDED;
+      margin-bottom: 1.5rem;
+    }
+
+    .admin-menu-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .admin-menu-buttons a {
+      display: inline-block;
+      text-decoration: none;
+      padding: 0.8rem 1.2rem;
+      border-radius: 10px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .btn-generator {
+      background-color: #FF8C42;
+      color: #1E1E1E;
+    }
+
+    .btn-cadeaus {
+      background-color: #f97373;
+      color: #1E1E1E;
+    }
+
+    .btn-thijmen {
+      background-color: #60a5fa;
+      color: #1E1E1E;
+    }
+
+    .admin-menu-buttons a:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+    }
+
+    .back-link {
+      display:inline-block;
+      margin-top:1.5rem;
+      color:#FFD369;
+      text-decoration:none;
+      font-weight:500;
+    }
+
+    .back-link:hover {
+      color:#FF8C42;
+    }
   </style>
 </head>
 <body>
 
-<main>
-  <section class="admin-menu-wrapper">
-    <h1>Beheer</h1>
-    <p>Kies wat je wilt beheren:</p>
+  <!-- Bovenste knoppenbalk, gelijk aan admin.html maar met Beheer-knop -->
+  <div class="top-links">
+    <a href="index.html" class="home">🏠 Home</a>
+    <a href="backend.html" class="private-link">🛠️ Beheer</a>
+    <a href="https://console.firebase.google.com/project/verlanglijst-12015/database/verlanglijst-12015-default-rtdb/data" target="_blank" class="firebase">🌐 Firebase Console</a>
+    <a href="https://github.com/ThijmenMeesvg/Verlanglijst" target="_blank" class="github">💻 GitHub Repo</a>
+    <button id="logoutBtn" class="logout">Log uit</button>
+  </div>
 
-    <div class="admin-menu-buttons">
-      <a href="admin.html" class="btn-generator">🔧 Generator / Admin</a>
-      <a href="prive.html?view=cadeaus" class="btn-cadeaus">🎁 Cadeaus voor anderen</a>
-      <a href="prive.html?view=thijmen" class="btn-thijmen">🧍 Thijmen</a>
-    </div>
+  <main>
+    <section class="admin-menu-wrapper">
+      <h1>Admin overzicht</h1>
+      <p>Kies wat je wilt beheren:</p>
 
-    <a class="back-link" href="index.html">← Terug naar de site</a>
-  </section>
-</main>
+      <div class="admin-menu-buttons">
+        <a href="admin.html" class="btn-generator">🔧 Generator / Admin</a>
+        <a href="prive.html?view=cadeaus" class="btn-cadeaus">🎁 Cadeaus voor anderen</a>
+        <a href="prive.html?view=thijmen" class="btn-thijmen">🧍 Voor Thijmen</a>
+      </div>
 
-<script>
-  // Extra beveiliging: als iemand direct naar backend.html surft
-  if (sessionStorage.getItem("adminAuth") !== "1") {
-    const pwd = prompt("Voer admin-wachtwoord in:");
-    if (pwd === "verlanglijst") {
-      sessionStorage.setItem("adminAuth","1");
-    } else {
-      alert("Onjuist wachtwoord.");
-      window.location.href = "index.html";
+      <a class="back-link" href="index.html">← Terug naar de site</a>
+    </section>
+  </main>
+
+  <script>
+    // Beveiliging: alleen toegankelijk als adminAuth in deze sessie gezet is
+    if (sessionStorage.getItem("adminAuth") !== "1") {
+      const pwd = prompt("Voer admin-wachtwoord in:");
+      if (pwd === "verlanglijst") {
+        sessionStorage.setItem("adminAuth","1");
+      } else {
+        alert("Onjuist wachtwoord.");
+        window.location.href = "index.html";
+      }
     }
-  }
-</script>
 
+    // Logout: ruim zowel adminAuth (sessie) als adminLoggedIn (admin.html) op
+    document.getElementById("logoutBtn")?.addEventListener("click", () => {
+      sessionStorage.removeItem("adminAuth");
+      localStorage.removeItem("adminLoggedIn");
+      alert("Uitgelogd.");
+      window.location.href = "index.html";
+    });
+  </script>
 </body>
 </html>
