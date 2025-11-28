@@ -16,9 +16,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// ================================
+// ===============================
 // Helpers
-// ================================
+// ===============================
 async function fetchAllItems() {
   const snap = await get(ref(db, "/"));
   const root = snap.val() || {}; // { Boeken: {key: item}, Muziek: {...}, ... }
@@ -40,17 +40,14 @@ function renderItems(container, items) {
   }
 
   container.innerHTML = items.map(i => `
-    <div 
-      class="preview-card${i.favorite ? " favorite" : ""} ${i.done ? "done" : ""}" 
-      data-key="${i.key}" 
-      data-category="${i.category}"
-    >
+    <div class="preview-card${i.favorite ? " favorite" : ""} ${i.done ? "done" : ""}" 
+         data-key="${i.key}" data-category="${i.category}">
       ${i.image ? `<img src="${i.image}" alt="${i.title}">` : ""}
-      <div>
+      <div class="preview-content">
         <h3>${i.title}</h3>
         <p>💶 €${(i.price ?? 0).toFixed(2)}</p>
         <a href="${i.link}" target="_blank" style="color:#2563eb;">Bekijk product</a>
-        <p style="font-size:0.9rem;color:#555;margin-top:.4rem;">Categorie: ${i.category}</p>
+        <p style="font-size:0.9rem;color:#bbb;margin-top:.4rem;">Categorie: ${i.category}</p>
         <button 
           class="strike-btn"
           data-key="${i.key}"
@@ -64,7 +61,7 @@ function renderItems(container, items) {
     </div>
   `).join("");
 
-  // “Afstrepen” + undo-koppeling
+  // koppel “Afstrepen” met undo-actie
   container.querySelectorAll(".strike-btn").forEach(btn => {
     btn.addEventListener("click", async (e) => {
       const b = e.currentTarget;
@@ -101,6 +98,7 @@ function applyPriceFilter(list, min, max) {
 }
 
 function shufflePick(arr, n = 3) {
+  // Fisher-Yates shuffle
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -130,24 +128,10 @@ function ensureUndoBar() {
     const undoBtn = bar.querySelector("#undoBtn");
     undoBtn.addEventListener("click", async () => {
       if (!lastDoneAction) return;
-      const { cat, key } = lastDoneAction;
-
       try {
-        // done weer op false in Firebase
+        const { cat, key } = lastDoneAction;
+        // done weer op false zetten in Firebase
         await update(ref(db, `/${cat}/${key}`), { done: false });
-
-        // UI óók terugzetten
-        const card = document.querySelector(
-          `.preview-card[data-category="${cat}"][data-key="${key}"]`
-        );
-        if (card) {
-          card.classList.remove("done");
-          const strike = card.querySelector(".strike-btn");
-          if (strike) {
-            strike.disabled = false;
-            strike.textContent = "Afstrepen";
-          }
-        }
       } catch (e) {
         console.error("Undo mislukt:", e);
       } finally {
@@ -185,16 +169,16 @@ async function runHome() {
 
   let items = await fetchAllItems();
 
-  // alleen publieke items
+  // alleen publieke items (geen private)
   items = items.filter(i => !i.private);
 
   // favorieten die NIET afgestreept zijn
   const favorites = items.filter(i => i.favorite && !i.done);
 
-  // pak maximaal 3 random favorieten
-  const selected = shufflePick(favorites, 3);
-  
-  renderItems(container, favorites);
+  // max 3 random favorieten
+  const picked = shufflePick(favorites, 3);
+
+  renderItems(container, picked);
 }
 
 async function runAllItems() {
@@ -209,27 +193,27 @@ async function runAllItems() {
   const minEl = document.getElementById("minPrice");
   const maxEl = document.getElementById("maxPrice");
   const applyBtn = document.getElementById("applyFilters");
- 
+
   function updateView() {
     let list = all.slice();
     const cat = categorySelect?.value || "";
     const min = minEl?.value ? parseFloat(minEl.value) : null;
     const max = maxEl?.value ? parseFloat(maxEl.value) : null;
-  
+
     if (cat) list = list.filter(i => i.category === cat);
     list = applyPriceFilter(list, min, max);
-  
-    // eerst niet-afgestreept, dan afgestreept; binnen die groep: nieuwste eerst
+
+    // eerst niet-afgestreept, dan afgestreept; binnen die groepen nieuwste eerst
     list.sort((a, b) => {
-      const ad = !!a.done;
-      const bd = !!b.done;
-      if (ad !== bd) return ad - bd;       // false (0) komt boven true (1)
-      return new Date(b.dateAdded) - new Date(a.dateAdded);
+      if (!!a.done === !!b.done) {
+        return new Date(b.dateAdded) - new Date(a.dateAdded);
+      }
+      return a.done ? 1 : -1; // done onderaan
     });
-  
+
     renderItems(container, list);
   }
-  
+
   applyBtn?.addEventListener("click", updateView);
   updateView();
 }
@@ -251,7 +235,14 @@ async function runCategory(cat) {
     const min = minEl?.value ? parseFloat(minEl.value) : null;
     const max = maxEl?.value ? parseFloat(maxEl.value) : null;
     let filtered = applyPriceFilter(list, min, max);
-    filtered.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+
+    filtered.sort((a, b) => {
+      if (!!a.done === !!b.done) {
+        return new Date(b.dateAdded) - new Date(a.dateAdded);
+      }
+      return a.done ? 1 : -1;
+    });
+
     renderItems(container, filtered);
   }
 
@@ -259,6 +250,7 @@ async function runCategory(cat) {
   updateView();
 }
 
+// ------- Privépagina (zonder wachtwoord, met view=cadeaus/thijmen) -------
 async function runPrivatePage() {
   const container = document.getElementById("private-items");
   const titleEl   = document.getElementById("private-title");
@@ -297,32 +289,8 @@ async function runPrivatePage() {
   }
 }
 
+// ------- Router op basis van flags in HTML -------
 
-    gate.classList.add("hidden");
-    content.classList.remove("hidden");
-    error.textContent = "";
-
-    const allItems = await fetchAllItems();
-    const privateItems = allItems.filter(i => i.private === true);
-
-    const cadeauItems = privateItems.filter(i => i.category === "Cadeaus");
-    const thijmenItems = privateItems.filter(i => i.category === "Voor Thijmen");
-
-    if (!cadeauItems.length) {
-      cadeauContainer.innerHTML = "<p>Geen cadeaus gevonden.</p>";
-    } else {
-      renderItems(cadeauContainer, cadeauItems);
-    }
-
-    if (!thijmenItems.length) {
-      thijmenContainer.innerHTML = "<p>Geen persoonlijke items gevonden.</p>";
-    } else {
-      renderItems(thijmenContainer, thijmenItems);
-    }
-  });
-}
-
-// Router op basis van flags uit de HTML
 if (window.HOME_PAGE) {
   runHome();
 } else if (window.ALL_ITEMS_PAGE) {
