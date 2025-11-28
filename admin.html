@@ -1,315 +1,326 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Verlanglijst Admin</title>
-<style>
-  body {
-    font-family: 'Inter', 'Poppins', 'Arial', sans-serif;
-    max-width: 1100px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: #1E1E1E;
-    color: #EDEDED;
-    line-height: 1.6;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verlanglijst Admin</title>
+  <style>
+    body {
+      font-family: 'Inter', 'Poppins', 'Arial', sans-serif;
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background-color: #1E1E1E;
+      color: #EDEDED;
+      line-height: 1.6;
+    }
 
-  h1, h2, h3 {
-    text-align: center;
-    margin-bottom: 1rem;
-    color: #FFD369;
-    letter-spacing: 0.5px;
-  }
+    h1, h2, h3 {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #FFD369;
+      letter-spacing: 0.5px;
+    }
 
-  label {
-    font-weight: bold;
-    display: block;
-    margin-top: 1rem;
-    color: #FFD369;
-  }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 1rem;
+      color: #FFD369;
+    }
 
-  input, select, textarea, button {
-    width: 100%;
-    padding: .6rem;
-    font-size: 1rem;
-    margin-top: .3rem;
-    border-radius: 8px;
-    border: 1px solid #555;
-    box-sizing: border-box;
-    background-color: #2C2C2C;
-    color: #EDEDED;
-  }
+    input,
+    select,
+    textarea,
+    button {
+      width: 100%;
+      padding: .6rem;
+      font-size: 1rem;
+      margin-top: .3rem;
+      border-radius: 8px;
+      border: 1px solid #555;
+      box-sizing: border-box;
+      background-color: #2C2C2C;
+      color: #EDEDED;
+    }
 
-  input::placeholder,
-  textarea::placeholder {
-    color: #aaa;
-  }
+    input::placeholder,
+    textarea::placeholder {
+      color: #aaa;
+    }
 
-  button {
-    margin-top: 1rem;
-    background-color: #FF8C42;
-    color: #1E1E1E;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
+    button {
+      margin-top: 1rem;
+      background-color: #FF8C42;
+      color: #1E1E1E;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
 
-  button:hover {
-    background-color: #FFD369;
-    transform: translateY(-1px);
-  }
+    button:hover {
+      background-color: #FFD369;
+      transform: translateY(-1px);
+    }
 
-  .section {
-    background-color: #2C2C2C;
-    padding: 2rem;
-    margin-top: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    transition: box-shadow 0.3s ease;
-  }
+    .section {
+      background-color: #2C2C2C;
+      padding: 2rem;
+      margin-top: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      transition: box-shadow 0.3s ease;
+    }
 
-  .section:hover {
-    box-shadow: 0 8px 20px rgba(255, 140, 66, 0.3);
-  }
+    .section:hover {
+      box-shadow: 0 8px 20px rgba(255, 140, 66, 0.3);
+    }
 
-  .error-box {
-    margin-top: 1rem;
-    padding: .8rem;
-    border-radius: 8px;
-    background: #3b0a0a;
-    border: 1px solid #f87171;
-    color: #fca5a5;
-    display: none;
-    white-space: pre-wrap;
-  }
+    .error-box {
+      margin-top: 1rem;
+      padding: .8rem;
+      border-radius: 8px;
+      background: #3b0a0a;
+      border: 1px solid #f87171;
+      color: #fca5a5;
+      display: none;
+      white-space: pre-wrap;
+    }
 
-  .success-box {
-    margin-top: 1rem;
-    padding: .8rem;
-    border-radius: 8px;
-    background: #064e3b;
-    border: 1px solid #34d399;
-    color: #a7f3d0;
-    display: none;
-  }
+    .success-box {
+      margin-top: 1rem;
+      padding: .8rem;
+      border-radius: 8px;
+      background: #064e3b;
+      border: 1px solid #34d399;
+      color: #a7f3d0;
+      display: none;
+    }
 
-  .favorite-wrapper {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    margin-top: 1rem;
-  }
+    .favorite-wrapper {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      margin-top: 1rem;
+    }
 
-  .favorite-wrapper input {
-    width: auto;
-    transform: scale(1.3);
-    cursor: pointer;
-  }
+    .favorite-wrapper input {
+      width: auto;
+      transform: scale(1.3);
+      cursor: pointer;
+    }
 
-  .favorite-wrapper label {
-    margin-top: 0;
-    font-weight: 500;
-    color: #FFD369;
-  }
+    .favorite-wrapper label {
+      margin-top: 0;
+      font-weight: 500;
+      color: #FFD369;
+    }
 
-  .loading-spinner {
-    display: none;
-    justify-content: center;
-    align-items: center;
-    margin-top: 1rem;
-  }
+    .loading-spinner {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      margin-top: 1rem;
+    }
 
-  .spinner {
-    border: 4px solid #333;
-    border-top: 4px solid #FFD369;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    animation: spin 1s linear infinite;
-  }
+    .spinner {
+      border: 4px solid #333;
+      border-top: 4px solid #FFD369;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      animation: spin 1s linear infinite;
+    }
 
-  @keyframes spin {
-    0% { transform: rotate(0); }
-    100% { transform: rotate(360deg); }
-  }
+    @keyframes spin {
+      0% { transform: rotate(0); }
+      100% { transform: rotate(360deg); }
+    }
 
-  .top-links {
-    text-align: center;
-    margin-bottom: 1rem;
-  }
+    .top-links {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
 
-  .top-links a, .top-links button {
-    display: inline-block;
-    padding: .5rem 1rem;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
-    margin: 0 .3rem .3rem;
-    border: none;
-    cursor: pointer;
-  }
+    .top-links a,
+    .top-links button {
+      display: inline-block;
+      padding: .5rem 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      margin: 0 .3rem .3rem;
+      border: none;
+      cursor: pointer;
+    }
 
-  .home { background: #FF8C42; color: #1E1E1E; }
-  .firebase { background: #FFD369; color: #1E1E1E; }
-  .github { background: #10b981; color: #fff; }
-  .logout { background: #ef4444; color: #fff; }
-  .private { background: #3b82f6; color: #fff;
-}
+    .home    { background: #FF8C42; color: #1E1E1E; }
+    .firebase{ background: #FFD369; color: #1E1E1E; }
+    .github  { background: #10b981; color: #fff; }
+    .logout  { background: #ef4444; color: #fff; }
+    .private-link { background:#3b82f6; color:#fff; }
 
+    .link-item,
+    .item-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #262626;
+      padding: .5rem .8rem;
+      border-radius: 6px;
+      margin-top: .5rem;
+      word-break: break-all;
+      transition: background 0.4s;
+      border: 1px solid #333;
+    }
 
-  .link-item, .item-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #262626;
-    padding: .5rem .8rem;
-    border-radius: 6px;
-    margin-top: .5rem;
-    word-break: break-all;
-    transition: background 0.4s;
-    border: 1px solid #333;
-  }
+    .link-item:hover,
+    .item-card:hover {
+      background: #333;
+    }
 
-  .link-item:hover, .item-card:hover {
-    background: #333;
-  }
+    .item-buttons,
+    .link-buttons {
+      display: flex;
+      gap: .3rem;
+    }
 
-  .item-buttons, .link-buttons {
-    display: flex;
-    gap: .3rem;
-  }
+    #filterBar {
+      display: flex;
+      gap: .5rem;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
 
-  #filterBar {
-    display: flex;
-    gap: .5rem;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 1rem;
-  }
+    #filterBar label {
+      color: #FFD369;
+      font-weight: 600;
+    }
 
-  #filterBar select {
-    padding: .4rem .8rem;
-    border-radius: 6px;
-    border: 1px solid #555;
-    background: #1E1E1E;
-    color: #FFD369;
-  }
+    #filterBar select {
+      padding: .4rem .8rem;
+      border-radius: 6px;
+      border: 1px solid #555;
+      background: #1E1E1E;
+      color: #FFD369;
+    }
 
-  #deleteDoneBtn {
-    background: #ef4444;
-    color: #fff;
-    padding: .4rem .8rem;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-  }
+    #deleteDoneBtn {
+      background: #ef4444;
+      color: #fff;
+      padding: .4rem .8rem;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-  #deleteDoneBtn:hover {
-    background: #dc2626;
-  }
+    #deleteDoneBtn:hover {
+      background: #dc2626;
+    }
 
-  #previewContainer {
-    margin-top: 1.5rem;
-    background: #1E1E1E;
-    padding: 1rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, .5);
-    display: none;
-  }
+    #previewContainer {
+      margin-top: 1.5rem;
+      background: #1E1E1E;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .5);
+      display: none;
+    }
 
-  .preview-card {
-    margin-top: 1rem;
-    padding: 1rem;
-    border: 1px solid #333;
-    border-radius: 10px;
-    background: #262626;
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-  }
+    .preview-card {
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 1px solid #333;
+      border-radius: 10px;
+      background: #262626;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
 
-  .preview-card.favorite {
-    border: 2px solid #FF8C42;
-    box-shadow: 0 0 20px rgba(255, 140, 66, .4);
-    background: #2E2A25;
-  }
+    .preview-card.favorite {
+      border: 2px solid #FF8C42;
+      box-shadow: 0 0 20px rgba(255, 140, 66, .4);
+      background: #2E2A25;
+    }
 
-  .preview-card img {
-    width: 100px;
-    border-radius: 8px;
-    object-fit: cover;
-  }
+    .preview-card img {
+      width: 100px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
 
-  .preview-card h3 {
-    margin: 0 0 .3rem;
-    color: #FFD369;
-  }
+    .preview-card h3 {
+      margin: 0 0 .3rem;
+      color: #FFD369;
+    }
 
-  .preview-card p {
-    margin: 0;
-    color: #EDEDED;
-  }
+    .preview-card p {
+      margin: 0;
+      color: #EDEDED;
+    }
 
-  .preview-card a {
-    color: #FF8C42;
-    text-decoration: none;
-    font-weight: bold;
-  }
+    .preview-card a {
+      color: #FF8C42;
+      text-decoration: none;
+      font-weight: bold;
+    }
 
-  .preview-card a:hover {
-    color: #FFD369;
-  }
+    .preview-card a:hover {
+      color: #FFD369;
+    }
 
-  .edit-input {
-    width: auto;
-    margin: 0 4px;
-    padding: 2px 4px;
-    font-size: .9rem;
-    border-radius: 4px;
-    background: #2C2C2C;
-    color: #FFD369;
-    border: 1px solid #555;
-  }
+    .edit-input {
+      width: auto;
+      margin: 0 4px;
+      padding: 2px 4px;
+      font-size: .9rem;
+      border-radius: 4px;
+      background: #2C2C2C;
+      color: #FFD369;
+      border: 1px solid #555;
+    }
 
-  .highlight {
-    background: rgba(255, 140, 66, 0.2) !important;
-    transition: background 1.5s ease;
-  }
-/* Scroll naar boven knop - klein rond knopje dat meebeweegt */
-#scrollTopBtn {
-  position: absolute;
-  right: 30px;
-  background-color: #2C2C2C;
-  color: #FFD369;
-  border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  font-size: 1.3rem;
-  line-height: 48px; /* zorgt dat de pijl gecentreerd is */
-  text-align: center;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-  display: none;
-  transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
-  z-index: 999;
-}
+    .highlight {
+      background: rgba(255, 140, 66, 0.2) !important;
+      transition: background 1.5s ease;
+    }
 
-#scrollTopBtn:hover {
-  background-color: #FF8C42;
-  color: #1E1E1E;
-  transform: translateY(-3px);
-}
+    /* Scroll naar boven knop */
+    #scrollTopBtn {
+      position: fixed;
+      right: 30px;
+      bottom: 30px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: #2C2C2C;
+      color: #FFD369;
+      border: 1px solid #444;
+      font-size: 1.2rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
+      z-index: 999;
+    }
 
-</style>
-
+    #scrollTopBtn:hover {
+      background-color: #FF8C42;
+      color: #1E1E1E;
+      transform: translateY(-3px);
+    }
+  </style>
 </head>
-  <button id="scrollTopBtn" title="Naar boven">▲</button>
 <body>
+
+<button id="scrollTopBtn" title="Naar boven">▲</button>
 
 <div class="top-links">
   <a href="index.html" class="home">🏠 Home</a>
@@ -323,7 +334,7 @@
 
 <!-- Tijdelijke links -->
 <div class="section">
-  <h2>📎 Links </h2>
+  <h2>📎 Links</h2>
   <textarea id="tempLinks" placeholder="Plak hier tijdelijk links, één per regel..."></textarea>
   <div style="display:flex;gap:.5rem;">
     <button id="rememberLinksBtn" style="flex:1;">Onthoud mij</button>
@@ -334,7 +345,8 @@
 
 <!-- Product toevoegen -->
 <div class="section">
-  <h2>⚙️ Json generator</h2>
+  <h2>⚙️ JSON generator</h2>
+
   <label for="category">Categorie:</label>
   <select id="category">
     <option value="">-- Kies categorie --</option>
@@ -365,11 +377,11 @@
     <input type="checkbox" id="favoriteForm"/>
     <label for="favoriteForm">Markeer als favoriet ❤️</label>
   </div>
-  <div class="favorite-wrapper">
-  <input type="checkbox" id="privateForm"/>
-  <label for="privateForm">Markeer als privé 🔒</label>
-</div>
 
+  <div class="favorite-wrapper">
+    <input type="checkbox" id="privateForm"/>
+    <label for="privateForm">Markeer als privé 🔒</label>
+  </div>
 
   <label>Datum toegevoegd:</label>
   <input type="date" id="dateForm"/>
@@ -422,533 +434,537 @@
 </div>
 
 <script type="module">
-/* ================================
-   Firebase
-================================ */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getDatabase, ref, push, set, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getDatabase, ref, push, set, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCnDzhefAQWgoShNY2geSFwxTzNwqUqvTU",
-  authDomain: "verlanglijst-12015.firebaseapp.com",
-  databaseURL: "https://verlanglijst-12015-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "verlanglijst-12015",
-  storageBucket: "verlanglijst-12015.firebasestorage.app",
-  messagingSenderId: "512971362808",
-  appId: "1:512971362808:web:b16ec8341ec4fbe795460d"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyCnDzhefAQWgoShNY2geSFwxTzNwqUqvTU",
+    authDomain: "verlanglijst-12015.firebaseapp.com",
+    databaseURL: "https://verlanglijst-12015-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "verlanglijst-12015",
+    storageBucket: "verlanglijst-12015.firebasestorage.app",
+    messagingSenderId: "512971362808",
+    appId: "1:512971362808:web:b16ec8341ec4fbe795460d"
+  };
 
-const app = initializeApp(firebaseConfig);
-const db  = getDatabase(app);
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
 
-/* ================================
-   Login
-================================ */
-if (localStorage.getItem("adminLoggedIn") !== "true") {
-  const entered = prompt("Voer toegangscode in:");
-  if (entered !== "verlanglijst") { alert("Onjuiste code."); window.location.href = "index.html"; }
-  else localStorage.setItem("adminLoggedIn","true");
-}
-document.getElementById("logoutBtn").onclick = () => {
-  localStorage.removeItem("adminLoggedIn");
-  alert("Uitgelogd.");
-  window.location.href = "index.html";
-};
+  // Login
+  if (localStorage.getItem("adminLoggedIn") !== "true") {
+    const entered = prompt("Voer toegangscode in:");
+    if (entered !== "verlanglijst") {
+      alert("Onjuiste code.");
+      window.location.href = "index.html";
+    } else {
+      localStorage.setItem("adminLoggedIn","true");
+    }
+  }
 
-/* ================================
-   UI helpers
-================================ */
-const errBox = document.getElementById("errorBox");
-const okBox  = document.getElementById("successBox");
-const spin   = document.getElementById("loadingSpinner");
+  document.getElementById("logoutBtn").onclick = () => {
+    localStorage.removeItem("adminLoggedIn");
+    alert("Uitgelogd.");
+    window.location.href = "index.html";
+  };
 
-const showError = (msg) => { okBox.style.display="none"; errBox.style.display="block"; errBox.textContent = msg; };
-const showSuccess = (msg) => { errBox.style.display="none"; okBox.style.display="block"; okBox.textContent = msg; setTimeout(()=> okBox.style.display="none", 3000); };
-const clearMsg = () => { errBox.style.display="none"; okBox.style.display="none"; };
-const setLoading = (b) => spin.style.display = b ? "flex" : "none";
+  // UI helpers
+  const errBox = document.getElementById("errorBox");
+  const okBox  = document.getElementById("successBox");
+  const spin   = document.getElementById("loadingSpinner");
 
-/* ================================
-   Tijdelijke links (gesynchroniseerd via Firebase)
-================================ */
-const tempLinks = document.getElementById("tempLinks");
-const rememberLinksBtn = document.getElementById("rememberLinksBtn");
-const clearLinksBtn = document.getElementById("clearLinksBtn");
-const savedLinksList = document.getElementById("savedLinksList");
+  const showError = (msg) => {
+    okBox.style.display="none";
+    errBox.style.display="block";
+    errBox.textContent = msg;
+  };
 
-async function renderSavedLinks() {
-  savedLinksList.innerHTML = "";
-  try {
-    const snap = await get(ref(db, "/tempLinks"));
-    const data = snap.val() || {};
-    const saved = Object.values(data); // array van links
+  const showSuccess = (msg) => {
+    errBox.style.display="none";
+    okBox.style.display="block";
+    okBox.textContent = msg;
+    setTimeout(()=> okBox.style.display="none", 3000);
+  };
 
-    if (!saved.length) {
-      savedLinksList.innerHTML = "<p>Geen tijdelijke links opgeslagen.</p>";
+  const clearMsg = () => {
+    errBox.style.display="none";
+    okBox.style.display="none";
+  };
+
+  const setLoading = (b) => {
+    spin.style.display = b ? "flex" : "none";
+  };
+
+  // Tijdelijke links via Firebase
+  const tempLinks       = document.getElementById("tempLinks");
+  const rememberLinksBtn= document.getElementById("rememberLinksBtn");
+  const clearLinksBtn   = document.getElementById("clearLinksBtn");
+  const savedLinksList  = document.getElementById("savedLinksList");
+
+  async function renderSavedLinks() {
+    savedLinksList.innerHTML = "";
+    try {
+      const snap = await get(ref(db, "/tempLinks"));
+      const data = snap.val() || {};
+      const saved = Object.values(data);
+
+      if (!saved.length) {
+        savedLinksList.innerHTML = "<p>Geen tijdelijke links opgeslagen.</p>";
+        return;
+      }
+
+      saved.forEach(link => {
+        const div = document.createElement("div");
+        div.className = "link-item";
+        div.innerHTML = `
+          <span>${link}</span>
+          <div class="link-buttons">
+            <button style="background:#2563eb;color:#fff;">📋</button>
+            <button style="background:#ef4444;color:#fff;">❌</button>
+          </div>
+        `;
+
+        const [copyBtn, delBtn] = div.querySelectorAll("button");
+        copyBtn.onclick = () => navigator.clipboard.writeText(link);
+        delBtn.onclick = () => deleteTempLink(link);
+        savedLinksList.appendChild(div);
+      });
+    } catch (e) {
+      showError("❌ Kon tijdelijke links niet laden: " + e.message);
+    }
+  }
+
+  async function deleteTempLink(link) {
+    try {
+      const snap = await get(ref(db, "/tempLinks"));
+      const data = snap.val() || {};
+      const key = Object.keys(data).find(k => data[k] === link);
+      if (key) {
+        await remove(ref(db, `/tempLinks/${key}`));
+      }
+      showSuccess("🗑️ Link verwijderd.");
+      renderSavedLinks();
+    } catch (e) {
+      showError("❌ Verwijderen mislukt: " + e.message);
+    }
+  }
+
+  rememberLinksBtn.onclick = async () => {
+    const links = tempLinks.value.split("\n").map(l => l.trim()).filter(Boolean);
+    if (!links.length) return;
+    try {
+      for (const l of links) {
+        await push(ref(db, "/tempLinks"), l);
+      }
+      tempLinks.value = "";
+      showSuccess("✅ Links opgeslagen.");
+      renderSavedLinks();
+    } catch (e) {
+      showError("❌ Opslaan mislukt: " + e.message);
+    }
+  };
+
+  clearLinksBtn.onclick = async () => {
+    if (!confirm("Alle tijdelijke links in Firebase verwijderen?")) return;
+    try {
+      await remove(ref(db, "/tempLinks"));
+      renderSavedLinks();
+    } catch (e) {
+      showError("❌ Opschonen mislukt: " + e.message);
+    }
+  };
+
+  renderSavedLinks();
+
+  // Form referenties
+  const catEl    = document.getElementById("category");
+  const urlEl    = document.getElementById("urlForm");
+  const titleEl  = document.getElementById("titleForm");
+  const priceEl  = document.getElementById("priceForm");
+  const imageEl  = document.getElementById("imageForm");
+  const favEl    = document.getElementById("favoriteForm");
+  const privEl   = document.getElementById("privateForm");
+  const dateEl   = document.getElementById("dateForm");
+  const previewContainer = document.getElementById("previewContainer");
+
+  // Automatisch invullen
+  document.getElementById("populateFormBtn").onclick = async () => {
+    clearMsg();
+    setLoading(true);
+    const url = urlEl.value.trim();
+    if (!url) {
+      setLoading(false);
+      return showError("⚠️ Voer een product-URL in.");
+    }
+
+    let html = "";
+    const errors = [];
+
+    try {
+      const res = await fetch(url, { mode: "cors" });
+      html = await res.text();
+    } catch {
+      errors.push("❌ Kon de productpagina niet laden (CORS of ongeldig URL).");
+    }
+
+    const doc = new DOMParser().parseFromString(html, "text/html");
+
+    // JSON-LD (ook binnen @graph)
+    let jsonLd;
+    try {
+      const scripts = [...doc.querySelectorAll('script[type="application/ld+json"]')];
+      for (const s of scripts) {
+        const parsed = JSON.parse(s.textContent);
+        const graph = Array.isArray(parsed?.["@graph"]) ? parsed["@graph"] : [parsed];
+        const product = graph.find(n => (n?.["@type"]||"").toString().toLowerCase().includes("product"));
+        if (product) {
+          jsonLd = product;
+          break;
+        }
+      }
+    } catch {
+      // stil
+    }
+
+    // Titel
+    const metaTitle = jsonLd?.name
+      || doc.querySelector('meta[property="og:title"]')?.content
+      || doc.querySelector('meta[name="twitter:title"]')?.content
+      || doc.title;
+    if (metaTitle) titleEl.value = metaTitle.trim();
+    else { titleEl.value=""; errors.push("⚠️ Kon titel niet ophalen."); }
+
+    // Afbeelding
+    let metaImg = jsonLd?.image
+      || doc.querySelector('meta[property="og:image"]')?.content
+      || doc.querySelector('meta[name="twitter:image"]')?.content;
+    if (Array.isArray(metaImg)) metaImg = metaImg[0];
+    if (metaImg) imageEl.value = metaImg;
+    else { imageEl.value=""; errors.push("⚠️ Kon afbeelding niet ophalen."); }
+
+    // Prijs
+    const text = html.replace(/\s+/g, " ");
+    let priceValue =
+      jsonLd?.offers?.price
+      || (text.match(/"price"\s*:\s*"([\d.,]+)/)?.[1])
+      || (text.match(/€\s?([\d.,]+)/)?.[1])
+      || (text.match(/"priceAmount"\s*:\s*"([\d.,]+)/)?.[1]);
+
+    if (priceValue) priceEl.value = parseFloat(priceValue.replace(",", "."));
+    else { priceEl.value=""; errors.push("⚠️ Kon prijs niet ophalen."); }
+
+    // Datum
+    dateEl.value = new Date().toISOString().slice(0,10);
+
+    setLoading(false);
+    if (errors.length) showError(errors.join("\n"));
+  };
+
+  // Preview
+  document.getElementById("previewBtn").onclick = () => {
+    clearMsg();
+    const t = titleEl.value.trim();
+    const p = priceEl.value;
+    const i = imageEl.value;
+    const l = urlEl.value;
+    const f = favEl.checked;
+    const c = catEl.value || "Geen categorie";
+    if (!t && !p && !i) return showError("⚠️ Geen gegevens om te tonen in de preview.");
+
+    previewContainer.style.display = "block";
+    previewContainer.innerHTML = `
+      <div class="preview-card ${f ? "favorite" : ""}">
+        ${i ? `<img src="${i}" alt="${t}">` : ""}
+        <div>
+          <h3>${t || "Onbekend product"}</h3>
+          ${p ? `<p>💶 €${parseFloat(p).toFixed(2)}</p>` : ""}
+          ${l ? `<a href="${l}" target="_blank">Bekijk product</a>` : ""}
+          <p style="font-size:.9rem;color:#aaa;margin-top:.4rem;">Categorie: ${c}</p>
+        </div>
+      </div>
+    `;
+  };
+
+  // Toevoegen
+  document.getElementById("addItemBtn").onclick = async () => {
+    clearMsg();
+    const c    = catEl.value;
+    const link = urlEl.value.trim();
+
+    if (!c)    return showError("⚠️ Kies eerst een categorie.");
+    if (!link) return showError("⚠️ Vul een product-URL in.");
+
+    try {
+      const snap = await get(ref(db, `/${c}`));
+      const data = snap.val() || {};
+      const dup = Object.values(data).some(item =>
+        (item.link||"").replace(/^https?:\/\//,"").toLowerCase() ===
+        link.replace(/^https?:\/\//,"").toLowerCase()
+      );
+      if (dup) return showError(`⚠️ Dit product staat al in de categorie "${c}".`);
+
+      const isPrivateCat = c === "Cadeaus" || c === "Voor Thijmen";
+
+      const item = {
+        title: titleEl.value || "Onbekend product",
+        price: priceEl.value ? parseFloat(priceEl.value) : 0,
+        link,
+        favorite: favEl.checked,
+        private: isPrivateCat ? true : (privEl.checked || false),
+        dateAdded: dateEl.value || new Date().toISOString().slice(0,10),
+        image: imageEl.value || "",
+        done: false
+      };
+
+      const newRef = await push(ref(db, `/${c}`), item);
+
+      resetForm();
+      showSuccess(`✅ Item toegevoegd aan ${c}`);
+
+      setTimeout(() => {
+        renderList();
+        const el = document.querySelector(`.item-card[data-key="${newRef.key}"]`);
+        if (el) {
+          el.classList.add("highlight");
+          el.scrollIntoView({ behavior:"smooth", block:"center" });
+          setTimeout(() => el.classList.remove("highlight"), 1500);
+        }
+      }, 800);
+    } catch (e) {
+      showError("❌ Fout bij toevoegen aan Firebase: " + e.message);
+    }
+  };
+
+  document.getElementById("resetFormBtn").onclick = () => resetForm();
+
+  function resetForm() {
+    catEl.value = "";
+    urlEl.value = "";
+    titleEl.value = "";
+    priceEl.value = "";
+    imageEl.value = "";
+    favEl.checked = false;
+    privEl.checked = false;
+    dateEl.value = "";
+    clearMsg();
+    previewContainer.style.display = "none";
+  }
+
+  // Realtime lijst + filters
+  const itemList     = document.getElementById("itemList");
+  const statusFilter = document.getElementById("statusFilter");
+  const dateSort     = document.getElementById("dateSort");
+  const catFilter    = document.getElementById("catFilter");
+  const applyFilters = document.getElementById("applyFilters");
+  const resetFilters = document.getElementById("resetFilters");
+  const deleteDone   = document.getElementById("deleteDoneBtn");
+
+  let latestData = {};
+
+  onValue(ref(db,"/"), (snap) => {
+    latestData = snap.val() || {};
+    updateCategoryFilter();
+    renderList();
+  });
+
+  function updateCategoryFilter() {
+    const cats = Object.keys(latestData);
+    catFilter.innerHTML = "<option value='all'>Alle categorieën</option>" +
+      cats.map(c => `<option>${c}</option>`).join("");
+  }
+
+  applyFilters.onclick = () => renderList();
+
+  resetFilters.onclick = () => {
+    catFilter.value    = "all";
+    statusFilter.value = "notdone";
+    dateSort.value     = "neutral";
+    renderList();
+  };
+
+  deleteDone.onclick = async () => {
+    if (!confirm("Weet je zeker dat je ALLE afgestreepte items wilt verwijderen?")) return;
+    for (const [cat, items] of Object.entries(latestData)) {
+      for (const [key, val] of Object.entries(items)) {
+        if (val.done) await remove(ref(db, `/${cat}/${key}`));
+      }
+    }
+    showSuccess("Alle afgestreepte items zijn verwijderd.");
+  };
+
+  function renderList() {
+    itemList.innerHTML = "";
+    if (!Object.keys(latestData).length) {
+      itemList.innerHTML = "<p>Geen items.</p>";
       return;
     }
 
-    saved.forEach((link) => {
-      const div = document.createElement("div");
-      div.className = "link-item";
-      div.innerHTML = `
-        <span>${link}</span>
-        <div class="link-buttons">
-          <button style="background:#2563eb;color:#fff;" onclick="navigator.clipboard.writeText('${link}')">📋</button>
-          <button style="background:#ef4444;color:#fff;" data-link="${link}" class="temp-del">❌</button>
-        </div>
-      `;
-      savedLinksList.appendChild(div);
+    const f  = statusFilter.value;
+    const s  = dateSort.value;
+    const cf = catFilter.value;
+
+    for (const [cat, items] of Object.entries(latestData)) {
+      if (cf !== "all" && cf !== cat) continue;
+
+      let arr = Object.entries(items).map(([key, v]) => ({ key, ...v }));
+
+      if (f === "done")     arr = arr.filter(i => i.done);
+      if (f === "notdone")  arr = arr.filter(i => !i.done);
+      if (f === "favorite") arr = arr.filter(i => i.favorite);
+      if (f === "private")  arr = arr.filter(i => i.private);
+
+      if (s === "newest") arr.sort((a,b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+      if (s === "oldest") arr.sort((a,b) => new Date(a.dateAdded) - new Date(b.dateAdded));
+
+      const h = document.createElement("h3");
+      h.textContent = `${cat} (${arr.length} items)`;
+      itemList.appendChild(h);
+
+      for (const i of arr) {
+        const row = document.createElement("div");
+        row.className = "item-card";
+        row.dataset.key = i.key;
+        row.dataset.cat = cat;
+
+        row.innerHTML = `
+          <span class="info">
+            <strong>${i.title}</strong> (€${i.price || 0})
+            ${i.done ? '<em style="color:#22c55e;">[Afgestreept]</em>' : ''}
+            ${i.private ? '<em style="color:#facc15;margin-left:6px;">[Privé]</em>' : ''}
+          </span>
+          <div class="item-buttons">
+            <button class="edit-btn" data-cat="${cat}" data-key="${i.key}" style="background:#0ea5e9;color:#fff;">📝</button>
+            <button class="fav-btn"  data-cat="${cat}" data-key="${i.key}" style="background:${i.favorite ? '#ff8c42' : '#999'};color:#fff;">★</button>
+            <button class="done-btn" data-cat="${cat}" data-key="${i.key}" style="background:${i.done ? '#22c55e' : '#999'};color:#fff;">✔️</button>
+            <button class="del-btn"  data-cat="${cat}" data-key="${i.key}" style="background:#ef4444;color:#fff;">❌</button>
+          </div>
+        `;
+        itemList.appendChild(row);
+      }
+    }
+
+    // knoppen koppelen
+    itemList.querySelectorAll(".fav-btn").forEach(btn => {
+      btn.onclick = async () => {
+        const { cat, key } = btn.dataset;
+        const current = latestData[cat][key];
+        await update(ref(db, `/${cat}/${key}`), { favorite: !current.favorite });
+      };
     });
 
-    // verwijderknoppen koppelen
-    savedLinksList.querySelectorAll(".temp-del").forEach(btn => {
-      btn.onclick = () => deleteTempLink(btn.dataset.link);
+    itemList.querySelectorAll(".done-btn").forEach(btn => {
+      btn.onclick = async () => {
+        const { cat, key } = btn.dataset;
+        const current = latestData[cat][key];
+        await update(ref(db, `/${cat}/${key}`), { done: !current.done });
+      };
     });
 
-  } catch (e) {
-    showError("❌ Kon tijdelijke links niet laden: " + e.message);
-  }
-}
+    itemList.querySelectorAll(".del-btn").forEach(btn => {
+      btn.onclick = async () => {
+        const { cat, key } = btn.dataset;
+        if (confirm("Verwijderen?")) {
+          await remove(ref(db, `/${cat}/${key}`));
+          showSuccess("🗑️ Item verwijderd.");
+        }
+      };
+    });
 
-async function deleteTempLink(link) {
-  try {
-    const snap = await get(ref(db, "/tempLinks"));
-    const data = snap.val() || {};
-    const key = Object.keys(data).find(k => data[k] === link);
-    if (key) await remove(ref(db, `/tempLinks/${key}`));
-    showSuccess("🗑️ Link verwijderd.");
-    renderSavedLinks();
-  } catch (e) {
-    showError("❌ Verwijderen mislukt: " + e.message);
-  }
-}
-
-rememberLinksBtn.onclick = async () => {
-  const links = tempLinks.value.split("\n").map(l => l.trim()).filter(Boolean);
-  if (!links.length) return;
-  try {
-    for (const l of links) {
-      await push(ref(db, "/tempLinks"), l);
-    }
-    tempLinks.value = "";
-    showSuccess("✅ Links opgeslagen.");
-    renderSavedLinks();
-  } catch (e) {
-    showError("❌ Opslaan mislukt: " + e.message);
-  }
-};
-
-clearLinksBtn.onclick = async () => {
-  if (!confirm("Alle tijdelijke links in Firebase verwijderen?")) return;
-  try {
-    await remove(ref(db, "/tempLinks"));
-    renderSavedLinks();
-  } catch (e) {
-    showError("❌ Opschonen mislukt: " + e.message);
-  }
-};
-
-// initial load
-renderSavedLinks();
-
-/* ================================
-   Form referenties
-================================ */
-const catEl    = document.getElementById("category");
-const urlEl    = document.getElementById("urlForm");
-const titleEl  = document.getElementById("titleForm");
-const priceEl  = document.getElementById("priceForm");
-const imageEl  = document.getElementById("imageForm");
-const favEl    = document.getElementById("favoriteForm");
-const dateEl   = document.getElementById("dateForm");
-const previewContainer = document.getElementById("previewContainer");
-
-/* ================================
-   Automatisch invullen
-   (JSON-LD, OG/Twitter, regex fallback + foutmeldingen)
-================================ */
-document.getElementById("populateFormBtn").onclick = async () => {
-  clearMsg(); setLoading(true);
-  const url = urlEl.value.trim();
-  if (!url) { setLoading(false); return showError("⚠️ Voer een product-URL in."); }
-
-  let html = "";
-  const errors = [];
-  try {
-    const res = await fetch(url, { mode: "cors" });
-    html = await res.text();
-  } catch {
-    errors.push("❌ Kon de productpagina niet laden (CORS of ongeldig URL).");
+    itemList.querySelectorAll(".edit-btn").forEach(btn => {
+      btn.onclick = () => startEdit(btn.dataset.cat, btn.dataset.key);
+    });
   }
 
-  const doc = new DOMParser().parseFromString(html, "text/html");
+  // Inline edit
+  function startEdit(cat, key) {
+    const row = [...itemList.querySelectorAll(".item-card")].find(r => r.dataset.key === key);
+    if (!row) return;
+    const i = latestData[cat][key];
 
-  // JSON-LD (ook binnen @graph)
-  let jsonLd;
-  try {
-    const scripts = [...doc.querySelectorAll('script[type="application/ld+json"]')];
-    for (const s of scripts) {
-      const parsed = JSON.parse(s.textContent);
-      const graph = Array.isArray(parsed?.["@graph"]) ? parsed["@graph"] : [parsed];
-      const product = graph.find(n => (n?.["@type"]||"").toString().toLowerCase().includes("product"));
-      if (product) { jsonLd = product; break; }
-    }
-  } catch {/* stil */}
+    const allCats = Object.keys(latestData);
+    const catOptions = allCats.map(c => `<option value="${c}" ${c === cat ? "selected" : ""}>${c}</option>`).join("");
 
-  // Titel
-  const metaTitle = jsonLd?.name
-    || doc.querySelector('meta[property="og:title"]')?.content
-    || doc.querySelector('meta[name="twitter:title"]')?.content
-    || doc.title;
-  if (metaTitle) titleEl.value = metaTitle.trim();
-  else { titleEl.value=""; errors.push("⚠️ Kon titel niet ophalen."); }
-
-  // Afbeelding
-  let metaImg = jsonLd?.image
-    || doc.querySelector('meta[property="og:image"]')?.content
-    || doc.querySelector('meta[name="twitter:image"]')?.content;
-  if (Array.isArray(metaImg)) metaImg = metaImg[0];
-  if (metaImg) imageEl.value = metaImg;
-  else { imageEl.value=""; errors.push("⚠️ Kon afbeelding niet ophalen."); }
-
-  // Prijs
-  const text = html.replace(/\s+/g, " ");
-  let priceValue =
-    jsonLd?.offers?.price
-    || (text.match(/"price"\s*:\s*"([\d.,]+)/)?.[1])
-    || (text.match(/€\s?([\d.,]+)/)?.[1])
-    || (text.match(/"priceAmount"\s*:\s*"([\d.,]+)/)?.[1]);
-  if (priceValue) priceEl.value = parseFloat(priceValue.replace(",", "."));
-  else { priceEl.value=""; errors.push("⚠️ Kon prijs niet ophalen."); }
-
-  // Datum altijd invullen
-  dateEl.value = new Date().toISOString().slice(0,10);
-
-  setLoading(false);
-  if (errors.length) showError(errors.join("\n"));
-};
-
-/* ================================
-   Preview
-================================ */
-document.getElementById("previewBtn").onclick = () => {
-  clearMsg();
-  const t = titleEl.value.trim();
-  const p = priceEl.value;
-  const i = imageEl.value;
-  const l = urlEl.value;
-  const f = favEl.checked;
-  const c = catEl.value || "Geen categorie";
-  if (!t && !p && !i) return showError("⚠️ Geen gegevens om te tonen in de preview.");
-
-  previewContainer.style.display = "block";
-  previewContainer.innerHTML = `
-    <div class="preview-card ${f ? "favorite" : ""}">
-      ${i ? `<img src="${i}" alt="${t}">` : ""}
-      <div>
-        <h3>${t || "Onbekend product"}</h3>
-        ${p ? `<p>💶 €${parseFloat(p).toFixed(2)}</p>` : ""}
-        ${l ? `<a href="${l}" target="_blank">Bekijk product</a>` : ""}
-        <p style="font-size:.9rem;color:#aaa;margin-top:.4rem;">Categorie: ${c}</p>
+    row.innerHTML = `
+      <div style="flex:1;display:flex;flex-direction:column;gap:.3rem;">
+        <label>Categorie:
+          <select id="editCategory" class="edit-input">${catOptions}</select>
+        </label>
+        <input class="edit-input" id="editTitle" value="${i.title || ''}" placeholder="Titel"/>
+        <input class="edit-input" id="editPrice" type="number" value="${i.price || 0}" placeholder="Prijs"/>
+        <input class="edit-input" id="editLink"  value="${i.link || ''}"  placeholder="Link"/>
+        <input class="edit-input" id="editImage" value="${i.image || ''}" placeholder="Afbeelding"/>
+        <label><input type="checkbox" id="editFav"  ${i.favorite ? "checked" : ""}/> Favoriet</label>
+        <label><input type="checkbox" id="editPrivate" ${i.private ? "checked" : ""}/> Privé 🔒</label>
+        <label><input type="checkbox" id="editDone" ${i.done ? "checked" : ""}/> Afgestreept</label>
       </div>
-    </div>
-  `;
-};
+      <div style="display:flex;flex-direction:column;gap:.3rem;">
+        <button id="saveEdit"   style="background:#10b981;color:#fff;">💾 Opslaan</button>
+        <button id="cancelEdit" style="background:#ef4444;color:#fff;">✖️ Annuleer</button>
+      </div>
+    `;
 
-/* ================================
-   Toevoegen + duplicaatcontrole + succesmelding + scroll
-================================ */
-document.getElementById("addItemBtn").onclick = async () => {
-  clearMsg();
-  const c = catEl.value;
-  const link = urlEl.value.trim();
-  if (!c)   return showError("⚠️ Kies eerst een categorie.");
-  if (!link) return showError("⚠️ Vul een product-URL in.");
+    row.querySelector("#cancelEdit").onclick = () => renderList();
 
-  try {
-    const snap = await get(ref(db, `/${c}`));
-    const data = snap.val() || {};
-    const dup = Object.values(data).some(item =>
-      (item.link||"").replace(/^https?:\/\//,"").toLowerCase() === link.replace(/^https?:\/\//,"").toLowerCase()
-    );
-    if (dup) return showError(`⚠️ Dit product staat al in de categorie "${c}".`);
+    row.querySelector("#saveEdit").onclick = async () => {
+      const nc  = row.querySelector("#editCategory").value;
+      const nt  = row.querySelector("#editTitle").value;
+      const np  = parseFloat(row.querySelector("#editPrice").value) || 0;
+      const nl  = row.querySelector("#editLink").value;
+      const ni  = row.querySelector("#editImage").value;
+      const nf  = row.querySelector("#editFav").checked;
+      const nd  = row.querySelector("#editDone").checked;
+      const npv = row.querySelector("#editPrivate").checked;
 
- // zet automatisch private = true bij Cadeaus of Voor Thijmen
-const isPrivateCat = c === "Cadeaus" || c === "Voor Thijmen";
-
-const item = {
-  title: titleEl.value || "Onbekend product",
-  price: priceEl.value ? parseFloat(priceEl.value) : 0,
-  link,
-  favorite: favEl.checked,
-  private: isPrivateCat ? true : document.getElementById("privateForm").checked || false,
-  dateAdded: dateEl.value || new Date().toISOString().slice(0,10),
-  image: imageEl.value || "",
-  done: false
-};
-
-
-    const newRef = await push(ref(db, `/${c}`), item);
-
-    // Reset formulier
-    resetForm();
-
-    // Succes + scroll/highlight zodra het item in de realtime lijst staat
-    showSuccess(`✅ Item toegevoegd aan ${c}`);
-    // Herlaad realtime previewlijst
-    setTimeout(() => renderList(), 800);
-    // Geef de onValue even tijd om te renderen, dan highlighten en scrollen:
-    setTimeout(() => {
-      const el = document.querySelector(`[data-key='${newRef.key}']`);
-      if (el) {
-        el.classList.add("highlight");
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-        setTimeout(() => el.classList.remove("highlight"), 1500);
-      }
-    }, 1200);
-
-  } catch (e) {
-    showError("❌ Fout bij toevoegen aan Firebase: " + e.message);
-  }
-};
-
-document.getElementById("resetFormBtn").onclick = () => resetForm();
-function resetForm(){
-  catEl.value = "";
-  urlEl.value = titleEl.value = priceEl.value = imageEl.value = "";
-  favEl.checked = false;
-  dateEl.value = "";
-  clearMsg();
-  previewContainer.style.display = "none";
-}
-
-/* ================================
-   Realtime lijst + filters + inline edit
-================================ */
-const itemList     = document.getElementById("itemList");
-const statusFilter = document.getElementById("statusFilter");
-const dateSort     = document.getElementById("dateSort");
-const catFilter    = document.getElementById("catFilter");
-const applyFilters = document.getElementById("applyFilters");
-const resetFilters = document.getElementById("resetFilters");
-const deleteDone   = document.getElementById("deleteDoneBtn");
-
-let latestData = {};
-
-onValue(ref(db,"/"), (snap) => {
-  latestData = snap.val() || {};
-  updateCategoryFilter();
-  renderList();
-});
-
-function updateCategoryFilter(){
-  const cats = Object.keys(latestData);
-  catFilter.innerHTML = "<option value='all'>Alle categorieën</option>" +
-    cats.map(c => `<option>${c}</option>`).join("");
-  // Niet automatisch renderen; gebruiker klikt op "Filters toepassen"
-  // zodat filters los van elkaar kunnen worden ingesteld.
-}
-
-applyFilters.onclick = () => renderList();
-resetFilters.onclick = () => {
-  catFilter.value    = "all";
-  statusFilter.value = "notdone";
-  dateSort.value     = "neutral";
-  renderList();
-};
-
-deleteDone.onclick = async () => {
-  if (!confirm("Weet je zeker dat je ALLE afgestreepte items wilt verwijderen?")) return;
-  for (const [cat, items] of Object.entries(latestData)) {
-    for (const [key, val] of Object.entries(items)) {
-      if (val.done) await remove(ref(db, `/${cat}/${key}`));
-    }
-  }
-  alert("Alle afgestreepte items zijn verwijderd.");
-};
-
-function renderList(){
-  itemList.innerHTML = "";
-  if (!Object.keys(latestData).length) {
-    itemList.innerHTML = "<p>Geen items.</p>";
-    return;
-  }
-
-  const f  = statusFilter.value;
-  const s  = dateSort.value;
-  const cf = catFilter.value;
-
-  for (const [cat, items] of Object.entries(latestData)) {
-    if (cf !== "all" && cf !== cat) continue;
-
-    let arr = Object.entries(items).map(([key, v]) => ({ key, ...v }));
-
-    if (f === "done")     arr = arr.filter(i => i.done);
-    if (f === "notdone")  arr = arr.filter(i => !i.done);
-    if (f === "favorite") arr = arr.filter(i => i.favorite);
-    if (f === "private")  arr = arr.filter(i => i.private);
-
-    if (s === "newest") arr.sort((a,b) => new Date(b.dateAdded) - new Date(a.dateAdded));
-    if (s === "oldest") arr.sort((a,b) => new Date(a.dateAdded) - new Date(b.dateAdded));
-
-    const h = document.createElement("h3");
-    h.textContent = `${cat} (${arr.length} items)`;
-    itemList.appendChild(h);
-
-    for (const i of arr) {
-      const row = document.createElement("div");
-      row.className = "item-card";
-      row.dataset.key = i.key;
-
-      row.innerHTML = `
-        <span class="info">
-          <strong>${i.title}</strong> (€${i.price || 0})
-          ${i.done ? '<em style="color:#22c55e;">[Afgestreept]</em>' : ''}
-        </span>
-        <div class="item-buttons">
-          <button class="edit-btn" data-cat="${cat}" data-key="${i.key}" style="background:#0ea5e9;color:#fff;">📝</button>
-          <button class="fav-btn"  data-cat="${cat}" data-key="${i.key}" style="background:${i.favorite ? '#ff8c42' : '#999'};color:#fff;">★</button>
-          <button class="done-btn" data-cat="${cat}" data-key="${i.key}" style="background:${i.done ? '#22c55e' : '#999'};color:#fff;">✔️</button>
-          <button class="del-btn"  data-cat="${cat}" data-key="${i.key}" style="background:#ef4444;color:#fff;">❌</button>
-        </div>
-      `;
-      itemList.appendChild(row);
-    }
-  }
-
-  // Koppelingen
-  itemList.querySelectorAll(".fav-btn").forEach(btn => {
-    btn.onclick = async () => {
-      const { cat, key } = btn.dataset;
-      const current = latestData[cat][key];
-      await update(ref(db, `/${cat}/${key}`), { favorite: !current.favorite });
-    };
-  });
-
-  itemList.querySelectorAll(".done-btn").forEach(btn => {
-    btn.onclick = async () => {
-      const { cat, key } = btn.dataset;
-      const current = latestData[cat][key];
-      await update(ref(db, `/${cat}/${key}`), { done: !current.done });
-    };
-  });
-
-  itemList.querySelectorAll(".del-btn").forEach(btn => {
-    btn.onclick = async () => {
-      const { cat, key } = btn.dataset;
-      if (confirm("Verwijderen?")) {
-        await remove(ref(db, `/${cat}/${key}`));
-        showSuccess("🗑️ Item verwijderd.");
-        setTimeout(() => renderList(), 800);
+      try {
+        if (nc !== cat) {
+          const newRef = push(ref(db, `/${nc}`));
+          await set(newRef, {
+            ...i,
+            title: nt,
+            price: np,
+            link: nl,
+            image: ni,
+            favorite: nf,
+            private: npv,
+            done: nd
+          });
+          await remove(ref(db, `/${cat}/${key}`));
+          showSuccess(`✅ Item verplaatst naar ${nc}`);
+        } else {
+          await update(ref(db, `/${cat}/${key}`), {
+            title: nt,
+            price: np,
+            link: nl,
+            image: ni,
+            favorite: nf,
+            private: npv,
+            done: nd
+          });
+          showSuccess("✅ Item aangepast.");
+        }
+      } catch (e) {
+        showError("❌ Fout bij opslaan: " + e.message);
+      } finally {
+        setTimeout(() => renderList(), 500);
       }
     };
-  });
+  }
 
-  // Bewerken
-  itemList.querySelectorAll(".edit-btn").forEach(btn => {
-    btn.onclick = () => startEdit(btn.dataset.cat, btn.dataset.key);
-  });
-}
+  // Scroll naar boven knop logica
+  const scrollTopBtn = document.getElementById("scrollTopBtn");
 
-/* ================================
-   Inline edit (alle velden)
-================================ */
-function startEdit(cat, key) {
-  const row = [...itemList.querySelectorAll(".item-card")].find(r => r.dataset.key === key);
-  if (!row) return;
-  const i = latestData[cat][key];
-
-  // Dropdown met alle categorieën
-  const allCats = Object.keys(latestData);
-  const catOptions = allCats.map(c => `<option value="${c}" ${c === cat ? "selected" : ""}>${c}</option>`).join("");
-
-  row.innerHTML = `
-    <div style="flex:1;display:flex;flex-direction:column;gap:.3rem;">
-      <label>Categorie:
-        <select id="editCategory" class="edit-input">${catOptions}</select>
-      </label>
-      <input class="edit-input" id="editTitle" value="${i.title || ''}" placeholder="Titel"/>
-      <input class="edit-input" id="editPrice" type="number" value="${i.price || 0}" placeholder="Prijs"/>
-      <input class="edit-input" id="editLink"  value="${i.link || ''}"  placeholder="Link"/>
-      <input class="edit-input" id="editImage" value="${i.image || ''}" placeholder="Afbeelding"/>
-     <label><input type="checkbox" id="editFav"  ${i.favorite ? "checked" : ""}/> Favoriet</label>
-    <label><input type="checkbox" id="editPrivate" ${i.private ? "checked" : ""}/> Privé 🔒</label>
-    <label><input type="checkbox" id="editDone" ${i.done ? "checked" : ""}/> Afgestreept</label>
-
-    </div>
-    <div style="display:flex;flex-direction:column;gap:.3rem;">
-      <button id="saveEdit"   style="background:#10b981;color:#fff;">💾 Opslaan</button>
-      <button id="cancelEdit" style="background:#ef4444;color:#fff;">✖️ Annuleer</button>
-    </div>
-  `;
-
-  // Annuleren: renderlijst opnieuw
-  row.querySelector("#cancelEdit").onclick = () => renderList();
-
-  // Opslaan
-  row.querySelector("#saveEdit").onclick = async () => {
-    const nc = row.querySelector("#editCategory").value;
-    const nt = row.querySelector("#editTitle").value;
-    const np = parseFloat(row.querySelector("#editPrice").value) || 0;
-    const nl = row.querySelector("#editLink").value;
-    const ni = row.querySelector("#editImage").value;
-    const nf = row.querySelector("#editFav").checked;
-    const nd = row.querySelector("#editDone").checked;
-    const npv = row.querySelector("#editPrivate").checked;
-
-
-    // Als de categorie veranderd is → verplaats het item
-    if (nc !== cat) {
-      const newRef = push(ref(db, `/${nc}`));
-      await set(newRef, { ...i, title: nt, price: np, link: nl, image: ni, favorite: nf, private: npv, done: nd });
-      await remove(ref(db, `/${cat}/${key}`));
-      showSuccess(`✅ Item verplaatst naar ${nc}`);
+  window.addEventListener("scroll", () => {
+    const scrollY = window.scrollY || document.documentElement.scrollTop;
+    if (scrollY > 300) {
+      scrollTopBtn.style.display = "flex";
     } else {
-      await update(ref(db, `/${cat}/${key}`), {
-        title: nt, price: np, link: nl, image: ni, favorite: nf, private: npv, done: nd
-      });
-
-      showSuccess("✅ Item aangepast.");
-      // Sluit editmodus en herlaad realtime preview
-      setTimeout(() => renderList(), 800);
+      scrollTopBtn.style.display = "none";
     }
-  };
-  }
-// ================================
-// Scroll naar boven knop (meebewegend effect)
-// ================================
-const scrollTopBtn = document.createElement("button");
-scrollTopBtn.id = "scrollTopBtn";
-scrollTopBtn.textContent = "▲";
-scrollTopBtn.title = "Naar boven";
-document.body.appendChild(scrollTopBtn);
+  });
 
-let targetY = 0;
-let currentY = 0;
-let ticking = false;
-
-function animateButton() {
-  currentY += (targetY - currentY) * 0.1;
-  scrollTopBtn.style.top = currentY + "px";
-  if (Math.abs(targetY - currentY) > 0.5) requestAnimationFrame(animateButton);
-}
-
-window.addEventListener("scroll", () => {
-  const scrollY = window.scrollY || document.documentElement.scrollTop;
-  targetY = scrollY + window.innerHeight - 100;
-
-  if (!ticking) {
-    requestAnimationFrame(animateButton);
-    ticking = true;
-    setTimeout(() => (ticking = false), 200);
-  }
-
-  scrollTopBtn.style.display = scrollY > 300 ? "block" : "none";
-});
-
-scrollTopBtn.onclick = () => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-};
+  scrollTopBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
 </script>
 </body>
 </html>
+
