@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin login</title>
+</head>
+
+<body>
+
+  <main>
+    <h1>Admin login</h1>
+
+    <form id="loginForm">
+      <label for="email">E-mailadres</label>
+      <input
+        type="email"
+        id="email"
+        autocomplete="email"
+        required
+      >
+
+      <label for="password">Wachtwoord</label>
+      <input
+        type="password"
+        id="password"
+        autocomplete="current-password"
+        required
+      >
+
+      <button type="submit">Inloggen</button>
+    </form>
+
+    <p id="loginError"></p>
+  </main>
+
+
+  <script type="module">
+    import { login } from "./js/auth.js";
+
+    const form = document.getElementById("loginForm");
+    const errorEl = document.getElementById("loginError");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      errorEl.textContent = "";
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      try {
+        const credential = await login(email, password);
+
+        console.log("Ingelogd:", credential.user.uid);
+
+        window.location.href = "backend.html";
+
+      } catch (error) {
+        console.error(error);
+
+        errorEl.textContent = "Inloggen mislukt.";
+      }
+    });
+  </script>
+
+</body>
+</html>
