@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verlanglijst v2 migratie</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background: #1e1e1e;
+            color: #ededed;
+        }
+
+        h1,
+        h2 {
+            color: #ffd369;
+        }
+
+        .card {
+            background: #2c2c2c;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            color: #4ade80;
+        }
+
+        .error {
+            color: #f87171;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border-bottom: 1px solid #444;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            color: #ffd369;
+        }
+
+        code {
+            color: #ff8c42;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Verlanglijst v2 migratie</h1>
+
+    <div class="card">
+        <h2>Controle</h2>
+        <p id="authStatus">Authenticatie controleren...</p>
+        <p id="migrationStatus">Nog niet gestart.</p>
+    </div>
+
+    <div class="card">
+        <h2>Samenvatting</h2>
+
+        <p>Oude items: <strong id="oldCount">-</strong></p>
+        <p>Nieuwe items: <strong id="newCount">-</strong></p>
+        <p>Publiek: <strong id="publicCount">-</strong></p>
+        <p>Privé: <strong id="privateCount">-</strong></p>
+        <p>Beschikbaar: <strong id="availableCount">-</strong></p>
+        <p>Gekocht: <strong id="boughtCount">-</strong></p>
+    </div>
+
+    <div class="card">
+        <h2>Validatie</h2>
+        <div id="validationResults">
+            Nog niet uitgevoerd.
+        </div>
+    </div>
+
+
+    <div class="card">
+        <h2>Preview</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Oud</th>
+                    <th>Titel</th>
+                    <th>Nieuwe categorie</th>
+                    <th>Status</th>
+                    <th>Zichtbaarheid</th>
+                    <th>Privélijst</th>
+                </tr>
+            </thead>
+
+            <tbody id="previewBody"></tbody>
+        </table>
+    </div>
+
+
+    <script type="module">
+
+        import { db } from "./js/firebase.js";
+        import { watchAuth } from "./js/auth.js";
+        import { createItemModel } from "./js/items.js";
+
+        import {
+            ref,
+            get
+        } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+
+        const ADMIN_UID = "31cz7LUdboNMqF4T6GS7UFCh1E62";
+
+
+        const OLD_SOURCES = {
+
+            "Boeken": {
+                category: "books",
+                visibility: "public",
+                privateList: null
+            },
+
+            "Spelletjes": {
+                category: "games",
+                visibility: "public",
+                privateList: null
+            },
+
+            "Muziek": {
+                category: "music",
+                visibility: "public",
+                privateList: null
+            },
+
+            "Kleding & Accesoires": {
+                category: "clothing",
+                visibility: "public",
+                privateList: null
+            },
+
+            "Uitzet": {
+                category: "home",
+                visibility: "public",
+                privateList: null
+            },
+
+            "Sport & Buiten": {
+                category: "outdoor",
+                visibility: "public",
+                privateList: null
+            },
+
+            "Overig": {
+                category: "other",
+                visibility: "public",
+                privateList: null
+            },
+
+            "Cadeaus": {
+                category: "other",
+                visibility: "private",
+                privateList: "gifts"
+            },
+
+            "Voor Thijmen": {
+                category: "other",
+                visibility: "private",
+                privateList: "thijmen"
+            }
+
+        };
+
+
+        function determineStatus(oldItem) {
+
+            if (oldItem.done === true) {
+                return "bought";
+            }
+
+            if (oldItem.checked === true) {
+                return "bought";
+            }
+
+            return "available";
+        }
+
+
+        function migrateItem(oldItem, sourceName) {
+
+            const source = OLD_SOURCES[sourceName];
+
+            return createItemModel({
+
+                title:
+                    oldItem.title ??
+                    "Onbekend product",
+
+                price:
+                    oldItem.price ?? 0,
+
+                link:
+                    oldItem.link ?? "",
+
+                image:
+                    oldItem.image ?? "",
+
+                category:
+                    source.category,
+
+                favorite:
+                    oldItem.favorite ?? false,
+
+                status:
+                    determineStatus(oldItem),
+
+                visibility:
+                    source.visibility,
+
+                privateList:
+                    source.privateList,
+
+                createdAt:
+                    oldItem.dateAdded ??
+                    new Date().toISOString().slice(0, 10)
+
+            });
+
+        }
+
+
+        async function buildMigrationPreview() {
+
+            const statusEl =
+                document.getElementById("migrationStatus");
+
+            statusEl.textContent =
+                "Oude Firebase-data ophalen...";
+
+
+            const rootSnapshot =
+                await get(ref(db, "/"));
+
+            const root =
+                rootSnapshot.val() || {};
+
+
+            const migratedItems = [];
+
+
+            for (
+                const [sourceName, sourceConfig]
+                of Object.entries(OLD_SOURCES)
+            ) {
+
+                const oldCategory =
+                    root[sourceName];
+
+                if (!oldCategory) {
+                    continue;
+                }
+
+
+                for (
+                    const [oldId, oldItem]
+                    of Object.entries(oldCategory)
+                ) {
+
+                    const newItem =
+                        migrateItem(
+                            oldItem,
+                            sourceName
+                        );
+
+
+                    migratedItems.push({
+
+                        oldId,
+                        sourceName,
+                        ...newItem
+
+                    });
+
+                }
+
+            }
+
+
+            renderSummary(migratedItems);
+            validateMigration(migratedItems);
+
+            renderPreview(migratedItems);
+
+
+            statusEl.textContent =
+                "Preview gereed. Er is niets naar Firebase geschreven.";
+
+            statusEl.className =
+                "success";
+
+        }
+
+
+        function renderSummary(items) {
+
+            const publicItems =
+                items.filter(
+                    item =>
+                        item.visibility === "public"
+                );
+
+
+            const privateItems =
+                items.filter(
+                    item =>
+                        item.visibility === "private"
+                );
+
+
+            const availableItems =
+                items.filter(
+                    item =>
+                        item.status === "available"
+                );
+
+
+            const boughtItems =
+                items.filter(
+                    item =>
+                        item.status === "bought"
+                );
+
+
+            document.getElementById(
+                "oldCount"
+            ).textContent =
+                items.length;
+
+
+            document.getElementById(
+                "newCount"
+            ).textContent =
+                items.length;
+
+
+            document.getElementById(
+                "publicCount"
+            ).textContent =
+                publicItems.length;
+
+
+            document.getElementById(
+                "privateCount"
+            ).textContent =
+                privateItems.length;
+
+
+            document.getElementById(
+                "availableCount"
+            ).textContent =
+                availableItems.length;
+
+
+            document.getElementById(
+                "boughtCount"
+            ).textContent =
+                boughtItems.length;
+
+        }
+
+        function validateMigration(items) {
+
+            const problems = [];
+
+            const validCategories = [
+                "books",
+                "games",
+                "music",
+                "clothing",
+                "home",
+                "outdoor",
+                "other"
+            ];
+
+            const validStatuses = [
+                "available",
+                "bought"
+            ];
+
+            const validVisibility = [
+                "public",
+                "private"
+            ];
+
+
+            for (const item of items) {
+
+                if (!item.title || item.title.trim() === "") {
+                    problems.push(
+                        `Item ${item.oldId}: titel ontbreekt`
+                    );
+                }
+
+
+                if (!validCategories.includes(item.category)) {
+                    problems.push(
+                        `${item.title}: ongeldige categorie "${item.category}"`
+                    );
+                }
+
+
+                if (!validStatuses.includes(item.status)) {
+                    problems.push(
+                        `${item.title}: ongeldige status "${item.status}"`
+                    );
+                }
+
+
+                if (!validVisibility.includes(item.visibility)) {
+                    problems.push(
+                        `${item.title}: ongeldige zichtbaarheid "${item.visibility}"`
+                    );
+                }
+
+
+                if (
+                    item.visibility === "private" &&
+                    !item.privateList
+                ) {
+                    problems.push(
+                        `${item.title}: privé-item zonder privateList`
+                    );
+                }
+
+
+                if (
+                    item.visibility === "public" &&
+                    item.privateList !== null
+                ) {
+                    problems.push(
+                        `${item.title}: publiek item heeft een privateList`
+                    );
+                }
+
+
+                if (
+                    typeof item.price !== "number" ||
+                    Number.isNaN(item.price)
+                ) {
+                    problems.push(
+                        `${item.title}: ongeldige prijs`
+                    );
+                }
+
+            }
+
+
+            const resultEl =
+                document.getElementById("validationResults");
+
+
+            if (problems.length === 0) {
+
+                resultEl.innerHTML = `
+      <p class="success">
+        ✓ Alle ${items.length} items zijn geldig voor v2.
+      </p>
+
+      <p>
+        Geen ontbrekende titels, ongeldige categorieën,
+        statussen, zichtbaarheid of prijzen gevonden.
+      </p>
+    `;
+
+                return true;
+
+            }
+
+
+            resultEl.innerHTML = "";
+
+            const heading =
+                document.createElement("p");
+
+            heading.className = "error";
+
+            heading.textContent =
+                `${problems.length} probleem/problemen gevonden:`;
+
+            resultEl.appendChild(heading);
+
+
+            const list =
+                document.createElement("ul");
+
+
+            for (const problem of problems) {
+
+                const li =
+                    document.createElement("li");
+
+                li.textContent = problem;
+
+                list.appendChild(li);
+
+            }
+
+
+            resultEl.appendChild(list);
+
+            return false;
+        }
+
+        function renderPreview(items) {
+
+            const tbody =
+                document.getElementById(
+                    "previewBody"
+                );
+
+
+            tbody.innerHTML = "";
+
+
+            for (const item of items) {
+
+                const row =
+                    document.createElement("tr");
+
+
+                const values = [
+
+                    item.sourceName,
+
+                    item.title,
+
+                    item.category,
+
+                    item.status,
+
+                    item.visibility,
+
+                    item.privateList ?? "-"
+
+                ];
+
+
+                for (const value of values) {
+
+                    const cell =
+                        document.createElement("td");
+
+                    cell.textContent =
+                        value;
+
+                    row.appendChild(cell);
+
+                }
+
+
+                tbody.appendChild(row);
+
+            }
+
+        }
+
+
+        watchAuth(async user => {
+
+            const authStatus =
+                document.getElementById(
+                    "authStatus"
+                );
+
+
+            if (!user) {
+
+                authStatus.textContent =
+                    "Niet ingelogd. Je wordt doorgestuurd.";
+
+                authStatus.className =
+                    "error";
+
+
+                setTimeout(() => {
+
+                    window.location.href =
+                        "admin-login.html";
+
+                }, 1000);
+
+                return;
+
+            }
+
+
+            if (user.uid !== ADMIN_UID) {
+
+                authStatus.textContent =
+                    "Dit Firebase-account heeft geen adminrechten.";
+
+                authStatus.className =
+                    "error";
+
+                return;
+
+            }
+
+
+            authStatus.textContent =
+                `Admin ingelogd: ${user.email}`;
+
+            authStatus.className =
+                "success";
+
+
+            try {
+
+                await buildMigrationPreview();
+
+            } catch (error) {
+
+                console.error(error);
+
+                const statusEl =
+                    document.getElementById(
+                        "migrationStatus"
+                    );
+
+                statusEl.textContent =
+                    "Migratie-preview mislukt: " +
+                    error.message;
+
+                statusEl.className =
+                    "error";
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>
