@@ -8,6 +8,7 @@
 
 import { firebaseConfig, FIREBASE_SDK, CATEGORIES, LISTS, PATHS, DEFAULT_SETTINGS } from "../config.js";
 import { newId, toTimestamp, normalizePrice } from "./util.js";
+import { LEGACY_NODES } from "./migrate.js";
 
 export function isDemo() {
   return new URLSearchParams(location.search).has("demo");
@@ -316,10 +317,9 @@ export async function applyUpdates(updates) {
 export async function readLegacy() {
   if (isDemo()) return structuredClone((await import("./demo-data.js")).DEMO_DATA.legacy);
   const { db, ref, get } = await firebase();
-  const names = [...CATEGORIES.map((c) => c.legacy), ...LISTS.filter((l) => l.legacy).map((l) => l.legacy), "tempLinks"];
   const root = {};
   await Promise.all(
-    names.map(async (name) => {
+    LEGACY_NODES.map(async (name) => {
       try { root[name] = (await get(ref(db, name))).val(); } catch { /* geen toegang of bestaat niet */ }
     })
   );

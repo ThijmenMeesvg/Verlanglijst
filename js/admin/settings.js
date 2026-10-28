@@ -8,9 +8,9 @@ import { createMigration } from "./migration.js";
 
 /**
  * @param {HTMLElement} root
- * @param {{ onSurpriseChange: () => void }} options
+ * @param {{ onSurpriseChange: () => void, existingIds: () => Set<string> }} options
  */
-export function createSettings(root, { onSurpriseChange }) {
+export function createSettings(root, { onSurpriseChange, existingIds }) {
   const adminUrl = new URL("admin.html", location.href).href.replace(/\?.*$/, "");
   // De bladwijzer opent de beheerpagina met de link van de winkelpagina waar je op dat moment bent.
   const bookmarklet = `javascript:location.href=${JSON.stringify(`${adminUrl}?url=`)}+encodeURIComponent(location.href)`;
@@ -83,7 +83,7 @@ export function createSettings(root, { onSurpriseChange }) {
     catch { showToast("Kopiëren lukte niet.", { error: true }); }
   });
 
-  createMigration(root.querySelector("#s-migration"));
+  createMigration(root.querySelector("#s-migration"), { existingIds });
 
   let textLoaded = false;
   return {

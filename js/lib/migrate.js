@@ -34,12 +34,23 @@ export function convertItem(old, categoryId, now = Date.now()) {
   return item;
 }
 
+/** Namen van alle oude mappen die na de overstap opgeruimd mogen worden. */
+export const LEGACY_NODES = [
+  ...CATEGORIES.map((c) => c.legacy),
+  ...LISTS.filter((l) => l.legacy).map((l) => l.legacy),
+  "tempLinks",
+  "v2"
+];
+
 /**
  * @param {object} root  De oude database (bijv. de JSON-export of losse categorie-nodes).
+ * @param {number} [now]
+ * @param {Set<string>} [existingIds]  Ids die al in de nieuwe indeling staan (in welke lijst of het archief dan ook).
+ *   Die worden overgeslagen, zodat opnieuw overzetten nooit latere wijzigingen overschrijft.
  * @returns {{ updates: Record<string, any>, report: object }}
  *   `updates` kun je in één keer aan Firebase `update(ref(db), updates)` geven.
  */
-export function planMigration(root, now = Date.now()) {
+export function planMigration(root, now = Date.now(), existingIds = new Set()) {
   const updates = {};
   const report = {
     perDestination: {},          // { "Openbaar · Boeken": 8, "Cadeaus": 3, ... }
@@ -50,7 +61,8 @@ export function planMigration(root, now = Date.now()) {
     unknownPrices: [],
     noImage: [],
     unknownNodes: [],
-    tempLinks: 0
+    tempLinks: 0,
+    skipped: 0
   };
   const bump = (key) => (report.perDestination[key] = (report.perDestination[key] || 0) + 1);
 
@@ -61,6 +73,7 @@ export function planMigration(root, now = Date.now()) {
     if (!node || typeof node !== "object") continue;
     if (nodeName === "tempLinks") {
       for (const [key, url] of Object.entries(node)) {
+        if (existingIds.has(key)) continue;
         if (typeof url === "string" && url.trim()) {
           updates[`${PATHS.tempLinks}/${key}`] = { url: url.trim(), at: now };
           report.tempLinks++;
@@ -76,6 +89,7 @@ export function planMigration(root, now = Date.now()) {
 
     for (const [key, old] of Object.entries(node)) {
       if (!old || typeof old !== "object" || !old.link) continue;
+      if (existingIds.has(key)) { report.skipped++; continue; }
       const categoryId = category ? category.id : "overig";
       const item = convertItem(old, categoryId, now);
 

@@ -80,3 +80,21 @@ test("planMigration zet alles op de juiste plek", () => {
 test("planMigration is herhaalbaar (zelfde sleutels, zelfde resultaat)", () => {
   assert.deepEqual(planMigration(legacy, NOW).updates, planMigration(legacy, NOW).updates);
 });
+
+test("planMigration slaat items over die al in de nieuwe indeling staan", () => {
+  const existing = new Set(["boeken3", "c1", "k1"]);   // bijv. bewerkt, of al naar het archief verplaatst
+  const { updates, report } = planMigration(legacy, NOW, existing);
+  assert.equal(updates["wishlist/items/boeken3"], undefined);
+  assert.equal(updates["private/cadeaus/items/c1"], undefined);
+  assert.equal(updates["private/tempLinks/k1"], undefined);
+  assert.ok(updates["wishlist/items/-Ox"]);
+  assert.equal(report.skipped, 2);
+  assert.equal(report.total, 5);
+});
+
+test("alles al overgezet: niets meer te doen", () => {
+  const all = new Set(Object.values(legacy).flatMap((node) => Object.keys(node)));
+  const { updates, report } = planMigration(legacy, NOW, all);
+  assert.deepEqual(updates, {});
+  assert.equal(report.total, 0);
+});
