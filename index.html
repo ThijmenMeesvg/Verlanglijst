@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://*.firebasedatabase.app; connect-src 'self' https://*.firebasedatabase.app wss://*.firebasedatabase.app; img-src 'self' https: data:; style-src 'self'; font-src 'self'; frame-src https://*.firebasedatabase.app; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://*.firebasedatabase.app; connect-src 'self' https://*.firebasedatabase.app wss://*.firebasedatabase.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; img-src 'self' https: data:; style-src 'self'; font-src 'self'; frame-src https://*.firebasedatabase.app; object-src 'none'; base-uri 'self'; form-action 'self'">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Verlanglijst van Thijmen</title>
   <meta name="description" content="Mijn verlanglijst: zoek iets uit en klik op ‘Ik geef dit’, dan weet iedereen dat het al geregeld is.">
@@ -28,10 +28,16 @@
     <button type="button" class="btn btn--small btn--quiet" id="share">Link delen</button>
   </header>
 
+  <p class="surprise-notice" id="surprise-notice" hidden>
+    Verrassingsmodus staat aan op dit apparaat: je ziet niet wat al gegeven wordt.
+    <button type="button" class="link-button">Uitzetten</button>
+  </p>
+
   <main>
     <section class="hero" aria-labelledby="title">
       <h1 id="title">Verlanglijst van Thijmen</h1>
       <p class="hero__intro" id="intro"></p>
+      <a class="btn hero__jump" href="#lijst">Naar alle wensen</a>
       <ol class="steps">
         <li><span>Zoek iets uit dat je wilt geven.</span></li>
         <li><span>Klik op <strong>Ik geef dit</strong>.</span></li>

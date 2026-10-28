@@ -1,7 +1,8 @@
 // Startpunt van de openbare verlanglijst.
 import { isDemo, subscribePublic } from "../lib/store.js";
 import { countByCategory, filterItems, sortItems } from "../lib/util.js";
-import { showDemoBanner, showToast } from "../lib/ui.js";
+import { installImageFallback, showDemoBanner, showToast } from "../lib/ui.js";
+import { isSurpriseMode, setSurpriseMode } from "../lib/surprise.js";
 import { confettiOncePerVisit } from "../lib/confetti.js";
 import { renderTag } from "./render.js";
 import { setupFilters } from "./filters.js";
@@ -22,13 +23,17 @@ let firstRender = true;
 
 const { filters, updateCounts, reset } = setupFilters(render);
 
+const surprise = isSurpriseMode();
+
 function tagState(item) {
   const claimed = Boolean(state.claims[item.id]);
-  return { claimed, mine: claimed && isMine(item.id), canUndo: claimed && canUndo(item.id) };
+  return { claimed, mine: claimed && isMine(item.id), canUndo: claimed && canUndo(item.id), surprise };
 }
 
 function render() {
-  const { items, claims } = state;
+  const { items } = state;
+  // In verrassingsmodus doet de pagina alsof er nog niets gegeven wordt.
+  const claims = surprise ? {} : state.claims;
   const openItems = items.filter((i) => !claims[i.id]);
 
   // Favorieten bovenaan: alleen wat nog niet gegeven wordt.
@@ -86,14 +91,16 @@ document.addEventListener("click", (e) => {
   }
 });
 
-// Kapotte productfoto: val terug op het categorie-plaatje. (error-events borrelen niet op, dus capture.)
-document.addEventListener(
-  "error",
-  (e) => {
-    if (e.target instanceof HTMLImageElement && e.target.closest(".tag__media")) e.target.remove();
-  },
-  true
-);
+installImageFallback();
+
+if (surprise) {
+  const notice = document.getElementById("surprise-notice");
+  notice.hidden = false;
+  notice.querySelector("button").addEventListener("click", () => {
+    setSurpriseMode(false);
+    location.reload();
+  });
+}
 
 els.share.addEventListener("click", async () => {
   const url = `${location.origin}${location.pathname}`;

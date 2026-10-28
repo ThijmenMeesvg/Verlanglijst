@@ -4,7 +4,7 @@ import { categoryById, domId, escapeHtml, filterItems, formatPrice, safeUrl, sho
 import { archiveItems, deleteItems, saveItem, setClaimAdmin, setFields } from "../lib/store.js";
 import { confirmDialog, showToast } from "../lib/ui.js";
 import { createItemForm } from "./item-form.js";
-import { isSurpriseMode } from "./settings.js";
+import { isSurpriseMode } from "../lib/surprise.js";
 
 const listById = (id) => LISTS.find((l) => l.id === id);
 

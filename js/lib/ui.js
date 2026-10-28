@@ -93,3 +93,15 @@ export function showDemoBanner() {
   bar.textContent = "Demo-modus: je ziet voorbeelddata en niets wordt echt opgeslagen. Ververs de pagina om opnieuw te beginnen.";
   document.body.prepend(bar);
 }
+
+/** Kapotte productfoto: weghalen, zodat het categorie-icoon eronder zichtbaar wordt. */
+export function installImageFallback() {
+  // error-events borrelen niet op, daarom luisteren in de capture-fase.
+  document.addEventListener(
+    "error",
+    (e) => {
+      if (e.target instanceof HTMLImageElement && e.target.closest(".tag__media, .row__thumb")) e.target.remove();
+    },
+    true
+  );
+}

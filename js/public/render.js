@@ -3,9 +3,10 @@ import { categoryById, domId, escapeHtml, formatPrice, safeUrl, shopName } from 
 
 /**
  * @param {object} item
- * @param {{ claimed: boolean, mine: boolean, canUndo: boolean, withId?: boolean }} state
+ * @param {{ claimed: boolean, mine: boolean, canUndo: boolean, withId?: boolean, surprise?: boolean }} state
+ *   `surprise`: verrassingsmodus op Thijmens eigen apparaat, dus geen knop en geen ‘gegeven’-status.
  */
-export function renderTag(item, { claimed, mine, canUndo, withId = true }) {
+export function renderTag(item, { claimed, mine, canUndo, withId = true, surprise = false }) {
   const cat = categoryById(item.category);
   const link = safeUrl(item.link);
   const image = safeUrl(item.image, { upgrade: true });
@@ -17,15 +18,18 @@ export function renderTag(item, { claimed, mine, canUndo, withId = true }) {
     ? `<img src="${escapeHtml(image)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">`
     : "";
 
+  if (surprise) claimed = false;
   let action;
-  if (claimed && mine) {
+  if (surprise) {
+    action = "";
+  } else if (claimed && mine) {
     action = `<p class="tag__mine">Jij geeft dit.${
-      canUndo ? ` <button type="button" class="link-button" data-unclaim="${id}">Ongedaan maken</button>` : ""
+      canUndo ? ` <button type="button" class="link-button" data-unclaim="${id}" aria-label="Ongedaan maken: ${title}">Ongedaan maken</button>` : ""
     }</p>`;
   } else if (claimed) {
     action = `<p class="tag__taken">Iemand anders geeft dit al.</p>`;
   } else {
-    action = `<button type="button" class="btn btn--primary tag__give" data-claim="${id}">Ik geef dit</button>`;
+    action = `<button type="button" class="btn btn--primary tag__give" data-claim="${id}" aria-label="Ik geef dit: ${title}">Ik geef dit</button>`;
   }
 
   return `
@@ -43,6 +47,6 @@ export function renderTag(item, { claimed, mine, canUndo, withId = true }) {
         ${item.note ? `<p class="tag__note">${escapeHtml(item.note)}</p>` : ""}
         <p class="tag__price${item.price ? "" : " is-unknown"}">${escapeHtml(formatPrice(item.price))}</p>
       </div>
-      <div class="tag__actions">${action}</div>
+      ${action ? `<div class="tag__actions">${action}</div>` : ""}
     </article>`;
 }

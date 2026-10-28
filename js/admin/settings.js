@@ -3,14 +3,8 @@ import { FIREBASE_CONSOLE } from "../config.js";
 import { saveSettings } from "../lib/store.js";
 import { showToast } from "../lib/ui.js";
 import { escapeHtml } from "../lib/util.js";
+import { isSurpriseMode, setSurpriseMode } from "../lib/surprise.js";
 import { createMigration } from "./migration.js";
-
-const SURPRISE_KEY = "verlanglijst-verrassingsmodus";
-
-/** In verrassingsmodus zie je als beheerder niet wat er al gegeven wordt. Alleen op dit apparaat. */
-export function isSurpriseMode() {
-  try { return localStorage.getItem(SURPRISE_KEY) === "1"; } catch { return false; }
-}
 
 /**
  * @param {HTMLElement} root
@@ -39,7 +33,7 @@ export function createSettings(root, { onSurpriseChange }) {
 
     <section class="settings-block">
       <h2>Verrassingsmodus</h2>
-      <p>Zet dit aan als je niet wilt zien wat anderen al voor je kopen. De beheerpagina verbergt dan op dit apparaat alles over ‘gegeven’. Bezoekers merken er niets van.</p>
+      <p>Zet dit aan als je niet wilt zien wat anderen al voor je kopen. Op dit apparaat verbergen de beheerpagina en de openbare lijst dan alles over ‘gegeven’. Bezoekers merken er niets van.</p>
       <label class="check"><input type="checkbox" id="s-surprise"> Verrassingsmodus aan</label>
     </section>
 
@@ -76,7 +70,7 @@ export function createSettings(root, { onSurpriseChange }) {
   const surprise = root.querySelector("#s-surprise");
   surprise.checked = isSurpriseMode();
   surprise.addEventListener("change", () => {
-    try { localStorage.setItem(SURPRISE_KEY, surprise.checked ? "1" : "0"); } catch { /* geen opslag */ }
+    setSurpriseMode(surprise.checked);
     onSurpriseChange();
   });
 
