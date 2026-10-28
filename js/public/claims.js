@@ -35,6 +35,9 @@ export function forgetMissing(claims) {
 }
 
 const busy = new Set();   // voorkomt dubbel klikken terwijl iets wordt opgeslagen
+// Net ongedaan gemaakt: de lijst schuift, en de tweede klik van een dubbelklik landt dan op een
+// ‘Ik geef dit’-knop die toevallig op die plek komt te staan. Die negeren we heel even.
+let lastUndoAt = 0;
 
 /** Korte titel voor in meldingen, zodat een lange naam de melding niet opblaast. */
 const short = (title) => (title.length > 60 ? `${title.slice(0, 57).trimEnd()}…` : title);
@@ -58,7 +61,7 @@ function refocus(itemId, selector) {
 }
 
 export async function startClaim(item, mode, isTaken) {
-  if (busy.has(item.id)) return;
+  if (busy.has(item.id) || Date.now() - lastUndoAt < 800) return;
   const ok = await confirmDialog({
     title: "Geef je dit cadeau?",
     body: [
@@ -110,6 +113,7 @@ export async function undoClaim(item, mode, isClaimed) {
   busy.add(item.id);
   try {
     await unclaim(item, mode);
+    lastUndoAt = Date.now();
     delete mine[item.id];
     writeMine(mine);
     showToast(`“${short(item.title)}” staat weer open.`);

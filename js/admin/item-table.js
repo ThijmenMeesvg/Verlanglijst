@@ -217,7 +217,9 @@ export function createItemTable(root, { onGotoMigration }) {
     heading.textContent = "Item bewerken";
     const close = () => { dialog.close(); dialog.remove(); };
     // Al gegeven op de openbare lijst? Dan staat ‘Al gekocht’ aan als je hem naar een privélijst verplaatst.
-    const form = createItemForm({ mode: "edit", item: { ...item, done: isClaimed(item) }, allItems, onSaved: close, onCancel: close });
+    // (Niet in verrassingsmodus: dan zou het vinkje verraden dat iemand het al geeft.)
+    const done = isSurpriseMode() && item.listId === "public" ? false : isClaimed(item);
+    const form = createItemForm({ mode: "edit", item: { ...item, done }, allItems, onSaved: close, onCancel: close });
     dialog.append(heading, form);
     dialog.addEventListener("cancel", (e) => { e.preventDefault(); close(); });
     document.body.append(dialog);

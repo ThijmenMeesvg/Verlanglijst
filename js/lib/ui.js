@@ -94,7 +94,7 @@ export function showDemoBanner() {
   document.body.prepend(bar);
 
   // Links binnen de site blijven in demo-modus, zodat je niet per ongeluk in de echte lijst belandt.
-  for (const a of document.querySelectorAll("a[href]")) {
+  for (const a of document.querySelectorAll("a[href]:not([href^='#'])")) {
     const url = new URL(a.getAttribute("href"), location.href);
     if (url.origin !== location.origin || !/\/(index\.html|admin\.html)?$/.test(url.pathname)) continue;
     url.searchParams.set("demo", "");
