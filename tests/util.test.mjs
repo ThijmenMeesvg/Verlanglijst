@@ -24,6 +24,9 @@ test("prijzen", () => {
   assert.equal(parsePrice("€ 1.299,00"), 1299);
   assert.equal(parsePrice("1,299.50"), 1299.5);
   assert.equal(parsePrice("24.5"), 24.5);
+  assert.equal(parsePrice("24.95"), 24.95);
+  assert.equal(parsePrice("1.299"), 1299);
+  assert.equal(parsePrice("12.999"), 12999);
   assert.equal(normalizePrice(0), null);
   assert.equal(normalizePrice(""), null);
   assert.equal(normalizePrice("7,5"), 7.5);

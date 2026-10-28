@@ -45,8 +45,8 @@ export function parsePrice(text) {
     s = s.replace(/\./g, "").replace(",", ".");          // 1.299,95 -> 1299.95
   } else if (lastDot > lastComma && lastComma !== -1) {
     s = s.replace(/,/g, "");                              // 1,299.95 -> 1299.95
-  } else if (lastComma === -1 && (s.match(/\./g) || []).length > 1) {
-    s = s.replace(/\./g, "");                             // 1.299.000 -> 1299000
+  } else if (lastComma === -1 && /^\d{1,3}(\.\d{3})+$/.test(s)) {
+    s = s.replace(/\./g, "");                             // 1.299 of 1.299.000 -> duizendtallen
   }
   return parseFloat(s);
 }
