@@ -49,7 +49,7 @@ test("planMigration zet alles op de juiste plek", () => {
   assert.equal("image" in updates["wishlist/items/-Ox"], false);
 
   // Gegeven ("done") wordt een claim
-  assert.deepEqual(updates["wishlist/claims/-Ox"], { at: NOW });
+  assert.deepEqual(updates["wishlist/claims/-Ox"], { at: Date.parse("2026-04-25") });
   assert.equal(report.claims, 1);
 
   // Prijs 0 wordt onbekend, http-afbeelding wordt https

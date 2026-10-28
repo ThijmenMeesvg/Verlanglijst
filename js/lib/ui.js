@@ -39,7 +39,7 @@ export function showToast(message, { actionLabel, onAction, error = false, durat
   toastTimer = setTimeout(hideToast, duration);
 }
 
-export function hideToast() {
+function hideToast() {
   const toast = document.getElementById("toast");
   if (toast) toast.hidden = true;
 }

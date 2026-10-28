@@ -93,7 +93,8 @@ export function planMigration(root, now = Date.now()) {
       } else {
         updates[`${PATHS.items}/${key}`] = item;
         if (old.done === true) {
-          updates[`${PATHS.claims}/${key}`] = { at: now };
+          // Het echte moment is onbekend; de toevoegdatum zorgt dat bezoekers het niet meer kunnen terugdraaien.
+          updates[`${PATHS.claims}/${key}`] = { at: item.createdAt };
           report.claims++;
         }
         bump(`Openbaar · ${CATEGORIES.find((c) => c.id === categoryId).label}`);
