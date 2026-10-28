@@ -128,8 +128,10 @@ export function planMigration(root, now = Date.now(), existingIds = new Set()) {
       } else {
         updates[`${PATHS.items}/${key}`] = item;
         if (old.done === true) {
-          // Het echte moment is onbekend; de toevoegdatum zorgt dat bezoekers het niet meer kunnen terugdraaien.
-          updates[`${PATHS.claims}/${key}`] = { at: item.createdAt };
+          // Het echte moment en de gever zijn onbekend: zonder eigenaar en met tijdstip 0, net als een claim
+          // die je in het beheer zet. Bezoekers kunnen hem dan niet terugdraaien, en de klok van deze
+          // computer speelt geen rol (de regels weigeren tijdstippen in de toekomst).
+          updates[`${PATHS.claims}/${key}`] = { at: 0 };
           report.claims++;
         }
         bump(`Openbaar · ${CATEGORIES.find((c) => c.id === categoryId).label}`);
