@@ -26,11 +26,13 @@ export const CATEGORIES = [
   { id: "overig",  label: "Overig",                emoji: "✨", legacy: "Overig" }
 ];
 
-// Lijsten. "public" is wat bezoekers zien; de andere twee zijn alleen voor de beheerder.
+// Lijsten. "public" is wat bezoekers zien; de rest is alleen voor de beheerder.
+// Het archief vangt verwijderde en ontvangen items op, zodat niets per ongeluk voorgoed weg is.
 export const LISTS = [
   { id: "public",  label: "Verlanglijst (openbaar)", short: "Openbaar",    emoji: "🌍", isPrivate: false },
   { id: "cadeaus", label: "Cadeaus voor anderen",    short: "Cadeaus",     emoji: "🎁", isPrivate: true, legacy: "Cadeaus" },
-  { id: "voorMij", label: "Voor mezelf",             short: "Voor mezelf", emoji: "🧍", isPrivate: true, legacy: "Voor Thijmen" }
+  { id: "voorMij", label: "Voor mezelf",             short: "Voor mezelf", emoji: "🧍", isPrivate: true, legacy: "Voor Thijmen" },
+  { id: "archief", label: "Archief",                 short: "Archief",     emoji: "🗄️", isPrivate: true }
 ];
 
 export const PRICE_BANDS = [

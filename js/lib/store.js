@@ -215,7 +215,7 @@ const itemPath = (listId, id) => (listId === "public" ? `${PATHS.items}/${id}` :
 function cleanForSave(data, listId) {
   const out = {};
   const allowed = ["title", "link", "category", "price", "image", "note", "favorite", "createdAt", "updatedAt"];
-  if (listId !== "public") allowed.push("done");
+  if (listId !== "public") allowed.push("done", "archivedAt", "fromList");
   for (const key of allowed) {
     const v = data[key];
     if (v === undefined || v === null || v === "") continue;
@@ -240,6 +240,23 @@ export async function saveItem({ id, fromListId, listId, data }) {
   return itemId;
 }
 
+/**
+ * Verplaatst items naar het archief (in één keer). Een item dat al gegeven werd, krijgt `done: true`.
+ * @param {Array<{ item: object, claimed?: boolean }>} entries
+ */
+export async function archiveItems(entries) {
+  const updates = {};
+  const now = Date.now();
+  for (const { item, claimed } of entries) {
+    const data = cleanForSave({ ...item, archivedAt: now, fromList: item.listId, done: claimed || item.done || undefined }, "archief");
+    updates[itemPath("archief", item.id)] = data;
+    updates[itemPath(item.listId, item.id)] = null;
+    if (item.listId === "public") updates[`${PATHS.claims}/${item.id}`] = null;
+  }
+  return applyUpdates(updates);
+}
+
+/** Definitief verwijderen (alleen gebruikt vanuit het archief). */
 export async function deleteItems(entries) {
   const updates = {};
   for (const { listId, id } of entries) {
