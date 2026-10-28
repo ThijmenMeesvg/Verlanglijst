@@ -87,7 +87,7 @@ Na stap 6 mogen de zeven regels voor `Boeken` t/m `Overig` onderaan `database.ru
 | Gegevens | Waar | Lezen | Schrijven |
 |---|---|---|---|
 | Openbare items en de tekst bovenaan | `wishlist/items`, `wishlist/settings` | iedereen | alleen beheerder |
-| ‘Ik geef dit’ | `wishlist/claims` | iedereen | een bezoeker mag een claim toevoegen (tijdstip + anoniem id, geen naam) en alleen zijn eigen claim binnen 24 uur weghalen; claims die jij in het beheer zet kunnen bezoekers niet weghalen |
+| ‘Ik geef dit’ | `wishlist/claims` | iedereen | een bezoeker mag een claim toevoegen (tijdstip + anoniem id, geen naam) en alleen zijn eigen claim binnen 24 uur weghalen; claims die jij in het beheer zet (en die uit de oude lijst) kunnen bezoekers niet weghalen |
 | Oude categorieën (tot je opruimt) | `Boeken`, `Muziek`, … | iedereen | alleen beheerder |
 | Cadeaus voor anderen, Voor mezelf, archief, bewaarde links | `private/…` | alleen beheerder | alleen beheerder |
 | Wie beheerder is | `admins` | alleen je eigen regel | alleen via de Console |
@@ -102,6 +102,12 @@ Na stap 6 mogen de zeven regels voor `Boeken` t/m `Overig` onderaan `database.ru
 - Er staan geen wachtwoorden in de code. De Firebase-configuratie in `js/config.js` is bedoeld om openbaar te zijn; de beveiligingsregels bepalen wat ermee kan.
 - Firebase wordt geladen van Google’s eigen CDN in een vaste versie (10.12.2). Integrity-hashes (SRI) zijn niet mogelijk voor de manier waarop Firebase zijn modules laadt; de CSP beperkt waar scripts vandaan mogen komen.
 - Database-exports bevatten je privélijsten en staan daarom in `.gitignore`.
+
+## Bekende beperkingen
+
+- Elke bezoeker kan ‘Ik geef dit’ op elk item klikken; alleen jij kunt dat daarna nog terugzetten (in het beheer, tabblad Items). Voor een lijst onder vrienden en familie is dat een bewuste keuze.
+- ‘Gegevens ophalen’ gebruikt het gratis gebruik van Microlink, met een daglimiet. Daarna vul je naam, foto en prijs zelf in.
+- Een item dat je ná de overstap definitief verwijdert, komt terug als je de overstap opnieuw uitvoert vóórdat je de oude mappen hebt opgeruimd. Ruim dus op zodra alles klopt.
 
 ## Categorieën aanpassen
 
