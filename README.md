@@ -18,7 +18,7 @@ Gewone HTML, CSS en JavaScript, zonder framework en zonder bouwstap. De gegevens
 **Voor mij (beheer, inloggen met Google)**
 - Toevoegen: link plakken, ‘Gegevens ophalen’ vult naam, foto en vaak de prijs in. Trackingcodes (utm, gclid, …) worden automatisch uit links gehaald. Dubbele links worden gemeld.
 - Notitie per item (‘maat L, liefst groen’), favorieten, en drie lijsten: openbaar, cadeaus voor anderen, en voor mezelf. Plus een archief, zodat niets per ongeluk voorgoed weg is.
-- Verrassingsmodus: verbergt in het beheer wat al gegeven wordt.
+- Verrassingsmodus: verbergt op jouw apparaat, in het beheer én op de lijst zelf, wat al gegeven wordt.
 - Bladwijzer ‘Op mijn verlanglijst’: vanuit elke webwinkel met één klik toevoegen (zie Instellingen in het beheer).
 - Links bewaren om later te bekijken.
 
@@ -65,13 +65,18 @@ De vorige versie van de site staat ongewijzigd op de branch [`v1-oud`](https://g
 
 ## Eenmalige installatie
 
-Deze stappen doe je één keer in de [Firebase Console](https://console.firebase.google.com/project/verlanglijst-12015). Tot je ze gedaan hebt, blijft de site gewoon werken: hij leest dan nog de oude indeling.
+Deze stappen doe je één keer in de [Firebase Console](https://console.firebase.google.com/project/verlanglijst-12015). De site blijft de hele tijd werken: tot je overgestapt bent leest hij de oude indeling.
 
-1. **Google-inloggen aanzetten.** Authentication → Sign-in method → Google → Enable → Save.
+1. **Inlogmethoden aanzetten.** Authentication → Sign-in method:
+   - **Google** → Enable → Save (voor jou, in het beheer).
+   - **Anonymous** → Enable → Save (voor bezoekers: zo kan alleen wie ‘Ik geef dit’ klikte het ook terugdraaien; ze merken er niets van).
 2. **Je websiteadres toestaan.** Authentication → Settings → Authorized domains → Add domain → `thijmenmeesvg.github.io`.
-3. **Beveiligingsregels plaatsen.** Realtime Database → Rules. Vervang alles door de inhoud van [`database.rules.json`](database.rules.json) en klik Publish.
+3. **Beveiligingsregels plaatsen.** Realtime Database → Rules. Vervang alles door de inhoud van [`database.rules.json`](database.rules.json) en klik Publish. De oude openbare categorieën blijven leesbaar, dus de lijst blijft zichtbaar; je privélijsten zijn vanaf nu afgeschermd. (Alleen ‘Ik geef dit’ werkt pas weer na stap 5.)
 4. **Jezelf beheerder maken.** Open `admin.html` en log in met Google. Je ziet nu ‘Bijna klaar’ met jouw gebruikers-ID. Ga in de Console naar Realtime Database → Data, voeg in de root een node `admins` toe, en daarin een sleutel met jouw gebruikers-ID en de waarde `true`. Ververs de beheerpagina.
-5. **Overstappen.** In het beheer: Instellingen → Overstap van de oude database → Oude gegevens controleren → Overzetten. De oude mappen (Boeken, Muziek, …) blijven staan; als alles klopt kun je ze later zelf in de Console verwijderen, net als de oude map `v2`.
+5. **Overstappen.** In het beheer: Instellingen → Overstap → Oude gegevens controleren → Overzetten. Je kunt dit gerust nog eens doen: items die al overgezet zijn worden overgeslagen, dus latere wijzigingen blijven staan.
+6. **Opruimen.** Als alles is overgezet, verschijnt in hetzelfde blok de knop ‘Oude mappen opruimen’. Die verwijdert de oude categorieën, Cadeaus, Voor Thijmen, tempLinks en de oude kopie `v2`. Wil je eerst een reservekopie: Realtime Database → ⋮ → Export JSON (en bewaar die niet in deze repo).
+
+Na stap 6 mogen de zeven regels voor `Boeken` t/m `Overig` onderaan `database.rules.json` weg; ze doen dan niets meer.
 
 **Optioneel:** beperk de Firebase API-sleutel tot je eigen website. In de [Google Cloud Console](https://console.cloud.google.com/apis/credentials?project=verlanglijst-12015) → de ‘Browser key’ → Application restrictions → Websites → voeg `https://thijmenmeesvg.github.io/*` toe. Zet tijdelijk ook `http://localhost:8000/*` erbij als je lokaal wilt testen.
 
@@ -82,11 +87,12 @@ Deze stappen doe je één keer in de [Firebase Console](https://console.firebase
 | Gegevens | Waar | Lezen | Schrijven |
 |---|---|---|---|
 | Openbare items en de tekst bovenaan | `wishlist/items`, `wishlist/settings` | iedereen | alleen beheerder |
-| ‘Ik geef dit’ | `wishlist/claims` | iedereen | iedereen mag een claim toevoegen (alleen een tijdstip, geen naam) of binnen 24 uur weghalen |
+| ‘Ik geef dit’ | `wishlist/claims` | iedereen | een bezoeker mag een claim toevoegen (tijdstip + anoniem id, geen naam) en alleen zijn eigen claim binnen 24 uur weghalen; claims die jij in het beheer zet kunnen bezoekers niet weghalen |
+| Oude categorieën (tot je opruimt) | `Boeken`, `Muziek`, … | iedereen | alleen beheerder |
 | Cadeaus voor anderen, Voor mezelf, archief, bewaarde links | `private/…` | alleen beheerder | alleen beheerder |
 | Wie beheerder is | `admins` | alleen je eigen regel | alleen via de Console |
 
-**In de browser** van bezoekers wordt alleen bewaard welke items zíj gekozen hebben (`localStorage`, om ‘ongedaan maken’ te tonen) en of de confetti al getoond is (`sessionStorage`). In jouw browser ook of de verrassingsmodus aanstaat.
+**In de browser** van bezoekers wordt bewaard welke items zíj gekozen hebben (`localStorage`, om ‘ongedaan maken’ te tonen), of de confetti al getoond is (`sessionStorage`), en na hun eerste ‘Ik geef dit’ een anonieme Firebase-sessie (IndexedDB). In jouw browser ook of de verrassingsmodus aanstaat.
 
 **Gegevens ophalen** in het beheer stuurt alleen de productlink naar [Microlink](https://microlink.io). Het gratis gebruik heeft een daglimiet; daarna vul je de gegevens zelf in.
 
