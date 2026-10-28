@@ -12,24 +12,6 @@
 }
 .skip-link:focus { top: 8px; }
 
-/* ---------- Kopbalk ---------- */
-
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding: var(--space-2) max(var(--space-4), calc((100% - var(--page)) / 2));
-  background: #1e3b2f;
-  color: #f5f6f1;
-}
-.topbar__brand {
-  font: 700 18px/1 var(--font-head);
-  text-decoration: none;
-}
-.topbar__share { color: inherit; }
-.topbar__share:hover { background: rgb(255 255 255 / 12%); }
-
 main {
   max-width: var(--page);
   margin: 0 auto;
@@ -140,134 +122,6 @@ main {
 }
 .grid > .notice { grid-column: 1 / -1; }
 
-/* ---------- Het cadeaulabel ---------- */
-
-.tag {
-  position: relative;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  min-width: 0;
-  /* Het label heeft afgeschuinde bovenhoeken; de rand en schaduw komen van drop-shadow,
-     omdat een gewone border of box-shadow door clip-path weggeknipt wordt. */
-  filter: drop-shadow(0 0 0.6px var(--line)) drop-shadow(0 3px 8px rgb(26 34 29 / 7%));
-}
-.tag::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--paper);
-  border-radius: 0 0 var(--radius-m) var(--radius-m);
-  clip-path: polygon(22px 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%, 0 22px);
-}
-/* Het gaatje van het label */
-.tag::after {
-  content: "";
-  position: absolute;
-  top: 9px;
-  left: 50%;
-  width: 12px;
-  height: 12px;
-  margin-left: -6px;
-  border-radius: 50%;
-  background: var(--birch);
-  box-shadow: inset 0 0 0 2px var(--line);
-}
-
-.tag__media {
-  position: relative;
-  margin: 30px 12px 0;
-  aspect-ratio: 1;
-  border-radius: var(--radius-s);
-  background: var(--pine-soft);
-  overflow: hidden;
-  display: grid;
-  place-items: center;
-}
-/* Geen of kapotte foto: het plaatje van de categorie */
-.tag__media::before {
-  content: attr(data-emoji);
-  font-size: 56px;
-  opacity: .9;
-  grid-area: 1 / 1;
-}
-.tag__media img {
-  grid-area: 1 / 1;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 8%;
-  background: #fff;
-}
-
-.tag__fav {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: var(--gold);
-  color: #3a2a00;
-  font: 700 12px/1.4 var(--font-body);
-}
-
-.tag__stamp {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  padding: 6px 12px;
-  border: 3px solid var(--moss);
-  border-radius: 6px;
-  background: rgb(255 255 255 / 88%);
-  color: #4f6153;
-  font: 800 17px/1.1 var(--font-head);
-  text-align: center;
-  white-space: nowrap;
-  transform: translate(-50%, -50%) rotate(-9deg);
-}
-
-.tag__body {
-  display: grid;
-  align-content: start;
-  gap: 4px;
-  padding: var(--space-3) var(--space-4) 0;
-}
-.tag__title {
-  font: 600 16px/1.3 var(--font-body);
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.tag__title a { text-decoration: none; }
-.tag__title a:hover { text-decoration: underline; text-underline-offset: 2px; }
-.tag__meta { color: var(--ink-soft); font-size: 13px; }
-.tag__note {
-  margin-top: 2px;
-  padding: 6px 8px;
-  border-radius: var(--radius-s);
-  background: var(--pine-soft);
-  font-size: 13px;
-}
-.tag__price {
-  margin-top: 4px;
-  font: 700 18px/1.2 var(--font-head);
-  font-variant-numeric: tabular-nums;
-}
-.tag__price.is-unknown { font: 500 14px/1.4 var(--font-body); color: var(--ink-soft); }
-
-.tag__actions { padding: var(--space-3) var(--space-4) var(--space-4); }
-.tag__give { width: 100%; }
-.tag__taken,
-.tag__mine { min-height: var(--touch); display: flex; align-items: center; flex-wrap: wrap; gap: 0 6px; font-size: 14px; color: var(--ink-soft); }
-.tag__mine { color: var(--pine); font-weight: 600; }
-
-.tag.is-claimed .tag__media img,
-.tag.is-claimed .tag__media::before { opacity: .45; filter: grayscale(1); }
-.tag.is-claimed .tag__price { color: var(--ink-soft); }
-
-.tag.is-highlighted { filter: drop-shadow(0 0 0 var(--orange)) drop-shadow(0 0 6px var(--orange)); }
-
 /* ---------- Voet ---------- */
 
 .footer {
@@ -289,22 +143,8 @@ main {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-4) var(--space-3);
   }
-  .tag__media { margin: 26px 8px 0; }
-  .tag__media::before { font-size: 40px; }
-  .tag__body { padding: var(--space-2) var(--space-3) 0; }
-  .tag__title { font-size: 14px; }
-  .tag__price { font-size: 16px; }
-  .tag__actions { padding: var(--space-2) var(--space-3) var(--space-3); }
-  .tag__give { padding: 0 var(--space-2); font-size: 14px; }
-  .tag__stamp { font-size: 13px; padding: 4px 8px; border-width: 2px; }
-  .tag__note { font-size: 12px; }
 
   .favorites__row { grid-auto-columns: 62%; }
 
   .toolbar__sort { max-width: 46%; }
-}
-
-@media (prefers-color-scheme: dark) {
-  .tag__stamp { background: rgb(24 36 29 / 90%); color: #b9c9bd; }
-  .tag__media img { background: #f3f4f0; }
 }

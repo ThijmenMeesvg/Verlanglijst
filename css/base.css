@@ -96,6 +96,24 @@ a { color: inherit; }
   white-space: nowrap;
 }
 
+/* ---------- Kopbalk (alle pagina's) ---------- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) max(var(--space-4), calc((100% - var(--page)) / 2));
+  background: #1e3b2f;
+  color: #f5f6f1;
+}
+.topbar__brand {
+  font: 700 18px/1 var(--font-head);
+  text-decoration: none;
+}
+.topbar__share { color: inherit; }
+.topbar__share:hover { background: rgb(255 255 255 / 12%); }
+
 /* ---------- Knoppen ---------- */
 
 .btn {
