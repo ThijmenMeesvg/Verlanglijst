@@ -22,7 +22,7 @@ export function createItemTable(root) {
       <input class="input" id="t-search" type="search" placeholder="Zoek op naam, winkel of notitie">
       <label class="visually-hidden" for="t-list">Lijst</label>
       <select class="select" id="t-list">
-        <option value="active">Alle lijsten (zonder archief)</option>
+        <option value="active">Alle lijsten</option>
         ${LISTS.map((l) => `<option value="${l.id}">${l.emoji} ${escapeHtml(l.label)}</option>`).join("")}
       </select>
       <label class="visually-hidden" for="t-cat">Categorie</label>
