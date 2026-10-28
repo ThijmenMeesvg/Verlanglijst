@@ -10,9 +10,9 @@ const listById = (id) => LISTS.find((l) => l.id === id);
 
 /**
  * @param {HTMLElement} root
- * @returns {{ update(state: object): void }}
+ * @param {{ onGotoMigration: () => void }} options
  */
-export function createItemTable(root) {
+export function createItemTable(root, { onGotoMigration }) {
   let state = { lists: {}, claims: {} };
   const filters = { list: "active", q: "", cat: "", status: "" };
 
@@ -127,18 +127,24 @@ export function createItemTable(root) {
       claimedPublic.length && !isSurpriseMode()
         ? `<button type="button" class="btn btn--small" data-act="archive-claimed">${claimedPublic.length} gegeven ${claimedPublic.length === 1 ? "item" : "items"} naar het archief</button>`
         : "";
+    if (!allItems().length) {
+      rowsEl.innerHTML = `<li class="notice"><p>Nog geen items. Kom je van de oude versie van de site? Zet je items dan eerst over.</p><button type="button" class="btn" data-act="goto-migration">Naar de overstap</button></li>`;
+      return;
+    }
     rowsEl.innerHTML = items.length
       ? items.map(renderRow).join("")
       : `<li class="notice"><p>Geen items met deze filters.</p></li>`;
   }
 
-  // Kapotte miniatuur: categorie-icoon laten zien.
-  rowsEl.addEventListener("error", (e) => { if (e.target instanceof HTMLImageElement) e.target.remove(); }, true);
-
   root.addEventListener("click", async (e) => {
     const btn = e.target.closest("[data-act]");
     if (!btn) return;
     const act = btn.dataset.act;
+
+    if (act === "goto-migration") {
+      onGotoMigration();
+      return;
+    }
 
     if (act === "archive-claimed") {
       const entries = (state.lists.public || []).filter((i) => state.claims[i.id]).map((item) => ({ item, claimed: true }));

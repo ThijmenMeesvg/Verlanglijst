@@ -1,6 +1,6 @@
 // Formulier om een item toe te voegen of te bewerken, met voorbeeld zoals bezoekers het zien.
 import { CATEGORIES, LISTS } from "../config.js";
-import { cleanUrl, escapeHtml, linkKey, normalizePrice, parsePrice, safeUrl } from "../lib/util.js";
+import { cleanUrl, escapeHtml, isValidPriceText, linkKey, normalizePrice, parsePrice, safeUrl } from "../lib/util.js";
 import { saveItem } from "../lib/store.js";
 import { showToast } from "../lib/ui.js";
 import { renderTag } from "../public/render.js";
@@ -20,7 +20,8 @@ let formCount = 0;
 export function createItemForm({ mode, item = {}, allItems, onSaved, onCancel }) {
   const uid = `f${++formCount}`;
   const listId = item.listId || "public";
-  const lists = LISTS.filter((l) => mode === "edit" || l.id !== "archief");
+  // Archiveren gaat via de knop in de lijst (die onthoudt waar het vandaan kwam), niet via dit menu.
+  const lists = LISTS.filter((l) => l.id !== "archief");
   const form = document.createElement("form");
   form.className = "item-form";
   form.noValidate = true;
@@ -149,7 +150,7 @@ export function createItemForm({ mode, item = {}, allItems, onSaved, onCancel })
   function validate(v) {
     if (!safeUrl(v.link)) return ["link", "Vul een geldige link in (beginnend met https://)."];
     if (!v.title) return ["title", "Geef het item een naam."];
-    if (v.priceText && v.price === null) return ["price", "De prijs is geen geldig bedrag. Gebruik bijv. 24,95 of laat het leeg."];
+    if (v.priceText && (!isValidPriceText(v.priceText) || v.price === null)) return ["price", "De prijs is geen geldig bedrag. Gebruik bijv. 24,95 of laat het leeg."];
     if (field("image").value.trim() && !v.image) return ["image", "De fotolink is ongeldig. Laat hem leeg of plak een link die met https:// begint."];
     return null;
   }
@@ -202,7 +203,7 @@ export function createItemForm({ mode, item = {}, allItems, onSaved, onCancel })
       });
       showToast(mode === "add" ? `“${v.title}” is toegevoegd.` : "Wijzigingen opgeslagen.");
       if (mode === "add") reset();
-      onSaved?.(id);
+      onSaved?.(id, { ...v });
     } catch (err) {
       errorBox.textContent = `Opslaan lukte niet: ${err.message}`;
     } finally {

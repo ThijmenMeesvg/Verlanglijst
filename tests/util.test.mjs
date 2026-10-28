@@ -2,7 +2,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
-  escapeHtml, safeUrl, normalizePrice, parsePrice, formatPrice, cleanUrl, linkKey, shopName,
+  escapeHtml, safeUrl, normalizePrice, parsePrice, formatPrice, isValidPriceText, cleanUrl, linkKey, shopName,
   titleFromUrl, toTimestamp, filterItems, sortItems, domId
 } from "../js/lib/util.js";
 
@@ -105,4 +105,9 @@ test("sortItems: gegeven items onderaan, onbekende prijs achteraan", () => {
 
 test("domId is veilig voor sleutels met spaties en &", () => {
   assert.match(domId("kleding & accesoires1"), /^item-[\w-]+$/);
+});
+
+test("isValidPriceText", () => {
+  for (const ok of ["24,95", "24.95", "15", "€ 1.299,00", "1299,00", "€12", "7,5", "40 euro"]) assert.equal(isValidPriceText(ok), true, ok);
+  for (const bad of ["12,5x", "abc12", "", "12,999", "€", "1,2,3"]) assert.equal(isValidPriceText(bad), false, bad);
 });

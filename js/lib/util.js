@@ -51,6 +51,11 @@ export function parsePrice(text) {
   return parseFloat(s);
 }
 
+/** Is dit een bedrag dat iemand zou typen? "24,95", "€ 1.299,00", "15" wel; "12,5x" of "abc" niet. */
+export function isValidPriceText(text) {
+  return /^\s*€?\s*\d{1,3}(?:[.\s]?\d{3})*(?:[.,]\d{1,2})?\s*(?:€|euro)?\s*$/i.test(String(text ?? ""));
+}
+
 export function formatPrice(value) {
   const n = normalizePrice(value);
   return n === null ? "Prijs onbekend" : euro.format(n);

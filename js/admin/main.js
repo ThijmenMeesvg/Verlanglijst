@@ -1,7 +1,8 @@
 // Startpunt van de beheerpagina: inloggen, tabbladen en live gegevens doorgeven aan de onderdelen.
 import { FIREBASE_CONSOLE } from "../config.js";
-import { isDemo, onAuth, signIn, signOut, subscribeAdmin } from "../lib/store.js";
-import { showDemoBanner, showToast } from "../lib/ui.js";
+import { deleteTempLinks, isDemo, onAuth, signIn, signOut, subscribeAdmin } from "../lib/store.js";
+import { linkKey } from "../lib/util.js";
+import { installImageFallback, showDemoBanner, showToast } from "../lib/ui.js";
 import { createItemForm } from "./item-form.js";
 import { createItemTable } from "./item-table.js";
 import { createLinks } from "./links.js";
@@ -11,6 +12,7 @@ const gates = ["gate-loading", "gate-signin", "gate-setup", "app"].map((id) => d
 const show = (id) => gates.forEach((el) => (el.hidden = el.id !== id));
 
 if (isDemo()) showDemoBanner();
+installImageFallback();
 
 // ---------- Inloggen ----------
 
@@ -74,20 +76,35 @@ function startApp() {
   started = true;
   show("app");
 
-  const table = createItemTable(document.getElementById("item-table"));
-  const addForm = createItemForm({ mode: "add", allItems: () => table.allItems() });
+  let tempLinks = [];
+  const goTo = (tabId) => selectTab(document.getElementById(tabId));
+
+  const table = createItemTable(document.getElementById("item-table"), { onGotoMigration: () => goTo("tab-settings") });
+  const addForm = createItemForm({
+    mode: "add",
+    allItems: () => table.allItems(),
+    // Toegevoegd vanuit ‘Links’ (of los geplakt)? Dan is de bewaarde link niet meer nodig.
+    onSaved: (id, data) => {
+      const done = tempLinks.filter((l) => linkKey(l.url) === linkKey(data.link)).map((l) => l.id);
+      if (done.length) deleteTempLinks(done).catch(() => {});
+    }
+  });
   document.getElementById("add-form").append(addForm);
 
   const links = createLinks(document.getElementById("links"), {
     onAddAsItem: (url) => {
-      selectTab(document.getElementById("tab-add"));
+      goTo("tab-add");
       addForm.prefill(url);
     }
   });
-  const settings = createSettings(document.getElementById("settings"), { onSurpriseChange: () => table.refresh() });
+  const settings = createSettings(document.getElementById("settings"), {
+    onSurpriseChange: () => table.refresh(),
+    existingIds: () => new Set([...table.allItems().map((i) => i.id), ...tempLinks.map((l) => l.id)])
+  });
 
   subscribeAdmin(
     (state) => {
+      tempLinks = state.tempLinks;
       table.update(state);
       links.update(state.tempLinks);
       settings.update(state);
