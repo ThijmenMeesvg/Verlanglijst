@@ -146,11 +146,11 @@ main {
 
 @media (max-width: 560px) {
   .hero { gap: var(--space-3); padding: var(--space-5) 0 var(--space-3); }
-  .hero h1 { font-size: 30px; }
+  .hero h1 { font-size: 26px; }
   .hero__intro { font-size: 16px; }
   .hero__jump { display: inline-flex; justify-self: start; }
-  .steps { gap: 4px; font-size: 14px; }
-  .steps li::before { width: 22px; height: 22px; font-size: 12px; }
+  /* Op de telefoon legt het bevestigingsvenster bij ‘Ik geef dit’ het al uit; de stappen kosten hier te veel ruimte. */
+  .steps { display: none; }
 
   .favorites,
   .wishes { padding: var(--space-4) 0; }
@@ -163,6 +163,10 @@ main {
   }
 
   .favorites__row { grid-auto-columns: 46%; gap: var(--space-3); }
+  /* Favorieten compacter, zodat de hele lijst sneller in beeld komt. */
+  .favorites .tag__media { aspect-ratio: 4 / 3; }
+  .favorites .tag__meta,
+  .favorites .tag__note { display: none; }
 
   .toolbar__sort { max-width: 46%; }
 }

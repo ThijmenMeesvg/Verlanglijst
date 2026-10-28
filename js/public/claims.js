@@ -3,6 +3,7 @@
 import { claim, unclaim } from "../lib/store.js";
 import { confirmDialog, showToast } from "../lib/ui.js";
 import { confetti } from "../lib/confetti.js";
+import { domId } from "../lib/util.js";
 
 const STORAGE_KEY = "verlanglijst-mijn-cadeaus";
 const UNDO_WINDOW = 24 * 60 * 60 * 1000;   // gelijk aan de database-regel
@@ -33,7 +34,31 @@ export function forgetMissing(claims) {
   if (changed) writeMine(mine);
 }
 
-export async function startClaim(item, mode) {
+const busy = new Set();   // voorkomt dubbel klikken terwijl iets wordt opgeslagen
+
+/** Korte titel voor in meldingen, zodat een lange naam de melding niet opblaast. */
+const short = (title) => (title.length > 60 ? `${title.slice(0, 57).trimEnd()}…` : title);
+
+function errorMessage(err, fallback) {
+  const code = String(err?.code || err?.message || "");
+  if (code.startsWith("auth/network") || code.includes("network") || !navigator.onLine) {
+    return "Geen internetverbinding. Controleer je verbinding en probeer het opnieuw.";
+  }
+  if (code.startsWith("auth/")) return "Kiezen lukt op dit moment niet. Probeer het later nog eens of laat het Thijmen weten.";
+  return fallback;
+}
+
+/** Na het opnieuw tekenen van de lijst de focus terugzetten op hetzelfde item (voor toetsenbordgebruikers). */
+function refocus(itemId, selector) {
+  requestAnimationFrame(() => {
+    const card = document.getElementById(domId(itemId));
+    const target = card?.querySelector(selector) || card?.querySelector("a, button");
+    target?.focus();
+  });
+}
+
+export async function startClaim(item, mode, isTaken) {
+  if (busy.has(item.id)) return;
   const ok = await confirmDialog({
     title: "Geef je dit cadeau?",
     body: [
@@ -42,8 +67,12 @@ export async function startClaim(item, mode) {
     ],
     confirmLabel: "Ja, ik geef dit"
   });
-  if (!ok) return;
+  if (!ok || isTaken()) {
+    if (ok) showToast("Iemand anders was je net voor: dit wordt al gegeven.", { error: true });
+    return;
+  }
 
+  busy.add(item.id);
   // Eerst onthouden, dan opslaan: de lijst tekent zichzelf al opnieuw zodra de wijziging lokaal binnenkomt,
   // en moet dan al weten dat dit jouw keuze is.
   mine[item.id] = Date.now();
@@ -51,25 +80,46 @@ export async function startClaim(item, mode) {
   try {
     await claim(item, mode);
     confetti({ pieces: 90, duration: 2200 });
-    showToast(`Genoteerd: jij geeft “${item.title}”.`, {
+    showToast(`Genoteerd: jij geeft “${short(item.title)}”.`, {
       actionLabel: "Ongedaan maken",
-      onAction: () => undoClaim(item, mode),
+      onAction: () => undoClaim(item, mode, () => true),
       duration: 10000
     });
-  } catch {
+    refocus(item.id, "[data-unclaim]");
+  } catch (err) {
     delete mine[item.id];
     writeMine(mine);
-    showToast("Dit is niet opgeslagen. Iemand anders was je misschien net voor; ververs de pagina en probeer het opnieuw.", { error: true });
+    showToast(
+      errorMessage(err, isTaken() ? "Iemand anders was je net voor: dit wordt al gegeven." : "Dit is niet opgeslagen. Ververs de pagina en probeer het opnieuw."),
+      { error: true }
+    );
+  } finally {
+    busy.delete(item.id);
   }
 }
 
-export async function undoClaim(item, mode) {
+/** `isClaimed()` zegt of het item op dit moment nog als gegeven staat. */
+export async function undoClaim(item, mode, isClaimed) {
+  if (busy.has(item.id)) return;
+  if (!isClaimed()) {
+    delete mine[item.id];
+    writeMine(mine);
+    showToast(`“${short(item.title)}” staat al weer open.`);
+    return;
+  }
+  busy.add(item.id);
   try {
     await unclaim(item, mode);
     delete mine[item.id];
     writeMine(mine);
-    showToast(`“${item.title}” staat weer open.`);
-  } catch {
-    showToast("Ongedaan maken lukte niet. Na 24 uur kan alleen Thijmen dit nog terugzetten.", { error: true });
+    showToast(`“${short(item.title)}” staat weer open.`);
+    refocus(item.id, "[data-claim]");
+  } catch (err) {
+    showToast(
+      errorMessage(err, "Ongedaan maken lukte niet. Dat kan alleen op het apparaat waarmee je het koos, binnen 24 uur. Daarna kan alleen Thijmen het terugzetten."),
+      { error: true }
+    );
+  } finally {
+    busy.delete(item.id);
   }
 }

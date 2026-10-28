@@ -82,10 +82,10 @@ document.addEventListener("click", (e) => {
   const undo = e.target.closest("[data-unclaim]");
   if (give) {
     const item = findItem(give.dataset.claim);
-    if (item) startClaim(item, state.mode);
+    if (item) startClaim(item, state.mode, () => Boolean(state.claims[item.id]));
   } else if (undo) {
     const item = findItem(undo.dataset.unclaim);
-    if (item) undoClaim(item, state.mode);
+    if (item) undoClaim(item, state.mode, () => Boolean(state.claims[item.id]));
   } else if (e.target.closest("[data-reset]")) {
     reset();
   }
@@ -96,6 +96,7 @@ installImageFallback();
 if (surprise) {
   const notice = document.getElementById("surprise-notice");
   notice.hidden = false;
+  document.getElementById("hide-claimed").closest("label").hidden = true;
   notice.querySelector("button").addEventListener("click", () => {
     setSurpriseMode(false);
     location.reload();

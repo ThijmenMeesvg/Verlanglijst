@@ -24,7 +24,7 @@ function writeFiltersToUrl(f) {
   set("prijs", f.band, !f.band);
   set("sort", f.sort, f.sort === DEFAULTS.sort);
   set("verberg", "1", !f.hideClaimed);
-  const query = p.toString();
+  const query = p.toString().replace(/(^|&)demo=(&|$)/, "$1demo$2");   // ?demo zonder lelijk "="
   history.replaceState(null, "", `${location.pathname}${query ? `?${query}` : ""}${location.hash}`);
 }
 

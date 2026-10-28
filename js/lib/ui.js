@@ -92,6 +92,14 @@ export function showDemoBanner() {
   bar.className = "demo-banner";
   bar.textContent = "Demo-modus: je ziet voorbeelddata en niets wordt echt opgeslagen. Ververs de pagina om opnieuw te beginnen.";
   document.body.prepend(bar);
+
+  // Links binnen de site blijven in demo-modus, zodat je niet per ongeluk in de echte lijst belandt.
+  for (const a of document.querySelectorAll("a[href]")) {
+    const url = new URL(a.getAttribute("href"), location.href);
+    if (url.origin !== location.origin || !/\/(index\.html|admin\.html)?$/.test(url.pathname)) continue;
+    url.searchParams.set("demo", "");
+    a.setAttribute("href", url.pathname + url.search.replace("demo=", "demo") + url.hash);
+  }
 }
 
 /** Kapotte productfoto: weghalen, zodat het categorie-icoon eronder zichtbaar wordt. */
