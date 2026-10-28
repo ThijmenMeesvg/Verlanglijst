@@ -73,6 +73,9 @@ body {
 
 img { max-width: 100%; display: block; }
 
+/* Het hidden-attribuut moet altijd winnen, ook van display:grid/flex in componenten. */
+[hidden] { display: none !important; }
+
 h1, h2, h3 {
   font-family: var(--font-head);
   line-height: 1.15;
@@ -255,7 +258,6 @@ a { color: inherit; }
   box-shadow: 0 10px 30px rgb(0 0 0 / 25%);
   transform: translateX(-50%);
 }
-.toast[hidden] { display: none; }
 .toast--error { background: var(--danger); color: #fff; }
 .toast .btn { min-height: 36px; border: 0; background: rgb(255 255 255 / 15%); color: inherit; }
 
