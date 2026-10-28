@@ -129,7 +129,7 @@ code {
   line-height: 1.6;
 }
 .badge--gold { background: var(--gold); border-color: var(--gold); color: #3a2a00; }
-.badge--moss { background: var(--moss); border-color: var(--moss); color: #fff; }
+.badge--moss { background: #4f6153; border-color: #4f6153; color: #fff; }
 
 /* ---------- Instellingen en links ---------- */
 

@@ -33,6 +33,15 @@ main {
   color: var(--pine);
 }
 .hero__intro { font-size: 18px; color: var(--ink-soft); }
+/* Alleen op de telefoon: een snelle sprong langs de favorieten naar de hele lijst. */
+.hero__jump { display: none; }
+
+.surprise-notice {
+  padding: var(--space-2) var(--space-4);
+  background: var(--pine-soft);
+  font-size: 14px;
+  text-align: center;
+}
 
 .steps {
   display: grid;
@@ -136,15 +145,24 @@ main {
 /* ---------- Telefoon ---------- */
 
 @media (max-width: 560px) {
-  .hero { padding: var(--space-5) 0 var(--space-4); }
+  .hero { gap: var(--space-3); padding: var(--space-5) 0 var(--space-3); }
+  .hero h1 { font-size: 30px; }
   .hero__intro { font-size: 16px; }
+  .hero__jump { display: inline-flex; justify-self: start; }
+  .steps { gap: 4px; font-size: 14px; }
+  .steps li::before { width: 22px; height: 22px; font-size: 12px; }
+
+  .favorites,
+  .wishes { padding: var(--space-4) 0; }
+  .favorites h2,
+  .wishes h2 { font-size: 22px; }
 
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-4) var(--space-3);
   }
 
-  .favorites__row { grid-auto-columns: 62%; }
+  .favorites__row { grid-auto-columns: 46%; gap: var(--space-3); }
 
   .toolbar__sort { max-width: 46%; }
 }

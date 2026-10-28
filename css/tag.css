@@ -116,6 +116,7 @@
 .tag__price.is-unknown { font: 500 14px/1.4 var(--font-body); color: var(--ink-soft); }
 
 .tag__actions { padding: var(--space-3) var(--space-4) var(--space-4); }
+.tag__body:last-child { padding-bottom: var(--space-4); }
 .tag__give { width: 100%; }
 .tag__taken,
 .tag__mine { min-height: var(--touch); display: flex; align-items: center; flex-wrap: wrap; gap: 0 6px; font-size: 14px; color: var(--ink-soft); }

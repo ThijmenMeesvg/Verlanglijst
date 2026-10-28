@@ -101,6 +101,20 @@ export function setupFilters(onChange) {
     changed();
   }
 
+  // Vervagende rand als er meer chips buiten beeld staan.
+  const markOverflow = (el) => {
+    const left = el.scrollLeft > 4;
+    const right = el.scrollLeft + el.clientWidth < el.scrollWidth - 4;
+    if (left && right) el.dataset.more = "both";
+    else if (left) el.dataset.more = "left";
+    else if (right) el.dataset.more = "right";
+    else delete el.dataset.more;
+  };
+  for (const el of [catChips, priceChips]) {
+    el.addEventListener("scroll", () => markOverflow(el), { passive: true });
+    new ResizeObserver(() => markOverflow(el)).observe(el);
+  }
+
   syncPressed();
-  return { filters, updateCounts, reset };
+  return { filters, updateCounts: (counts, total) => { updateCounts(counts, total); markOverflow(catChips); }, reset };
 }

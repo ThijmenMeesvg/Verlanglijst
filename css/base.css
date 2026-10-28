@@ -9,9 +9,9 @@
   --line: #dde2d9;           /* randen */
   --pine: #1e3b2f;           /* merkkleur, kop */
   --pine-soft: #e3ebe5;
-  --orange: #e4570f;         /* actie: ik geef dit */
+  --orange: #c2410c;         /* actie: ik geef dit (wit erop haalt 5,2:1) */
   --orange-ink: #ffffff;
-  --orange-dark: #b9440a;
+  --orange-dark: #9a3412;
   --gold: #e8b53a;           /* favoriet */
   --moss: #6b7f6e;           /* al gegeven */
   --danger: #b42318;
@@ -48,8 +48,6 @@
     --line: #2b3a31;
     --pine: #9fd0b4;
     --pine-soft: #1f3128;
-    --orange: #f06a24;
-    --orange-dark: #ff8a4c;
     --moss: #8fa393;
     --danger: #ff8a80;
     --focus: #8ab4ff;
@@ -111,6 +109,10 @@ a { color: inherit; }
   color: #f5f6f1;
 }
 .topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--touch);
   font: 700 18px/1 var(--font-head);
   text-decoration: none;
 }
@@ -172,6 +174,10 @@ a { color: inherit; }
   padding: 2px;
 }
 .chips::-webkit-scrollbar { display: none; }
+/* Er staan meer chips rechts buiten beeld: laat de rand vervagen als hint dat je kunt scrollen. */
+.chips[data-more="right"] { -webkit-mask-image: linear-gradient(to right, #000 80%, transparent); mask-image: linear-gradient(to right, #000 80%, transparent); }
+.chips[data-more="left"] { -webkit-mask-image: linear-gradient(to left, #000 80%, transparent); mask-image: linear-gradient(to left, #000 80%, transparent); }
+.chips[data-more="both"] { -webkit-mask-image: linear-gradient(to right, transparent, #000 15%, #000 80%, transparent); mask-image: linear-gradient(to right, transparent, #000 15%, #000 80%, transparent); }
 
 .chip {
   flex: none;
