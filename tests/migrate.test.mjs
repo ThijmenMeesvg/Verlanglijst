@@ -73,6 +73,7 @@ test("planMigration zet alles op de juiste plek", () => {
   assert.deepEqual(report.unknownNodes, ["Raar"]);
 
   assert.equal(report.total, 7);
+  assert.equal(updates["wishlist/settings/migratedAt"], NOW);
   assert.equal(report.linksCleaned, 1);
   assert.equal(report.tempLinks, 1);
 });
@@ -97,4 +98,23 @@ test("alles al overgezet: niets meer te doen", () => {
   const { updates, report } = planMigration(legacy, NOW, all);
   assert.deepEqual(updates, {});
   assert.equal(report.total, 0);
+});
+
+test("planMigration houdt zich aan de grenzen van de databaseregels", () => {
+  const { updates, report } = planMigration({
+    Overig: {
+      a: { title: "x".repeat(400), link: "www.bol.com/p/1", price: 150000, image: "https://img/" + "y".repeat(2100), dateAdded: "2025-01-01" },
+      b: { title: "Zonder link", price: 5 },
+      c: { title: "Rare link", link: "javascript:alert(1)" }
+    }
+  }, NOW);
+  const a = updates["wishlist/items/a"];
+  assert.equal(a.link, "https://www.bol.com/p/1");
+  assert.equal(a.title.length, 300);
+  assert.equal("price" in a, false);
+  assert.equal("image" in a, false);
+  assert.equal(updates["wishlist/items/b"], undefined);
+  assert.equal(updates["wishlist/items/c"], undefined);
+  assert.deepEqual(report.notMovable, ["Zonder link (Overig)", "Rare link (Overig)"]);
+  assert.equal(report.total, 1);
 });

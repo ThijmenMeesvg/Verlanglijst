@@ -39,16 +39,20 @@ export function createMigration(root, { existingIds }) {
 
     plan = planMigration(legacy, Date.now(), existingIds());
     const r = plan.report;
+    const list = (items) => items.map((t) => `<li>${escapeHtml(t)}</li>`).join("");
+    const notMovable = r.notMovable.length
+      ? `<p class="item-form__error">${r.notMovable.length} ${r.notMovable.length === 1 ? "item heeft" : "items hebben"} geen bruikbare link en ${r.notMovable.length === 1 ? "kan" : "kunnen"} niet automatisch over. Voeg ${r.notMovable.length === 1 ? "het" : "ze"} zelf opnieuw toe als je ${r.notMovable.length === 1 ? "het" : "ze"} wilt houden:</p><ul class="plain-list">${list(r.notMovable)}</ul>`
+      : "";
     if (!r.total && !r.tempLinks) {
       report.innerHTML = `
         <p><strong>Alles is overgezet.</strong> ${r.skipped} items staan al in de nieuwe indeling.</p>
+        ${notMovable}
         <p>De oude mappen (Boeken, Muziek, …, Cadeaus, Voor Thijmen, tempLinks en de oude kopie v2) zijn nu niet meer nodig. Opruimen maakt de database overzichtelijk en haalt de laatste oude, openbaar leesbare gegevens weg.</p>
         <button type="button" class="btn btn--danger" id="m-cleanup">Oude mappen opruimen</button>`;
       root.querySelector("#m-cleanup").addEventListener("click", cleanup);
       return;
     }
 
-    const list = (items) => items.map((t) => `<li>${escapeHtml(t)}</li>`).join("");
     report.innerHTML = `
       <p><strong>${r.total} items</strong> om over te zetten:</p>
       <ul class="plain-list">${Object.entries(r.perDestination).map(([k, n]) => `<li>${escapeHtml(k)}: ${n}</li>`).join("")}</ul>
@@ -56,12 +60,13 @@ export function createMigration(root, { existingIds }) {
       <p>Daarbij wordt dit opgeruimd:</p>
       <ul class="plain-list">
         <li>${r.linksCleaned} links zonder trackingcodes</li>
-        <li>${r.claims} items die al als gegeven stonden, blijven gegeven</li>
+        ${r.claims ? `<li>${r.claims} items die al als gegeven stonden, blijven gegeven</li>` : ""}
         ${r.tempLinks ? `<li>${r.tempLinks} bewaarde links gaan mee</li>` : ""}
       </ul>
       ${r.titlesChanged.length ? `<details><summary>${r.titlesChanged.length} namen worden aangepast</summary><ul class="plain-list">${list(r.titlesChanged.map((t) => `${t.from} → ${t.to}`))}</ul></details>` : ""}
       ${r.unknownPrices.length ? `<details><summary>${r.unknownPrices.length} items zonder prijs (komen op ‘Prijs onbekend’)</summary><ul class="plain-list">${list(r.unknownPrices)}</ul></details>` : ""}
       ${r.noImage.length ? `<details><summary>${r.noImage.length} items zonder foto</summary><ul class="plain-list">${list(r.noImage)}</ul></details>` : ""}
+      ${notMovable}
       ${r.unknownNodes.length ? `<p>Onbekende mappen, items gaan naar ‘Overig’: ${escapeHtml(r.unknownNodes.join(", "))}</p>` : ""}
       <button type="button" class="btn btn--primary" id="m-run">Overzetten</button>`;
     root.querySelector("#m-run").addEventListener("click", run);
@@ -89,7 +94,10 @@ export function createMigration(root, { existingIds }) {
       title: "Oude mappen definitief verwijderen?",
       body: [
         `Dit verwijdert ${LEGACY_NODES.join(", ")} uit de database.`,
-        "Al je items staan in de nieuwe indeling, dus er gaat niets verloren. Dit kun je niet ongedaan maken; wil je een reservekopie, exporteer de database dan eerst in de Firebase Console (Realtime Database → ⋮ → Export JSON)."
+        plan.report.notMovable.length
+          ? `Let op: ${plan.report.notMovable.length} oude items zonder bruikbare link gaan hiermee verloren (zie de lijst).`
+          : "Al je items staan in de nieuwe indeling, dus er gaat niets verloren.",
+        "Dit kun je niet ongedaan maken. Wil je een reservekopie, exporteer de database dan eerst in de Firebase Console (Realtime Database → ⋮ → Export JSON)."
       ],
       confirmLabel: "Definitief opruimen",
       danger: true

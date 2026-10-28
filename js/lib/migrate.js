@@ -1,6 +1,6 @@
 // Zet de oude database-indeling (een node per categorie) om naar de nieuwe structuur.
 // Puur rekenwerk zonder Firebase: geeft een lijst met database-updates en een verslag terug.
-import { CATEGORIES, LISTS, PATHS } from "../config.js";
+import { CATEGORIES, LIMITS, LISTS, PATHS } from "../config.js";
 import { cleanUrl, normalizePrice, safeUrl, titleFromUrl, toTimestamp } from "./util.js";
 
 // Nodes in de root die geen oude categorie zijn en dus overgeslagen worden.
@@ -13,12 +13,28 @@ export function cleanTitle(title, link) {
   // "La Mesa Mexicana, Rosa Cienfuegos | Boek | 9789461433596" -> "La Mesa Mexicana, Rosa Cienfuegos"
   const parts = t.split(" | ").map((p) => p.trim()).filter(Boolean);
   const kept = parts.filter((p, i) => i === 0 || !(/^\d[\d-]{9,}$/.test(p) || /^boek$/i.test(p)));
-  return kept.join(" · ");
+  return clip(kept.join(" · "), LIMITS.title);
 }
 
-/** Zet één oud item om naar het nieuwe formaat. */
+function clip(text, max) {
+  return text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
+}
+
+/** Een oude link zonder http(s):// ("www.bol.com/…") alsnog bruikbaar maken; anders "". */
+function repairLink(raw) {
+  const text = String(raw ?? "").trim();
+  const candidate = safeUrl(text) ? text : /^[\w-]+(\.[\w-]+)+(\/|$)/.test(text) ? `https://${text}` : "";
+  const url = candidate ? cleanUrl(candidate) : "";
+  return url && safeUrl(url) && url.length <= LIMITS.link ? url : "";
+}
+
+/**
+ * Zet één oud item om naar het nieuwe formaat, binnen de grenzen van de databaseregels.
+ * Geeft null terug als het item geen bruikbare link heeft (dan kan het niet automatisch over).
+ */
 export function convertItem(old, categoryId, now = Date.now()) {
-  const link = cleanUrl(old.link || "");
+  const link = repairLink(old.link);
+  if (!link) return null;
   const item = {
     title: cleanTitle(old.title, old.link),
     link,
@@ -27,10 +43,10 @@ export function convertItem(old, categoryId, now = Date.now()) {
     createdAt: toTimestamp(old.dateAdded, now)
   };
   const price = normalizePrice(old.price);
-  if (price !== null) item.price = price;
+  if (price !== null && price <= LIMITS.maxPrice) item.price = price;
   const image = safeUrl(old.image, { upgrade: true });
-  if (image) item.image = image;
-  if (old.note) item.note = String(old.note).slice(0, 500);
+  if (image && image.length <= LIMITS.image) item.image = image;
+  if (old.note) item.note = clip(String(old.note), LIMITS.note);
   return item;
 }
 
@@ -62,7 +78,8 @@ export function planMigration(root, now = Date.now(), existingIds = new Set()) {
     noImage: [],
     unknownNodes: [],
     tempLinks: 0,
-    skipped: 0
+    skipped: 0,
+    notMovable: []       // items zonder bruikbare link: niet overgezet, gaan verloren bij opruimen
   };
   const bump = (key) => (report.perDestination[key] = (report.perDestination[key] || 0) + 1);
 
@@ -88,12 +105,16 @@ export function planMigration(root, now = Date.now(), existingIds = new Set()) {
     if (!category && !privateList) report.unknownNodes.push(nodeName);
 
     for (const [key, old] of Object.entries(node)) {
-      if (!old || typeof old !== "object" || !old.link) continue;
+      if (!old || typeof old !== "object") continue;
       if (existingIds.has(key)) { report.skipped++; continue; }
       const categoryId = category ? category.id : "overig";
       const item = convertItem(old, categoryId, now);
+      if (!item) {
+        report.notMovable.push(`${String(old.title || key).slice(0, 80)} (${nodeName})`);
+        continue;
+      }
 
-      if (item.link !== String(old.link).trim()) report.linksCleaned++;
+      if (item.link !== String(old.link ?? "").trim()) report.linksCleaned++;
       if (item.title !== String(old.title ?? "").trim()) report.titlesChanged.push({ from: old.title, to: item.title });
       if (item.price === undefined) report.unknownPrices.push(item.title);
       if (!item.image) report.noImage.push(item.title);
@@ -116,5 +137,8 @@ export function planMigration(root, now = Date.now(), existingIds = new Set()) {
       report.total++;
     }
   }
+  // Markeert dat de nieuwe indeling in gebruik is, zodat de site nooit meer terugvalt op de oude
+  // (ook niet als je later alle openbare items archiveert).
+  if (report.total) updates[`${PATHS.settings}/migratedAt`] = now;
   return { updates, report };
 }

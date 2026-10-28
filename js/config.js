@@ -54,6 +54,9 @@ export const DEFAULT_SETTINGS = {
   intro: "Hier houd ik mijn (ellenlange) verlanglijstje bij. Leuk dat je komt kijken!"
 };
 
+// Grenzen die ook in database.rules.json staan; formulier en overstap houden zich hieraan.
+export const LIMITS = { title: 300, link: 2000, image: 2000, note: 500, maxPrice: 99999.99 };
+
 // Paden in de database (nieuwe structuur).
 export const PATHS = {
   items: "wishlist/items",

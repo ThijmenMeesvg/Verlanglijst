@@ -36,11 +36,17 @@ function firebase() {
   return fbPromise;
 }
 
+// Bezoekers hebben alleen anoniem inloggen nodig. Zonder de popup-helper laadt Firebase dan geen
+// Google-scripts of iframes (die de CSP van de openbare pagina ook niet toestaat).
+// Elke pagina gebruikt maar één soort, dus de eerste aanroep bepaalt welke.
 let authPromise = null;
-function auth() {
+function auth({ withPopup = false } = {}) {
   authPromise ??= Promise.all([firebase(), import(`${FIREBASE_SDK}/firebase-auth.js`)]).then(([{ app }, mod]) => ({
     ...mod,
-    auth: mod.getAuth(app)
+    auth: mod.initializeAuth(app, {
+      persistence: [mod.indexedDBLocalPersistence, mod.browserLocalPersistence],
+      ...(withPopup ? { popupRedirectResolver: mod.browserPopupRedirectResolver } : {})
+    })
   }));
   return authPromise;
 }
@@ -62,7 +68,7 @@ export async function subscribePublic(cb) {
     ref(db, "wishlist"),
     (snap) => {
       const data = snap.val();
-      if (data && (data.items || data.settings || data.claims)) {
+      if (data) {
         stopLegacy?.(); stopLegacy = null;
         cb({
           mode: "v2",
@@ -167,7 +173,7 @@ export async function unclaim(item, mode) {
 /** cb({ user, isAdmin }) bij elke in- of uitlog. */
 export async function onAuth(cb) {
   if (isDemo()) { cb({ user: { displayName: "Demo", email: "demo", uid: "demo" }, isAdmin: true }); return () => {}; }
-  const { auth: a, onAuthStateChanged } = await auth();
+  const { auth: a, onAuthStateChanged } = await auth({ withPopup: true });
   const { db, ref, get } = await firebase();
   return onAuthStateChanged(a, async (user) => {
     // Een anonieme bezoeker (van ‘Ik geef dit’) telt hier als niet ingelogd.
@@ -179,7 +185,7 @@ export async function onAuth(cb) {
 }
 
 export async function signIn() {
-  const { auth: a, GoogleAuthProvider, signInWithPopup, signInWithRedirect } = await auth();
+  const { auth: a, GoogleAuthProvider, signInWithPopup, signInWithRedirect } = await auth({ withPopup: true });
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({ prompt: "select_account" });
   try {
@@ -195,7 +201,7 @@ export async function signIn() {
 
 export async function signOut() {
   if (isDemo()) return;
-  const { auth: a, signOut: out } = await auth();
+  const { auth: a, signOut: out } = await auth({ withPopup: true });
   await out(a);
 }
 

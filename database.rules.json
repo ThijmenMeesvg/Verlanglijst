@@ -66,6 +66,9 @@
         "intro": {
           ".validate": "newData.isString() && newData.val().length <= 1000"
         },
+        "migratedAt": {
+          ".validate": "newData.isNumber()"
+        },
         "$other": {
           ".validate": false
         }
