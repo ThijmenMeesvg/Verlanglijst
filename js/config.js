@@ -49,9 +49,7 @@ export const SORTS = [
 
 export const DEFAULT_SETTINGS = {
   title: "Verlanglijst van Thijmen",
-  intro:
-    "Hier houd ik mijn (ellenlange) verlanglijstje bij. Zie je iets wat je wilt geven? " +
-    "Klik op ‘Ik geef dit’, dan ziet iedereen dat het al geregeld is en krijg ik niets dubbel."
+  intro: "Hier houd ik mijn (ellenlange) verlanglijstje bij. Leuk dat je komt kijken!"
 };
 
 // Paden in de database (nieuwe structuur).

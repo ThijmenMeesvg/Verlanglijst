@@ -179,7 +179,7 @@ main {
   margin: 30px 12px 0;
   aspect-ratio: 1;
   border-radius: var(--radius-s);
-  background: #fff;
+  background: var(--pine-soft);
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -306,6 +306,5 @@ main {
 
 @media (prefers-color-scheme: dark) {
   .tag__stamp { background: rgb(24 36 29 / 90%); color: #b9c9bd; }
-  .tag__media,
   .tag__media img { background: #f3f4f0; }
 }

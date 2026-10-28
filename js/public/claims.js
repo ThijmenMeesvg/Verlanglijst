@@ -44,10 +44,12 @@ export async function startClaim(item, mode) {
   });
   if (!ok) return;
 
+  // Eerst onthouden, dan opslaan: de lijst tekent zichzelf al opnieuw zodra de wijziging lokaal binnenkomt,
+  // en moet dan al weten dat dit jouw keuze is.
+  mine[item.id] = Date.now();
+  writeMine(mine);
   try {
     await claim(item, mode);
-    mine[item.id] = Date.now();
-    writeMine(mine);
     confetti({ pieces: 90, duration: 2200 });
     showToast(`Genoteerd: jij geeft “${item.title}”.`, {
       actionLabel: "Ongedaan maken",
@@ -55,6 +57,8 @@ export async function startClaim(item, mode) {
       duration: 10000
     });
   } catch {
+    delete mine[item.id];
+    writeMine(mine);
     showToast("Dit is niet opgeslagen. Iemand anders was je misschien net voor; ververs de pagina en probeer het opnieuw.", { error: true });
   }
 }
