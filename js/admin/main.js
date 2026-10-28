@@ -61,8 +61,16 @@ function selectTab(tab, { focus = false } = {}) {
 tabs.forEach((tab, i) => {
   tab.addEventListener("click", () => selectTab(tab));
   tab.addEventListener("keydown", (e) => {
-    const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
-    if (step) selectTab(tabs[(i + step + tabs.length) % tabs.length], { focus: true });
+    const target = {
+      ArrowRight: tabs[(i + 1) % tabs.length],
+      ArrowLeft: tabs[(i - 1 + tabs.length) % tabs.length],
+      Home: tabs[0],
+      End: tabs[tabs.length - 1]
+    }[e.key];
+    if (target) {
+      e.preventDefault();
+      selectTab(target, { focus: true });
+    }
   });
 });
 selectTab(tabs[0]);

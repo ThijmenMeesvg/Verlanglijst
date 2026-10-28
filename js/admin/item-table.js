@@ -1,7 +1,7 @@
 // Overzicht van alle items in alle lijsten, met filters en acties per item.
-import { CATEGORIES, LISTS } from "../config.js";
+import { CATEGORIES, LISTS, PATHS } from "../config.js";
 import { categoryById, domId, escapeHtml, filterItems, formatPrice, safeUrl, shopName, sortItems } from "../lib/util.js";
-import { archiveItems, deleteItems, saveItem, setClaimAdmin, setFields } from "../lib/store.js";
+import { applyUpdates, archiveItems, deleteItems, saveItem, setClaimAdmin, setFields } from "../lib/store.js";
 import { confirmDialog, showToast } from "../lib/ui.js";
 import { createItemForm } from "./item-form.js";
 import { isSurpriseMode } from "../lib/surprise.js";
@@ -171,12 +171,14 @@ export function createItemTable(root, { onGotoMigration }) {
     }
     if (act === "archive") {
       const claimed = isClaimed(item);
+      const originalClaim = item.listId === "public" ? state.claims[item.id] : null;
       await run(() => archiveItems([{ item, claimed }]), `“${item.title}” staat in het archief.`, {
         actionLabel: "Ongedaan maken",
         onAction: () =>
           run(async () => {
             await restore({ ...item, listId: "archief", fromList: item.listId });
-            if (claimed && item.listId === "public") await setClaimAdmin(item.id, true);
+            // De oorspronkelijke claim terugzetten (met dezelfde eigenaar), zodat die bezoeker hem nog kan terugdraaien.
+            if (originalClaim) await applyUpdates({ [`${PATHS.claims}/${item.id}`]: originalClaim });
           }, "Teruggezet.")
       });
     }
@@ -214,7 +216,8 @@ export function createItemTable(root, { onGotoMigration }) {
     const heading = document.createElement("h2");
     heading.textContent = "Item bewerken";
     const close = () => { dialog.close(); dialog.remove(); };
-    const form = createItemForm({ mode: "edit", item, allItems, onSaved: close, onCancel: close });
+    // Al gegeven op de openbare lijst? Dan staat ‘Al gekocht’ aan als je hem naar een privélijst verplaatst.
+    const form = createItemForm({ mode: "edit", item: { ...item, done: isClaimed(item) }, allItems, onSaved: close, onCancel: close });
     dialog.append(heading, form);
     dialog.addEventListener("cancel", (e) => { e.preventDefault(); close(); });
     document.body.append(dialog);

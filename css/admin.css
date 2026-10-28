@@ -161,6 +161,7 @@ code {
 }
 
 @media (max-width: 460px) {
+  .tab { padding: 0 10px; font-size: 14px; }
   .item-form__row { grid-template-columns: 1fr; }
   .item-form__checks { padding-top: 0; }
   .item-form__fetch { flex-direction: column; }

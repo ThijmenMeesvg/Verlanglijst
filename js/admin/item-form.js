@@ -1,5 +1,5 @@
 // Formulier om een item toe te voegen of te bewerken, met voorbeeld zoals bezoekers het zien.
-import { CATEGORIES, LISTS } from "../config.js";
+import { CATEGORIES, LIMITS, LISTS } from "../config.js";
 import { cleanUrl, escapeHtml, isValidPriceText, linkKey, normalizePrice, parsePrice, safeUrl } from "../lib/util.js";
 import { saveItem } from "../lib/store.js";
 import { showToast } from "../lib/ui.js";
@@ -133,7 +133,7 @@ export function createItemForm({ mode, item = {}, allItems, onSaved, onCancel })
     status.textContent = "Bezig met ophalen…";
     try {
       const info = await fetchProductInfo(link);
-      if (info.title && !field("title").value.trim()) field("title").value = info.title;
+      if (info.title && !field("title").value.trim()) field("title").value = info.title.slice(0, LIMITS.title);
       if (info.image && !field("image").value.trim()) field("image").value = info.image;
       if (info.price && !field("price").value.trim()) field("price").value = String(info.price).replace(".", ",");
       const missing = [!info.title && "naam", !info.image && "foto", !info.price && "prijs"].filter(Boolean);
@@ -150,6 +150,10 @@ export function createItemForm({ mode, item = {}, allItems, onSaved, onCancel })
   function validate(v) {
     if (!safeUrl(v.link)) return ["link", "Vul een geldige link in (beginnend met https://)."];
     if (!v.title) return ["title", "Geef het item een naam."];
+    if (v.title.length > LIMITS.title) return ["title", `De naam is te lang (maximaal ${LIMITS.title} tekens).`];
+    if (v.link.length > LIMITS.link) return ["link", "Deze link is te lang. Probeer een kortere link naar hetzelfde product."];
+    if (v.price !== null && v.price > LIMITS.maxPrice) return ["price", "Dat bedrag is te hoog voor de lijst (maximaal € 99.999,99)."];
+    if (v.image.length > LIMITS.image) return ["image", "Deze fotolink is te lang. Laat hem leeg of gebruik een kortere link."];
     if (v.priceText && (!isValidPriceText(v.priceText) || v.price === null)) return ["price", "De prijs is geen geldig bedrag. Gebruik bijv. 24,95 of laat het leeg."];
     if (field("image").value.trim() && !v.image) return ["image", "De fotolink is ongeldig. Laat hem leeg of plak een link die met https:// begint."];
     return null;
