@@ -356,7 +356,7 @@ function makeDemo(DEMO_DATA) {
           lists,
           claims: { ...(getPath("wishlist/claims") || {}) },
           settings: { ...DEFAULT_SETTINGS, ...(getPath("wishlist/settings") || {}) },
-          tempLinks: toList(getPath("private/tempLinks"))
+          tempLinks: toList(getPath("private/tempLinks")).sort((a, b) => (b.at || 0) - (a.at || 0))
         });
       };
       listeners.add(fn);

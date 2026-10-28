@@ -1,7 +1,7 @@
 // Startpunt van de openbare verlanglijst.
-import { subscribePublic } from "../lib/store.js";
+import { isDemo, subscribePublic } from "../lib/store.js";
 import { countByCategory, filterItems, sortItems } from "../lib/util.js";
-import { showToast } from "../lib/ui.js";
+import { showDemoBanner, showToast } from "../lib/ui.js";
 import { confettiOncePerVisit } from "../lib/confetti.js";
 import { renderTag } from "./render.js";
 import { setupFilters } from "./filters.js";
@@ -125,4 +125,5 @@ subscribePublic((data) => {
   els.items.innerHTML = `<div class="notice"><p>De lijst kon niet geladen worden. Controleer je internetverbinding en ververs de pagina.</p></div>`;
 });
 
+if (isDemo()) showDemoBanner();
 confettiOncePerVisit();

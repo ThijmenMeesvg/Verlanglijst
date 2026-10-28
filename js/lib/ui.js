@@ -85,3 +85,11 @@ export function confirmDialog({ title, body = [], confirmLabel, cancelLabel = "A
     ok.focus();
   });
 }
+
+/** Duidelijke balk bovenaan in demo-modus, zodat niemand denkt dat hij de echte lijst aanpast. */
+export function showDemoBanner() {
+  const bar = document.createElement("p");
+  bar.className = "demo-banner";
+  bar.textContent = "Demo-modus: je ziet voorbeelddata en niets wordt echt opgeslagen. Ververs de pagina om opnieuw te beginnen.";
+  document.body.prepend(bar);
+}

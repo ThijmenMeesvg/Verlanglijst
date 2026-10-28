@@ -1,7 +1,7 @@
 // Startpunt van de beheerpagina: inloggen, tabbladen en live gegevens doorgeven aan de onderdelen.
 import { FIREBASE_CONSOLE } from "../config.js";
 import { isDemo, onAuth, signIn, signOut, subscribeAdmin } from "../lib/store.js";
-import { showToast } from "../lib/ui.js";
+import { showDemoBanner, showToast } from "../lib/ui.js";
 import { createItemForm } from "./item-form.js";
 import { createItemTable } from "./item-table.js";
 import { createLinks } from "./links.js";
@@ -9,6 +9,8 @@ import { createSettings } from "./settings.js";
 
 const gates = ["gate-loading", "gate-signin", "gate-setup", "app"].map((id) => document.getElementById(id));
 const show = (id) => gates.forEach((el) => (el.hidden = el.id !== id));
+
+if (isDemo()) showDemoBanner();
 
 // ---------- Inloggen ----------
 

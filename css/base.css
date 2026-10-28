@@ -114,8 +114,8 @@ a { color: inherit; }
   font: 700 18px/1 var(--font-head);
   text-decoration: none;
 }
-.topbar__share { color: inherit; }
-.topbar__share:hover { background: rgb(255 255 255 / 12%); }
+.topbar .btn { color: inherit; }
+.topbar .btn:hover { background: rgb(255 255 255 / 12%); }
 
 /* ---------- Knoppen ---------- */
 
@@ -283,4 +283,14 @@ a { color: inherit; }
   height: 100%;
   z-index: 60;
   pointer-events: none;
+}
+
+/* ---------- Demo-modus ---------- */
+
+.demo-banner {
+  padding: var(--space-2) var(--space-4);
+  background: var(--gold);
+  color: #3a2a00;
+  font-size: 14px;
+  text-align: center;
 }
