@@ -2,46 +2,95 @@
   "rules": {
     ".read": "auth != null && root.child('admins').child(auth.uid).val() === true",
     ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
-
     "admins": {
       "$uid": {
         ".read": "auth != null && auth.uid === $uid"
       }
     },
-
     "wishlist": {
       ".read": true,
-
       "items": {
         "$id": {
           ".validate": "newData.hasChildren(['title', 'link', 'category', 'createdAt'])",
-          "title":     { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 300" },
-          "link":      { ".validate": "newData.isString() && newData.val().matches(/^https?:\\/\\//) && newData.val().length <= 2000" },
-          "category":  { ".validate": "newData.isString() && newData.val().length <= 40" },
-          "price":     { ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() < 100000" },
-          "image":     { ".validate": "newData.isString() && newData.val().matches(/^https?:\\/\\//) && newData.val().length <= 2000" },
-          "note":      { ".validate": "newData.isString() && newData.val().length <= 500" },
-          "favorite":  { ".validate": "newData.isBoolean()" },
-          "createdAt": { ".validate": "newData.isNumber()" },
-          "updatedAt": { ".validate": "newData.isNumber()" },
-          "$other":    { ".validate": false }
+          "title": {
+            ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 300"
+          },
+          "link": {
+            ".validate": "newData.isString() && newData.val().matches(/^https?:\\/\\//) && newData.val().length <= 2000"
+          },
+          "category": {
+            ".validate": "newData.isString() && newData.val().length <= 40"
+          },
+          "price": {
+            ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() < 100000"
+          },
+          "image": {
+            ".validate": "newData.isString() && newData.val().matches(/^https?:\\/\\//) && newData.val().length <= 2000"
+          },
+          "note": {
+            ".validate": "newData.isString() && newData.val().length <= 500"
+          },
+          "favorite": {
+            ".validate": "newData.isBoolean()"
+          },
+          "createdAt": {
+            ".validate": "newData.isNumber()"
+          },
+          "updatedAt": {
+            ".validate": "newData.isNumber()"
+          },
+          "$other": {
+            ".validate": false
+          }
         }
       },
-
       "claims": {
         "$id": {
-          ".write": "(!data.exists() && newData.exists() && root.child('wishlist/items').child($id).exists()) || (data.exists() && !newData.exists() && data.child('at').val() > now - 86400000)",
+          ".write": "auth != null && ((!data.exists() && newData.exists() && newData.child('by').val() === auth.uid && root.child('wishlist/items').child($id).exists()) || (data.exists() && !newData.exists() && data.child('by').val() === auth.uid && data.child('at').val() > now - 86400000))",
           ".validate": "newData.hasChildren(['at'])",
-          "at":     { ".validate": "newData.isNumber() && newData.val() <= now + 60000" },
-          "$other": { ".validate": false }
+          "at": {
+            ".validate": "newData.isNumber() && newData.val() <= now + 60000"
+          },
+          "by": {
+            ".validate": "newData.isString() && newData.val().length <= 128"
+          },
+          "$other": {
+            ".validate": false
+          }
         }
       },
-
       "settings": {
-        "title":  { ".validate": "newData.isString() && newData.val().length <= 100" },
-        "intro":  { ".validate": "newData.isString() && newData.val().length <= 1000" },
-        "$other": { ".validate": false }
+        "title": {
+          ".validate": "newData.isString() && newData.val().length <= 100"
+        },
+        "intro": {
+          ".validate": "newData.isString() && newData.val().length <= 1000"
+        },
+        "$other": {
+          ".validate": false
+        }
       }
+    },
+    "Boeken": {
+      ".read": true
+    },
+    "Spelletjes": {
+      ".read": true
+    },
+    "Muziek": {
+      ".read": true
+    },
+    "Kleding & Accesoires": {
+      ".read": true
+    },
+    "Uitzet": {
+      ".read": true
+    },
+    "Sport & Buiten": {
+      ".read": true
+    },
+    "Overig": {
+      ".read": true
     }
   }
 }

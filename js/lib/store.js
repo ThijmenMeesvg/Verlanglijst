@@ -131,18 +131,31 @@ function subscribeLegacy(cb) {
   return () => { stopped = true; stops.forEach((s) => s()); };
 }
 
+/**
+ * Anonieme gebruiker voor deze browser. Een claim onthoudt dit id, zodat alleen
+ * wie iets koos het (binnen 24 uur) kan terugdraaien. Pas geladen bij de eerste klik.
+ */
+async function visitorId() {
+  const { auth: a, signInAnonymously, onAuthStateChanged } = await auth();
+  // Wachten tot een eerder opgeslagen sessie geladen is, anders krijgt de bezoeker een nieuw id.
+  await new Promise((resolve) => { const stop = onAuthStateChanged(a, () => { stop(); resolve(); }); });
+  return (a.currentUser || (await signInAnonymously(a)).user).uid;
+}
+
 /** Markeert een item als "wordt gegeven". */
 export async function claim(item, mode) {
   if (isDemo()) return (await demo()).claim(item.id);
   const { db, ref, set, update, serverTimestamp } = await firebase();
   if (mode === "legacy") return update(ref(db, item.id), { done: true });
-  return set(ref(db, `${PATHS.claims}/${item.id}`), { at: serverTimestamp() });
+  const by = await visitorId();
+  return set(ref(db, `${PATHS.claims}/${item.id}`), { at: serverTimestamp(), by });
 }
 
 export async function unclaim(item, mode) {
   if (isDemo()) return (await demo()).unclaim(item.id);
   const { db, ref, remove, update } = await firebase();
   if (mode === "legacy") return update(ref(db, item.id), { done: false });
+  await visitorId();
   return remove(ref(db, `${PATHS.claims}/${item.id}`));
 }
 
@@ -156,7 +169,8 @@ export async function onAuth(cb) {
   const { auth: a, onAuthStateChanged } = await auth();
   const { db, ref, get } = await firebase();
   return onAuthStateChanged(a, async (user) => {
-    if (!user) return cb({ user: null, isAdmin: false });
+    // Een anonieme bezoeker (van ‘Ik geef dit’) telt hier als niet ingelogd.
+    if (!user || user.isAnonymous) return cb({ user: null, isAdmin: false });
     let isAdmin = false;
     try { isAdmin = (await get(ref(db, `${PATHS.admins}/${user.uid}`))).val() === true; } catch { /* nog geen regels */ }
     cb({ user, isAdmin });
@@ -272,8 +286,9 @@ export async function setFields(listId, id, fields) {
   return applyUpdates(updates);
 }
 
+/** Door de beheerder gezet: zonder eigenaar en met tijdstip 0, dus bezoekers kunnen het niet terugdraaien. */
 export async function setClaimAdmin(id, claimed) {
-  return applyUpdates({ [`${PATHS.claims}/${id}`]: claimed ? { at: Date.now() } : null });
+  return applyUpdates({ [`${PATHS.claims}/${id}`]: claimed ? { at: 0 } : null });
 }
 
 export async function saveSettings(settings) {
@@ -363,7 +378,7 @@ function makeDemo(DEMO_DATA) {
       setTimeout(fn, 100);
       return () => listeners.delete(fn);
     },
-    async claim(id) { setPath(`wishlist/claims/${id}`, { at: Date.now() }); notify(); },
+    async claim(id) { setPath(`wishlist/claims/${id}`, { at: Date.now(), by: "demo" }); notify(); },
     async unclaim(id) { setPath(`wishlist/claims/${id}`, null); notify(); },
     async applyUpdates(updates) {
       for (const [path, value] of Object.entries(updates)) setPath(path, value);
