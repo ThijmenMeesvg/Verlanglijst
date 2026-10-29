@@ -4,7 +4,7 @@ import { countByCategory, filterItems, sortItems } from "../lib/util.js";
 import { installImageFallback, showDemoBanner, showToast } from "../lib/ui.js";
 import { isSurpriseMode, setSurpriseMode } from "../lib/surprise.js";
 import { confettiOncePerVisit } from "../lib/confetti.js";
-import { renderTag } from "./render.js";
+import { renderFavorite, renderTag } from "./render.js";
 import { setupFilters } from "./filters.js";
 import { canUndo, forgetMissing, isMine, startClaim, undoClaim } from "./claims.js";
 
@@ -39,7 +39,7 @@ function render() {
   // Favorieten bovenaan: alleen wat nog niet gegeven wordt.
   const favorites = sortItems(openItems.filter((i) => i.favorite), "nieuw");
   els.favoritesSection.hidden = favorites.length === 0;
-  els.favorites.innerHTML = favorites.map((i) => renderTag(i, { ...tagState(i), withId: false })).join("");
+  els.favorites.innerHTML = favorites.map((i) => renderFavorite(i, tagState(i))).join("");
 
   updateCounts(countByCategory(items), items.length);
 

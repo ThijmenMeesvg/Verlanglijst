@@ -35,10 +35,12 @@
 
   <main>
     <section class="hero" aria-labelledby="title">
-      <h1 id="title">Verlanglijst van Thijmen</h1>
-      <p class="hero__intro" id="intro"></p>
-      <a class="btn hero__jump" href="#lijst">Naar alle wensen</a>
-      <ol class="steps">
+      <div class="hero__text">
+        <h1 id="title">Verlanglijst van Thijmen</h1>
+        <p class="hero__intro" id="intro"></p>
+        <a class="btn hero__jump" href="#lijst">Naar alle wensen</a>
+      </div>
+      <ol class="steps" aria-label="Zo werkt het">
         <li><span>Zoek iets uit dat je wilt geven.</span></li>
         <li><span>Klik op <strong>Ik geef dit</strong>.</span></li>
         <li><span>Iedereen ziet dat het geregeld is, dus niets komt dubbel.</span></li>
@@ -60,12 +62,16 @@
         <div class="toolbar__row">
           <label class="visually-hidden" for="search">Zoeken</label>
           <input class="input toolbar__search" id="search" type="search" placeholder="Zoek in de lijst" autocomplete="off">
-          <label class="visually-hidden" for="sort">Sorteren</label>
-          <select class="select toolbar__sort" id="sort"></select>
+          <!-- Alleen op de telefoon: de overige filters zitten achter deze knop. -->
+          <button type="button" class="btn toolbar__toggle" id="filter-toggle" aria-expanded="false" aria-controls="filter-panel">
+            Filters <span class="toolbar__badge" id="filter-badge" hidden></span>
+          </button>
         </div>
         <div class="chips" id="category-chips" role="group" aria-label="Categorie"></div>
-        <div class="toolbar__row toolbar__row--wrap">
+        <div class="toolbar__panel" id="filter-panel">
           <div class="chips" id="price-chips" role="group" aria-label="Prijs"></div>
+          <label class="visually-hidden" for="sort">Sorteren</label>
+          <select class="select toolbar__sort" id="sort"></select>
           <label class="check toolbar__hide">
             <input type="checkbox" id="hide-claimed"> Verberg wat al gegeven wordt
           </label>

@@ -1,6 +1,42 @@
 // Maakt de HTML voor één wens (een cadeaulabel). Alle tekst gaat door escapeHtml.
 import { categoryById, domId, escapeHtml, formatPrice, safeUrl, shopName } from "../lib/util.js";
 
+/** De knop of tekst onderaan een wens: ‘Ik geef dit’, ‘Jij geeft dit’ of ‘Iemand anders geeft dit al’. */
+function renderAction(item, { claimed, mine, canUndo, surprise }) {
+  const title = escapeHtml(item.title);
+  const id = escapeHtml(item.id);
+  if (surprise) return "";
+  if (claimed && mine) {
+    return `<p class="tag__mine">Jij geeft dit.${
+      canUndo ? ` <button type="button" class="link-button" data-unclaim="${id}" aria-label="Ongedaan maken: ${title}">Ongedaan maken</button>` : ""
+    }</p>`;
+  }
+  if (claimed) return `<p class="tag__taken">Iemand anders geeft dit al.</p>`;
+  return `<button type="button" class="btn tag__give" data-claim="${id}" aria-label="Ik geef dit: ${title}">Ik geef dit</button>`;
+}
+
+/**
+ * Compacte favoriet: foto, naam en prijs naast elkaar, met de knop rechts.
+ * Favorieten worden alleen getoond zolang ze nog niet gegeven worden.
+ */
+export function renderFavorite(item, state) {
+  const cat = categoryById(item.category);
+  const link = safeUrl(item.link);
+  const image = safeUrl(item.image, { upgrade: true });
+  const title = escapeHtml(item.title);
+  return `
+    <article class="fav">
+      <div class="fav__media" data-emoji="${escapeHtml(cat.emoji)}">
+        ${image ? `<img src="${escapeHtml(image)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : ""}
+      </div>
+      <div class="fav__body">
+        <h3 class="fav__title">${link ? `<a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">${title}<span class="visually-hidden"> (opent ${escapeHtml(shopName(link)) || "de winkel"} in een nieuw tabblad)</span></a>` : title}</h3>
+        <p class="fav__price${item.price ? "" : " is-unknown"}">${escapeHtml(formatPrice(item.price))}</p>
+      </div>
+      ${renderAction(item, { ...state, claimed: false })}
+    </article>`;
+}
+
 /**
  * @param {object} item
  * @param {{ claimed: boolean, mine: boolean, canUndo: boolean, withId?: boolean, surprise?: boolean }} state
@@ -12,25 +48,13 @@ export function renderTag(item, { claimed, mine, canUndo, withId = true, surpris
   const image = safeUrl(item.image, { upgrade: true });
   const shop = shopName(link);
   const title = escapeHtml(item.title);
-  const id = escapeHtml(item.id);
 
   const media = image
     ? `<img src="${escapeHtml(image)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">`
     : "";
 
   if (surprise) claimed = false;
-  let action;
-  if (surprise) {
-    action = "";
-  } else if (claimed && mine) {
-    action = `<p class="tag__mine">Jij geeft dit.${
-      canUndo ? ` <button type="button" class="link-button" data-unclaim="${id}" aria-label="Ongedaan maken: ${title}">Ongedaan maken</button>` : ""
-    }</p>`;
-  } else if (claimed) {
-    action = `<p class="tag__taken">Iemand anders geeft dit al.</p>`;
-  } else {
-    action = `<button type="button" class="btn btn--primary tag__give" data-claim="${id}" aria-label="Ik geef dit: ${title}">Ik geef dit</button>`;
-  }
+  const action = renderAction(item, { claimed, mine, canUndo, surprise });
 
   return `
     <article class="tag${claimed ? " is-claimed" : ""}${item.favorite ? " is-favorite" : ""}"${withId ? ` id="${domId(item.id)}"` : ""}>
