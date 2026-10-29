@@ -239,7 +239,7 @@ export function domId(id) {
 
 // Voorvoegsels die dubbel zijn met de categorie die er al onder staat ("Spel - …", "Boek- …", "LP - …").
 // Alleen met een spatie ná het streepje, zodat samengestelde woorden ("cd-speler", "Spel-computer") heel blijven.
-const TITLE_PREFIX = /^(?:spel|bordspel|kaartspel|boek|kookboek|lp|cd|vinyl)\s*[-–—:]\s+/i;
+const TITLE_PREFIX = /^(?:spel|bordspel|kaartspel|boek|kookboek|lp|cd)\s*[-–—:]\s+/i;
 
 /** Voorstel voor een nettere naam, of dezelfde naam als er niets te verbeteren valt. */
 export function suggestTitle(title) {

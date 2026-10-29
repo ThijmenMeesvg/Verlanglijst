@@ -133,6 +133,7 @@ test("suggestTitle haalt dubbele voorvoegsels weg en zet een hoofdletter", () =>
   assert.equal(suggestTitle("iPhone hoesje"), "iPhone hoesje");
   assert.equal(suggestTitle("eBook reader"), "eBook reader");
   assert.equal(suggestTitle("Boek: De Avonden"), "De Avonden");
+  assert.equal(suggestTitle("Vinyl - schoonmaakset"), "Vinyl - schoonmaakset");   // "vinyl" is hier het product zelf
 });
 
 test("findDuplicateTitles", () => {
