@@ -88,17 +88,12 @@ export async function startClaim(item, mode, isTaken, { fromFavorite = false } =
     confetti({ pieces: 90, duration: 2200 });
     showToast(`Genoteerd: jij geeft “${short(item.title)}”.`, {
       actionLabel: "Ongedaan maken",
-      onAction: () => undoClaim(item, mode, () => true),
+      onAction: () => undoClaim(item, mode, () => true, { fromFavorite }),
       duration: 10000
     });
     if (fromFavorite) {
-      // De favoriet verdwijnt uit de rij; niet naar de kaart verderop springen maar bij de favorieten blijven.
-      requestAnimationFrame(() => {
-        const next = document.querySelector("#favorites [data-claim]");
-        const heading = document.getElementById("favorites-title");
-        if (next) next.focus({ preventScroll: true });
-        else if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
-      });
+      // De favoriet verdwijnt uit de rij; bij de favorieten blijven (op de kop, niet op de knop van een ander cadeau).
+      focusFavoritesHeading();
     } else {
       refocus(item.id, "[data-unclaim]");
     }
@@ -114,8 +109,17 @@ export async function startClaim(item, mode, isTaken, { fromFavorite = false } =
   }
 }
 
+function focusFavoritesHeading() {
+  requestAnimationFrame(() => {
+    const heading = document.getElementById("favorites-title");
+    if (!heading) return;
+    heading.tabIndex = -1;
+    heading.focus({ preventScroll: true });
+  });
+}
+
 /** `isClaimed()` zegt of het item op dit moment nog als gegeven staat. */
-export async function undoClaim(item, mode, isClaimed) {
+export async function undoClaim(item, mode, isClaimed, { fromFavorite = false } = {}) {
   if (busy.has(item.id)) return;
   if (!isClaimed()) {
     delete mine[item.id];
@@ -130,7 +134,8 @@ export async function undoClaim(item, mode, isClaimed) {
     delete mine[item.id];
     writeMine(mine);
     showToast(`“${short(item.title)}” staat weer open.`);
-    refocus(item.id, "[data-claim]");
+    if (fromFavorite) focusFavoritesHeading();
+    else refocus(item.id, "[data-claim]");
   } catch (err) {
     showToast(
       errorMessage(err, "Ongedaan maken lukte niet. Dat kan alleen op het apparaat waarmee je het koos, binnen 24 uur. Daarna kan alleen Thijmen het terugzetten."),
