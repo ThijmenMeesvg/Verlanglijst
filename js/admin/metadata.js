@@ -1,7 +1,7 @@
 // Haalt titel, foto en (als de winkel hem meegeeft) prijs op bij een productlink.
 // Browsers mogen winkelpagina's niet zelf uitlezen (CORS), daarom via Microlink:
 // die dienst krijgt alleen de productlink te zien. Het gratis gebruik heeft een daglimiet.
-import { normalizePrice, safeUrl } from "../lib/util.js";
+import { normalizePrice, safeUrl, titleFromUrl } from "../lib/util.js";
 
 const ENDPOINT = "https://api.microlink.io/";
 
@@ -53,8 +53,10 @@ export async function fetchProductInfo(url) {
 
   // Sommige winkels (zoals bol) geven alleen hun eigen naam als titel terug: dan liever de productnaam.
   const genericTitle = !d.title || /^(bol|bol\.com|amazon(\.\w+)?)$/i.test(d.title.trim());
+  // Sommige winkels (bol) geven aan zo'n dienst alleen een productnummer als naam; dan liever de naam uit de link.
+  const usable = (t) => (t && !/^[\d\s-]+$/.test(String(t).trim()) ? String(t) : "");
   return {
-    title: cleanShopTitle(product?.name || (genericTitle ? "" : d.title) || ""),
+    title: cleanShopTitle(usable(product?.name) || (genericTitle ? "" : usable(d.title)) || titleFromUrl(url)),
     image: safeUrl(d.image?.url || (typeof ldImage === "string" ? ldImage : ldImage?.url), { upgrade: true }),
     price
   };
