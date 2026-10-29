@@ -97,15 +97,22 @@ export function createItemTable(root, { onGotoMigration }) {
       item.note ? `<span class="badge" title="${escapeHtml(item.note)}">Notitie</span>` : ""
     ].join("");
 
+    // Vaak gebruikt staat los; de rest zit in het ‘⋯’-menu, zodat ‘Verwijderen’ niet naast ‘Bewerken’ staat te schreeuwen.
+    const menuItems = [
+      item.listId === "public" && !surprise ? `<button type="button" class="menu__item" role="menuitem" data-act="claim">${claimed ? "Weer open zetten" : "Markeer als gegeven"}</button>` : "",
+      item.listId === "public" ? `<button type="button" class="menu__item" role="menuitem" data-act="copy">Link naar dit item kopiëren</button>` : "",
+      `<button type="button" class="menu__item" role="menuitem" data-act="archive">Archiveren</button>`,
+      `<button type="button" class="menu__item menu__item--danger" role="menuitem" data-act="delete">Verwijderen</button>`
+    ].join("");
     const actions = item.listId === "archief"
       ? `<button type="button" class="btn btn--small" data-act="restore">Terugzetten</button>
          <button type="button" class="btn btn--small btn--danger" data-act="delete">Definitief verwijderen</button>`
       : `<button type="button" class="btn btn--small" data-act="edit">Bewerken</button>
-         <button type="button" class="btn btn--small" data-act="fav" aria-pressed="${item.favorite === true}">${item.favorite ? "★ Favoriet" : "☆ Favoriet"}</button>
-         ${item.listId === "public" && !surprise ? `<button type="button" class="btn btn--small" data-act="claim">${claimed ? "Weer open zetten" : "Markeer als gegeven"}</button>` : ""}
-         ${item.listId === "public" ? `<button type="button" class="btn btn--small" data-act="copy">Link naar item</button>` : ""}
-         <button type="button" class="btn btn--small" data-act="archive">Archiveren</button>
-         <button type="button" class="btn btn--small btn--danger" data-act="delete">Verwijderen</button>`;
+         <button type="button" class="btn btn--small btn--icon${item.favorite ? " is-on" : ""}" data-act="fav" aria-pressed="${item.favorite === true}" aria-label="Favoriet: ${escapeHtml(item.title)}" title="Favoriet">${item.favorite ? "★" : "☆"}</button>
+         <div class="menu">
+           <button type="button" class="btn btn--small btn--icon" data-menu aria-haspopup="menu" aria-expanded="false" aria-label="Meer acties: ${escapeHtml(item.title)}" title="Meer acties">⋯</button>
+           <div class="menu__list" role="menu" hidden>${menuItems}</div>
+         </div>`;
 
     return `
       <li class="row${claimed && !surprise ? " is-claimed" : ""}" data-id="${id}" data-list="${listAttr}">
@@ -137,10 +144,45 @@ export function createItemTable(root, { onGotoMigration }) {
       : `<li class="notice"><p>Geen items met deze filters.</p></li>`;
   }
 
+  // ---------- ‘⋯’-menu ----------
+  let openMenu = null;
+  function closeMenu({ focusButton = false } = {}) {
+    if (!openMenu) return;
+    const button = openMenu.querySelector("[data-menu]");
+    openMenu.querySelector(".menu__list").hidden = true;
+    button.setAttribute("aria-expanded", "false");
+    if (focusButton) button.focus();
+    openMenu = null;
+  }
+  function toggleMenu(menu) {
+    const wasOpen = openMenu === menu;
+    closeMenu();
+    if (wasOpen) return;
+    openMenu = menu;
+    menu.querySelector(".menu__list").hidden = false;
+    menu.querySelector("[data-menu]").setAttribute("aria-expanded", "true");
+    menu.querySelector(".menu__item")?.focus();
+  }
+  root.addEventListener("keydown", (e) => {
+    if (!openMenu || !openMenu.contains(e.target)) return;
+    const items = [...openMenu.querySelectorAll(".menu__item")];
+    const i = items.indexOf(document.activeElement);
+    if (e.key === "Escape") { e.preventDefault(); closeMenu({ focusButton: true }); }
+    if (e.key === "ArrowDown") { e.preventDefault(); items[(i + 1) % items.length]?.focus(); }
+    if (e.key === "ArrowUp") { e.preventDefault(); items[(i - 1 + items.length) % items.length]?.focus(); }
+    if (e.key === "Tab") closeMenu();
+  });
+  document.addEventListener("click", (e) => {
+    if (openMenu && !openMenu.contains(e.target)) closeMenu();
+  });
+
   root.addEventListener("click", async (e) => {
+    const menuButton = e.target.closest("[data-menu]");
+    if (menuButton) { toggleMenu(menuButton.closest(".menu")); return; }
     const btn = e.target.closest("[data-act]");
     if (!btn) return;
     const act = btn.dataset.act;
+    if (btn.classList.contains("menu__item")) closeMenu();
 
     if (act === "goto-migration") {
       onGotoMigration();

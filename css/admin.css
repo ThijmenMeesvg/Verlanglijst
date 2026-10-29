@@ -118,7 +118,42 @@ code {
 .row__meta { color: var(--ink-soft); font-size: 13px; }
 .row__url { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .row__badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
-.row__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; max-width: 360px; }
+.row__actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; max-width: 360px; }
+
+/* Knoppen met alleen een teken (★, ⋯) */
+.btn--icon { min-width: 36px; padding: 0; font-size: 18px; line-height: 1; }
+.btn--icon.is-on { color: #9a6b00; border-color: var(--gold); background: #fdf5df; }
+
+/* ---------- ‘⋯’-menu ---------- */
+
+.menu { position: relative; }
+.menu__list {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 20;
+  display: grid;
+  min-width: 220px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--paper);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 15%);
+}
+.menu__item {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--radius-s);
+  background: none;
+  color: var(--ink);
+  font: 500 14px/1.2 var(--font-body);
+  text-align: left;
+  cursor: pointer;
+}
+.menu__item:hover,
+.menu__item:focus-visible { background: var(--pine-soft); }
+.menu__item--danger { color: var(--danger); }
 
 .badge {
   padding: 1px 8px;
@@ -144,6 +179,13 @@ code {
 .settings-block .btn { justify-self: start; }
 .plain-list { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
 .migration-report { display: grid; gap: var(--space-2); }
+.cleanup { display: grid; gap: var(--space-4); }
+.cleanup:empty { display: none; }
+.cleanup__form { display: grid; gap: var(--space-2); }
+.cleanup__form .btn { justify-self: start; }
+.cleanup__list { margin: 0; padding: 0; list-style: none; display: grid; }
+.cleanup__row { min-height: 40px; align-items: flex-start; padding: 6px 0; }
+.cleanup__row s { color: var(--ink-soft); }
 .migration-report:empty { display: none; }
 .links-form { display: grid; gap: var(--space-2); margin-bottom: var(--space-5); }
 
@@ -157,6 +199,10 @@ code {
   .row { grid-template-columns: 48px minmax(0, 1fr); }
   .row__thumb { width: 48px; height: 48px; }
   .row__actions { grid-column: 1 / -1; justify-content: flex-start; max-width: none; }
+  /* Menu over de volle breedte van het item, zodat het nooit buiten beeld valt. */
+  .row { position: relative; }
+  .menu { position: static; }
+  .menu__list { left: var(--space-3); right: var(--space-3); top: calc(100% - 6px); min-width: 0; }
   .row--link .row__actions { grid-column: 1 / -1; }
 }
 
