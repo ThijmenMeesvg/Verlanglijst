@@ -122,7 +122,7 @@ code {
 
 /* Knoppen met alleen een teken (★, ⋯) */
 .btn--icon { min-width: 36px; padding: 0; font-size: 18px; line-height: 1; }
-.btn--icon.is-on { color: #9a6b00; border-color: var(--gold); background: #fdf5df; }
+.btn--icon.is-on { color: #7a5400; border-color: var(--gold); background: #fdf5df; }
 
 /* ---------- ‘⋯’-menu ---------- */
 
