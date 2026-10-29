@@ -123,6 +123,11 @@ code {
 /* Knoppen met alleen een teken (★, ⋯) */
 .btn--icon { min-width: 36px; padding: 0; font-size: 18px; line-height: 1; }
 .btn--icon.is-on { color: #7a5400; border-color: var(--gold); background: #fdf5df; }
+@media (prefers-color-scheme: dark) {
+  .btn--icon.is-on { color: var(--gold); background: #33290f; }
+}
+/* Menu dat naar boven opent als er onder geen ruimte is */
+.menu--up .menu__list { top: auto; bottom: calc(100% + 4px); }
 
 /* ---------- ‘⋯’-menu ---------- */
 
@@ -203,6 +208,7 @@ code {
   .row { position: relative; }
   .menu { position: static; }
   .menu__list { left: var(--space-3); right: var(--space-3); top: calc(100% - 6px); min-width: 0; }
+  .menu--up .menu__list { top: auto; bottom: calc(100% - 6px); }
   .row--link .row__actions { grid-column: 1 / -1; }
 }
 

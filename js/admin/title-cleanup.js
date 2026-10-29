@@ -65,6 +65,8 @@ export function createTitleCleanup(root, { allItems }) {
         await applyUpdates(Object.fromEntries(picked.map(({ item, next }) => [`${itemPath(item.listId, item.id)}/title`, next])));
         showToast(`${picked.length} ${picked.length === 1 ? "naam" : "namen"} aangepast.`);
         render();
+        // Focus terug in dit blok in plaats van bovenaan de pagina.
+        (result.querySelector("input, button") || root.querySelector("#tc-check")).focus();
       } catch (err) {
         showToast(`Aanpassen lukte niet: ${err.message}`, { error: true });
       }

@@ -142,6 +142,31 @@ export function createItemTable(root, { onGotoMigration }) {
     rowsEl.innerHTML = items.length
       ? items.map(renderRow).join("")
       : `<li class="notice"><p>Geen items met deze filters.</p></li>`;
+    restoreFocus(items);
+  }
+
+  // Na een actie tekent de lijst zichzelf opnieuw; zet de focus dan terug op dezelfde plek
+  // (of op het volgende item als dit item uit de lijst is verdwenen), zodat toetsenbordgebruikers niet bovenaan beginnen.
+  let pendingFocus = null;
+  function rememberFocus(item, selector) {
+    const ids = visibleItems().map((i) => `${i.listId}|${i.id}`);
+    const index = ids.indexOf(`${item.listId}|${item.id}`);
+    pendingFocus = { key: `${item.listId}|${item.id}`, selector, next: ids[index + 1] || ids[index - 1] || null };
+  }
+  function restoreFocus() {
+    if (!pendingFocus) return;
+    const find = (key) => {
+      if (!key) return null;
+      const [list, id] = key.split("|");
+      return [...rowsEl.querySelectorAll(".row")].find((r) => r.dataset.list === list && r.dataset.id === id);
+    };
+    const row = find(pendingFocus.key);
+    const target = row
+      ? row.querySelector(pendingFocus.selector) || row.querySelector("[data-menu], button")
+      : find(pendingFocus.next)?.querySelector("[data-menu], button") || $("t-summary");
+    if (!row && target === $("t-summary")) target.tabIndex = -1;
+    target?.focus({ preventScroll: Boolean(row) });
+    pendingFocus = null;
   }
 
   // ---------- ‘⋯’-menu ----------
@@ -159,7 +184,11 @@ export function createItemTable(root, { onGotoMigration }) {
     closeMenu();
     if (wasOpen) return;
     openMenu = menu;
-    menu.querySelector(".menu__list").hidden = false;
+    const list = menu.querySelector(".menu__list");
+    list.hidden = false;
+    // Geen ruimte meer onder de knop (laatste items)? Dan naar boven openen.
+    menu.classList.remove("menu--up");
+    if (list.getBoundingClientRect().bottom > innerHeight - 8) menu.classList.add("menu--up");
     menu.querySelector("[data-menu]").setAttribute("aria-expanded", "true");
     menu.querySelector(".menu__item")?.focus();
   }
@@ -170,6 +199,8 @@ export function createItemTable(root, { onGotoMigration }) {
     if (e.key === "Escape") { e.preventDefault(); closeMenu({ focusButton: true }); }
     if (e.key === "ArrowDown") { e.preventDefault(); items[(i + 1) % items.length]?.focus(); }
     if (e.key === "ArrowUp") { e.preventDefault(); items[(i - 1 + items.length) % items.length]?.focus(); }
+    if (e.key === "Home") { e.preventDefault(); items[0]?.focus(); }
+    if (e.key === "End") { e.preventDefault(); items.at(-1)?.focus(); }
     if (e.key === "Tab") closeMenu();
   });
   document.addEventListener("click", (e) => {
@@ -177,6 +208,15 @@ export function createItemTable(root, { onGotoMigration }) {
   });
 
   root.addEventListener("click", async (e) => {
+    try {
+      await handleClick(e);
+    } finally {
+      // Geannuleerd, gekopieerd of mislukt: de lijst is niet opnieuw getekend, zet de focus dan alsnog terug.
+      if (pendingFocus) restoreFocus();
+    }
+  });
+
+  async function handleClick(e) {
     const menuButton = e.target.closest("[data-menu]");
     if (menuButton) { toggleMenu(menuButton.closest(".menu")); return; }
     const btn = e.target.closest("[data-act]");
@@ -203,6 +243,10 @@ export function createItemTable(root, { onGotoMigration }) {
     const rowEl = btn.closest(".row");
     const item = allItems().find((i) => i.id === rowEl?.dataset.id && i.listId === rowEl?.dataset.list);
     if (!item) return;
+
+    // Waar de focus na het opnieuw tekenen terug moet komen.
+    if (act === "fav") rememberFocus(item, '[data-act="fav"]');
+    else if (["claim", "archive", "delete", "restore", "copy"].includes(act)) rememberFocus(item, "[data-menu]");
 
     if (act === "edit") openEditor(item);
     if (act === "fav") await run(() => setFields(item.listId, item.id, { favorite: !item.favorite }));
@@ -257,7 +301,7 @@ export function createItemTable(root, { onGotoMigration }) {
         }
       );
     }
-  });
+  }
 
   function restore(item) {
     const target = LISTS.some((l) => l.id === item.fromList && l.id !== "archief") ? item.fromList : "public";
