@@ -125,6 +125,14 @@ test("suggestTitle haalt dubbele voorvoegsels weg en zet een hoofdletter", () =>
   assert.equal(suggestTitle("Groente Seizoenskalender - Fork Ranger"), "Groente Seizoenskalender - Fork Ranger");
   assert.equal(suggestTitle("Spel - Go"), "Spel - Go");                            // te kort na weghalen
   assert.equal(suggestTitle("  Makita   schroeftol "), "Makita schroeftol");
+  // Samengestelde woorden en merknamen blijven heel
+  assert.equal(suggestTitle("cd-speler"), "Cd-speler");
+  assert.equal(suggestTitle("Spel-computer"), "Spel-computer");
+  assert.equal(suggestTitle("lp-hoes"), "Lp-hoes");
+  assert.equal(suggestTitle("Plaat - voor seizoenenlamp"), "Plaat - voor seizoenenlamp");
+  assert.equal(suggestTitle("iPhone hoesje"), "iPhone hoesje");
+  assert.equal(suggestTitle("eBook reader"), "eBook reader");
+  assert.equal(suggestTitle("Boek: De Avonden"), "De Avonden");
 });
 
 test("findDuplicateTitles", () => {

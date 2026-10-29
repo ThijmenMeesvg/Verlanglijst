@@ -238,13 +238,16 @@ export function domId(id) {
 // ---------- Namen opschonen ----------
 
 // Voorvoegsels die dubbel zijn met de categorie die er al onder staat ("Spel - …", "Boek- …", "LP - …").
-const TITLE_PREFIX = /^(?:spel|bordspel|kaartspel|boek|kookboek|lp|cd|vinyl|plaat)\s*[-–—:]\s*/i;
+// Alleen met een spatie ná het streepje, zodat samengestelde woorden ("cd-speler", "Spel-computer") heel blijven.
+const TITLE_PREFIX = /^(?:spel|bordspel|kaartspel|boek|kookboek|lp|cd|vinyl)\s*[-–—:]\s+/i;
 
 /** Voorstel voor een nettere naam, of dezelfde naam als er niets te verbeteren valt. */
 export function suggestTitle(title) {
   let t = String(title ?? "").replace(/\s+/g, " ").trim();
   const withoutPrefix = t.replace(TITLE_PREFIX, "");
   if (withoutPrefix.length >= 3) t = withoutPrefix;
+  // Merknamen als iPhone en eBook laten we zoals ze zijn.
+  if (/^\p{Ll}\p{Lu}/u.test(t)) return t;
   return t.charAt(0).toLocaleUpperCase("nl-NL") + t.slice(1);
 }
 
