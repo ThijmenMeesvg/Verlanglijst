@@ -1,0 +1,22 @@
+# Besturingssysteem
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Node (alleen nodig om de tests te draaien; de site zelf heeft geen packages)
+node_modules/
+npm-debug.log*
+
+# Build-uitvoer en lokale omgevingsbestanden
+dist/
+.env
+.env.*
+
+# Database-exports bevatten privé-lijsten: nooit committen
+*-export.json

@@ -1,0 +1,302 @@
+/* Gedeelde basis: kleuren, letters, knoppen en onderdelen die op elke pagina terugkomen. */
+
+:root {
+  /* Kleuren */
+  --birch: #f5f6f1;          /* achtergrond */
+  --paper: #ffffff;          /* kaarten */
+  --ink: #1a221d;            /* tekst */
+  --ink-soft: #4d5a52;       /* rustige tekst */
+  --line: #dde2d9;           /* randen */
+  --pine: #1e3b2f;           /* merkkleur, kop */
+  --pine-soft: #e3ebe5;
+  --orange: #c2410c;         /* actie: ik geef dit (wit erop haalt 5,2:1) */
+  --orange-ink: #ffffff;
+  --orange-dark: #9a3412;
+  --gold: #e8b53a;           /* favoriet */
+  --moss: #6b7f6e;           /* al gegeven */
+  --danger: #b42318;
+  --focus: #2563eb;
+
+  /* Letters: geen externe fonts, wel een vriendelijke ronde kopletter waar het systeem die heeft */
+  --font-head: ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", "Nunito", system-ui, sans-serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Maten */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --radius-s: 8px;
+  --radius-m: 12px;
+  --radius-l: 18px;
+  --page: 1180px;
+  --shadow: 0 1px 2px rgb(26 34 29 / 6%), 0 4px 14px rgb(26 34 29 / 6%);
+  --touch: 44px;
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --birch: #111a15;
+    --paper: #18241d;
+    --ink: #e9eee9;
+    --ink-soft: #a9b7ad;
+    --line: #2b3a31;
+    --pine: #9fd0b4;
+    --pine-soft: #1f3128;
+    --moss: #8fa393;
+    --danger: #ff8a80;
+    --focus: #8ab4ff;
+    --shadow: none;
+  }
+}
+
+/* ---------- Reset ---------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--birch);
+  color: var(--ink);
+  font: 16px/1.55 var(--font-body);
+  overflow-wrap: anywhere;
+}
+
+img { max-width: 100%; display: block; }
+
+/* Het hidden-attribuut moet altijd winnen, ook van display:grid/flex in componenten. */
+[hidden] { display: none !important; }
+
+h1, h2, h3 {
+  font-family: var(--font-head);
+  line-height: 1.15;
+  margin: 0;
+  text-wrap: balance;
+}
+
+p { margin: 0; }
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- Kopbalk (alle pagina's) ---------- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) max(var(--space-4), calc((100% - var(--page)) / 2));
+  background: #1e3b2f;
+  color: #f5f6f1;
+}
+.topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--touch);
+  font: 700 18px/1 var(--font-head);
+  text-decoration: none;
+}
+.topbar .btn { color: inherit; }
+.topbar .btn:hover { background: rgb(255 255 255 / 12%); }
+
+/* ---------- Knoppen ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--touch);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--paper);
+  color: var(--ink);
+  font: 600 15px/1 var(--font-body);
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn:hover { border-color: var(--ink-soft); }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+
+.btn--primary {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--orange-ink);
+}
+.btn--primary:hover { background: var(--orange-dark); border-color: var(--orange-dark); }
+
+.btn--quiet { border-color: transparent; background: transparent; }
+.btn--quiet:hover { background: var(--pine-soft); border-color: transparent; }
+
+.btn--danger { color: var(--danger); }
+
+.btn--small { min-height: 36px; padding: 0 var(--space-3); font-size: 14px; }
+
+.link-button {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+/* ---------- Chips (filters) ---------- */
+
+.chips {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px;
+}
+.chips::-webkit-scrollbar { display: none; }
+/* Er staan meer chips rechts buiten beeld: laat de rand vervagen als hint dat je kunt scrollen. */
+.chips[data-more="right"] { -webkit-mask-image: linear-gradient(to right, #000 80%, transparent); mask-image: linear-gradient(to right, #000 80%, transparent); }
+.chips[data-more="left"] { -webkit-mask-image: linear-gradient(to left, #000 80%, transparent); mask-image: linear-gradient(to left, #000 80%, transparent); }
+.chips[data-more="both"] { -webkit-mask-image: linear-gradient(to right, transparent, #000 15%, #000 80%, transparent); mask-image: linear-gradient(to right, transparent, #000 15%, #000 80%, transparent); }
+
+.chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 500 14px/1 var(--font-body);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.chip[aria-pressed="true"] {
+  background: var(--pine);
+  border-color: var(--pine);
+  color: var(--birch);
+}
+.chip__count { opacity: .7; font-variant-numeric: tabular-nums; }
+
+/* ---------- Formulieren ---------- */
+
+.field { display: grid; gap: 6px; }
+.field__label { font-weight: 600; font-size: 14px; }
+.field__hint { color: var(--ink-soft); font-size: 13px; }
+
+.input, .select, .textarea {
+  width: 100%;
+  min-height: var(--touch);
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  background: var(--paper);
+  color: var(--ink);
+  font: 16px/1.4 var(--font-body);    /* 16px voorkomt inzoomen op iPhone */
+}
+.textarea { min-height: 88px; resize: vertical; }
+.input:focus, .select:focus, .textarea:focus { border-color: var(--pine); }
+
+.check { display: flex; align-items: center; gap: var(--space-2); min-height: var(--touch); cursor: pointer; }
+.check input { width: 20px; height: 20px; accent-color: var(--pine); }
+
+/* ---------- Dialoog ---------- */
+
+.dialog {
+  width: min(440px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  padding: var(--space-5);
+  border: 0;
+  border-radius: var(--radius-l);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 30%);
+}
+.dialog::backdrop { background: rgb(17 26 21 / 55%); }
+.dialog h2 { font-size: 22px; margin-bottom: var(--space-3); }
+.dialog p + p { margin-top: var(--space-2); }
+.dialog__actions {
+  display: flex;
+  flex-wrap: wrap-reverse;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+
+/* ---------- Melding onderin (toast) ---------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: calc(100% - 32px);
+  padding: 10px 10px 10px 16px;
+  border-radius: var(--radius-m);
+  background: var(--ink);
+  color: var(--birch);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 25%);
+  transform: translateX(-50%);
+}
+.toast--error { background: var(--danger); color: #fff; }
+.toast .btn { min-height: 36px; border: 0; background: rgb(255 255 255 / 15%); color: inherit; }
+
+/* ---------- Leeg en laden ---------- */
+
+.notice {
+  padding: var(--space-6) var(--space-4);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-l);
+  text-align: center;
+  color: var(--ink-soft);
+}
+.notice p + * { margin-top: var(--space-3); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+.confetti {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 60;
+  pointer-events: none;
+}
+
+/* ---------- Demo-modus ---------- */
+
+.demo-banner {
+  padding: var(--space-2) var(--space-4);
+  background: var(--gold);
+  color: #3a2a00;
+  font-size: 14px;
+  text-align: center;
+}
