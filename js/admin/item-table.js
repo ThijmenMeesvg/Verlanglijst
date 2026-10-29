@@ -104,7 +104,8 @@ export function createItemTable(root, { onGotoMigration }) {
          <button type="button" class="btn btn--small" data-act="fav" aria-pressed="${item.favorite === true}">${item.favorite ? "★ Favoriet" : "☆ Favoriet"}</button>
          ${item.listId === "public" && !surprise ? `<button type="button" class="btn btn--small" data-act="claim">${claimed ? "Weer open zetten" : "Markeer als gegeven"}</button>` : ""}
          ${item.listId === "public" ? `<button type="button" class="btn btn--small" data-act="copy">Link naar item</button>` : ""}
-         <button type="button" class="btn btn--small" data-act="archive">Archiveren</button>`;
+         <button type="button" class="btn btn--small" data-act="archive">Archiveren</button>
+         <button type="button" class="btn btn--small btn--danger" data-act="delete">Verwijderen</button>`;
 
     return `
       <li class="row${claimed && !surprise ? " is-claimed" : ""}" data-id="${id}" data-list="${listAttr}">
@@ -184,13 +185,35 @@ export function createItemTable(root, { onGotoMigration }) {
     }
     if (act === "restore") await run(() => restore(item), `“${item.title}” is teruggezet.`);
     if (act === "delete") {
+      const fromArchive = item.listId === "archief";
       const ok = await confirmDialog({
-        title: "Definitief verwijderen?",
-        body: `“${item.title}” wordt voorgoed verwijderd. Dit kun je niet ongedaan maken.`,
+        title: "Item verwijderen?",
+        body: fromArchive
+          ? `“${item.title}” wordt voorgoed verwijderd.`
+          : [
+              `“${item.title}” wordt verwijderd${item.listId === "public" ? " en verdwijnt meteen van je verlanglijst" : ""}.`,
+              "Je kunt het daarna nog even ongedaan maken. Wil je het liever bewaren? Kies dan ‘Archiveren’."
+            ],
         confirmLabel: "Verwijderen",
         danger: true
       });
-      if (ok) await run(() => deleteItems([{ listId: "archief", id: item.id }]), "Verwijderd.");
+      if (!ok) return;
+      const originalClaim = item.listId === "public" ? state.claims[item.id] : null;
+      await run(
+        () => deleteItems([{ listId: item.listId, id: item.id }]),
+        `“${item.title.length > 50 ? `${item.title.slice(0, 47)}…` : item.title}” is verwijderd.`,
+        {
+          actionLabel: "Ongedaan maken",
+          duration: 10000,
+          // Alles wat nodig is om het terug te zetten staat nog in het geheugen van deze pagina.
+          onAction: () =>
+            run(async () => {
+              const { id, listId, ...data } = item;
+              await saveItem({ id, listId, data });
+              if (originalClaim) await applyUpdates({ [`${PATHS.claims}/${id}`]: originalClaim });
+            }, "Teruggezet.")
+        }
+      );
     }
   });
 

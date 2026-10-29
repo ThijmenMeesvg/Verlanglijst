@@ -17,7 +17,7 @@ Gewone HTML, CSS en JavaScript, zonder framework en zonder bouwstap. De gegevens
 
 **Voor mij (beheer, inloggen met Google)**
 - Toevoegen: link plakken, ‘Gegevens ophalen’ vult naam, foto en vaak de prijs in. Trackingcodes (utm, gclid, …) worden automatisch uit links gehaald. Dubbele links worden gemeld.
-- Notitie per item (‘maat L, liefst groen’), favorieten, en drie lijsten: openbaar, cadeaus voor anderen, en voor mezelf. Plus een archief, zodat niets per ongeluk voorgoed weg is.
+- Notitie per item (‘maat L, liefst groen’), favorieten, en drie lijsten: openbaar, cadeaus voor anderen, en voor mezelf. Items verwijder je direct (met ‘ongedaan maken’) of zet je in het archief om ze te bewaren.
 - Verrassingsmodus: verbergt op jouw apparaat, in het beheer én op de lijst zelf, wat al gegeven wordt.
 - Bladwijzer ‘Op mijn verlanglijst’: vanuit elke webwinkel met één klik toevoegen (zie Instellingen in het beheer).
 - Links bewaren om later te bekijken.
