@@ -82,7 +82,7 @@ document.addEventListener("click", (e) => {
   const undo = e.target.closest("[data-unclaim]");
   if (give) {
     const item = findItem(give.dataset.claim);
-    if (item) startClaim(item, state.mode, () => Boolean(state.claims[item.id]));
+    if (item) startClaim(item, state.mode, () => Boolean(state.claims[item.id]), { fromFavorite: Boolean(give.closest(".fav")) });
   } else if (undo) {
     const item = findItem(undo.dataset.unclaim);
     if (item) undoClaim(item, state.mode, () => Boolean(state.claims[item.id]));

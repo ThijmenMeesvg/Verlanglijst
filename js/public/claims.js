@@ -60,7 +60,10 @@ function refocus(itemId, selector) {
   });
 }
 
-export async function startClaim(item, mode, isTaken) {
+/**
+ * @param {{ fromFavorite?: boolean }} [options] gekozen vanuit de favorieten bovenaan: dan blijft de pagina daar staan
+ */
+export async function startClaim(item, mode, isTaken, { fromFavorite = false } = {}) {
   if (busy.has(item.id) || Date.now() - lastUndoAt < 800) return;
   const ok = await confirmDialog({
     title: "Geef je dit cadeau?",
@@ -88,7 +91,17 @@ export async function startClaim(item, mode, isTaken) {
       onAction: () => undoClaim(item, mode, () => true),
       duration: 10000
     });
-    refocus(item.id, "[data-unclaim]");
+    if (fromFavorite) {
+      // De favoriet verdwijnt uit de rij; niet naar de kaart verderop springen maar bij de favorieten blijven.
+      requestAnimationFrame(() => {
+        const next = document.querySelector("#favorites [data-claim]");
+        const heading = document.getElementById("favorites-title");
+        if (next) next.focus({ preventScroll: true });
+        else if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
+      });
+    } else {
+      refocus(item.id, "[data-unclaim]");
+    }
   } catch (err) {
     delete mine[item.id];
     writeMine(mine);
