@@ -71,12 +71,12 @@ Deze stappen doe je één keer in de [Firebase Console](https://console.firebase
    - **Google** → Enable → Save (voor jou, in het beheer).
    - **Anonymous** → Enable → Save (voor bezoekers: zo kan alleen wie ‘Ik geef dit’ klikte het ook terugdraaien; ze merken er niets van).
 2. **Je websiteadres toestaan.** Authentication → Settings → Authorized domains → Add domain → `thijmenmeesvg.github.io`.
-3. **Beveiligingsregels plaatsen.** Realtime Database → Rules. Vervang alles door de inhoud van [`database.rules.json`](database.rules.json) en klik Publish. De oude openbare categorieën blijven leesbaar, dus de lijst blijft zichtbaar; je privélijsten zijn vanaf nu afgeschermd. (Alleen ‘Ik geef dit’ werkt pas weer na stap 5.)
+3. **Beveiligingsregels plaatsen.** Realtime Database → Rules. Vervang alles door de inhoud van [`database.rules.json`](database.rules.json) en klik Publish. Je privélijsten zijn vanaf nu afgeschermd.
 4. **Jezelf beheerder maken.** Open `admin.html` en log in met Google. Je ziet nu ‘Bijna klaar’ met jouw gebruikers-ID. Ga in de Console naar Realtime Database → Data, voeg in de root een node `admins` toe, en daarin een sleutel met jouw gebruikers-ID en de waarde `true`. Ververs de beheerpagina.
 5. **Overstappen.** In het beheer: Instellingen → Overstap → Oude gegevens controleren → Overzetten. Je kunt dit gerust nog eens doen: items die al overgezet zijn worden overgeslagen, dus latere wijzigingen blijven staan.
 6. **Opruimen.** Als alles is overgezet, verschijnt in hetzelfde blok de knop ‘Oude mappen opruimen’. Die verwijdert de oude categorieën, Cadeaus, Voor Thijmen, tempLinks en de oude kopie `v2`. Wil je eerst een reservekopie: Realtime Database → ⋮ → Export JSON (en bewaar die niet in deze repo).
 
-Na stap 6 mogen de zeven regels voor `Boeken` t/m `Overig` onderaan `database.rules.json` weg; ze doen dan niets meer.
+> Kom je van een database met de oude indeling (een map per categorie) en wil je tijdens de overstap de lijst zichtbaar houden? Zet dan tijdelijk `"Boeken": { ".read": true }` (en zo voor elke oude openbare categorie) in de regels, en haal dat na stap 6 weer weg.
 
 **Optioneel:** beperk de Firebase API-sleutel tot je eigen website. In de [Google Cloud Console](https://console.cloud.google.com/apis/credentials?project=verlanglijst-12015) → de ‘Browser key’ → Application restrictions → Websites → voeg `https://thijmenmeesvg.github.io/*` toe. Zet tijdelijk ook `http://localhost:8000/*` erbij als je lokaal wilt testen.
 
@@ -88,7 +88,6 @@ Na stap 6 mogen de zeven regels voor `Boeken` t/m `Overig` onderaan `database.ru
 |---|---|---|---|
 | Openbare items en de tekst bovenaan | `wishlist/items`, `wishlist/settings` | iedereen | alleen beheerder |
 | ‘Ik geef dit’ | `wishlist/claims` | iedereen | een bezoeker mag een claim toevoegen (tijdstip + anoniem id, geen naam) en alleen zijn eigen claim binnen 24 uur weghalen; claims die jij in het beheer zet (en die uit de oude lijst) kunnen bezoekers niet weghalen |
-| Oude categorieën (tot je opruimt) | `Boeken`, `Muziek`, … | iedereen | alleen beheerder |
 | Cadeaus voor anderen, Voor mezelf, archief, bewaarde links | `private/…` | alleen beheerder | alleen beheerder |
 | Wie beheerder is | `admins` | alleen je eigen regel | alleen via de Console |
 
