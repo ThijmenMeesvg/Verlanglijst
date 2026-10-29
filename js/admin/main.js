@@ -107,7 +107,8 @@ function startApp() {
   });
   const settings = createSettings(document.getElementById("settings"), {
     onSurpriseChange: () => table.refresh(),
-    existingIds: () => new Set([...table.allItems().map((i) => i.id), ...tempLinks.map((l) => l.id)])
+    existingIds: () => new Set([...table.allItems().map((i) => i.id), ...tempLinks.map((l) => l.id)]),
+    allItems: () => table.allItems()
   });
 
   subscribeAdmin(

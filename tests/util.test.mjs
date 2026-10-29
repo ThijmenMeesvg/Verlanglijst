@@ -3,7 +3,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   escapeHtml, safeUrl, normalizePrice, parsePrice, formatPrice, isValidPriceText, cleanUrl, linkKey, shopName,
-  titleFromUrl, toTimestamp, filterItems, sortItems, domId
+  titleFromUrl, toTimestamp, filterItems, sortItems, domId, suggestTitle, findDuplicateTitles
 } from "../js/lib/util.js";
 
 test("escapeHtml maakt tekst veilig", () => {
@@ -113,4 +113,26 @@ test("domId is veilig voor sleutels met spaties en &", () => {
 test("isValidPriceText", () => {
   for (const ok of ["24,95", "24.95", "15", "€ 1.299,00", "1299,00", "€12", "7,5", "40 euro"]) assert.equal(isValidPriceText(ok), true, ok);
   for (const bad of ["12,5x", "abc12", "", "12,999", "€", "1,2,3"]) assert.equal(isValidPriceText(bad), false, bad);
+});
+
+test("suggestTitle haalt dubbele voorvoegsels weg en zet een hoofdletter", () => {
+  assert.equal(suggestTitle("Spel - Exploding Pigeon"), "Exploding Pigeon");
+  assert.equal(suggestTitle("Boek- How Not to Make a Human"), "How Not to Make a Human");
+  assert.equal(suggestTitle("LP - Blue Neighbourhood"), "Blue Neighbourhood");
+  assert.equal(suggestTitle("Bordspel - Ransom Notes"), "Ransom Notes");
+  assert.equal(suggestTitle("totebag"), "Totebag");
+  assert.equal(suggestTitle("Notities - Moomin"), "Notities - Moomin");            // geen dubbel voorvoegsel
+  assert.equal(suggestTitle("Groente Seizoenskalender - Fork Ranger"), "Groente Seizoenskalender - Fork Ranger");
+  assert.equal(suggestTitle("Spel - Go"), "Spel - Go");                            // te kort na weghalen
+  assert.equal(suggestTitle("  Makita   schroeftol "), "Makita schroeftol");
+});
+
+test("findDuplicateTitles", () => {
+  const dups = findDuplicateTitles([
+    { id: "a", title: "Plaat voor seizoenenlamp", listId: "public" },
+    { id: "b", title: "plaat voor seizoenenlamp", listId: "public" },
+    { id: "c", title: "Plaat voor seizoenenlamp", listId: "cadeaus" },
+    { id: "d", title: "Iets anders", listId: "public" }
+  ]);
+  assert.deepEqual(dups.map((g) => g.map((i) => i.id)), [["a", "b"]]);
 });

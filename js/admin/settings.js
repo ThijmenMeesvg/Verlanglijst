@@ -5,12 +5,13 @@ import { showToast } from "../lib/ui.js";
 import { escapeHtml } from "../lib/util.js";
 import { isSurpriseMode, setSurpriseMode } from "../lib/surprise.js";
 import { createMigration } from "./migration.js";
+import { createTitleCleanup } from "./title-cleanup.js";
 
 /**
  * @param {HTMLElement} root
- * @param {{ onSurpriseChange: () => void, existingIds: () => Set<string> }} options
+ * @param {{ onSurpriseChange: () => void, existingIds: () => Set<string>, allItems: () => object[] }} options
  */
-export function createSettings(root, { onSurpriseChange, existingIds }) {
+export function createSettings(root, { onSurpriseChange, existingIds, allItems }) {
   const adminUrl = new URL("admin.html", location.href).href.replace(/\?.*$/, "");
   // De bladwijzer opent de beheerpagina met de link van de winkelpagina waar je op dat moment bent.
   const bookmarklet = `javascript:location.href=${JSON.stringify(`${adminUrl}?url=`)}+encodeURIComponent(location.href)`;
@@ -44,6 +45,8 @@ export function createSettings(root, { onSurpriseChange, existingIds }) {
       <p class="field__hint">Op een telefoon: kopieer de code, maak een bladwijzer van een willekeurige pagina en vervang daarna het adres door deze code.</p>
       <button type="button" class="btn btn--small" id="s-copy-bookmarklet">Code kopiëren</button>
     </section>
+
+    <section class="settings-block" id="s-cleanup"></section>
 
     <section class="settings-block" id="s-migration"></section>
 
@@ -83,6 +86,7 @@ export function createSettings(root, { onSurpriseChange, existingIds }) {
     catch { showToast("Kopiëren lukte niet.", { error: true }); }
   });
 
+  createTitleCleanup(root.querySelector("#s-cleanup"), { allItems });
   createMigration(root.querySelector("#s-migration"), { existingIds });
 
   let textLoaded = false;
