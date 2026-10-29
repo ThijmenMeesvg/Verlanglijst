@@ -105,6 +105,7 @@ main {
 }
 
 .fav {
+  position: relative;            /* houdt verborgen schermlezertekst binnen de kaart (anders schuift de pagina opzij) */
   display: grid;
   grid-template-columns: 76px minmax(0, 1fr) auto;
   align-items: center;
@@ -129,7 +130,7 @@ main {
 .fav__body { display: grid; gap: 2px; min-width: 0; }
 .fav__title {
   font: 600 15px/1.3 var(--font-body);
-  overflow-wrap: normal;        /* niet midden in een woord afbreken; liever afkappen met … */
+  overflow-wrap: break-word;     /* alleen een heel lang woord mag breken; gewone woorden niet */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -251,5 +252,10 @@ main {
   .toolbar__toggle { display: inline-flex; }
   .toolbar__panel { display: none; padding: var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-m); background: var(--paper); }
   .toolbar__panel.is-open { display: grid; gap: var(--space-3); }
+  .toolbar__panel .chips { flex-wrap: wrap; overflow: visible; }
+  /* Paneel direct onder de knop, vóór de categorieën */
+  .toolbar { grid-template-areas: "search" "panel" "cats"; }
+  .toolbar__toggle[aria-expanded="true"] { background: var(--pine); border-color: var(--pine); color: var(--birch); }
+  .toolbar__toggle[aria-expanded="true"] .toolbar__badge { background: var(--birch); color: var(--pine); }
   .toolbar__sort { width: 100%; }
 }

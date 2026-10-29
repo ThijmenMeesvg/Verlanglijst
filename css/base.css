@@ -265,7 +265,11 @@ a { color: inherit; }
   transform: translateX(-50%);
 }
 .toast--error { background: var(--danger); color: #fff; }
-.toast .btn { min-height: 36px; border: 0; background: rgb(255 255 255 / 15%); color: inherit; }
+.toast .btn { flex: none; min-height: 36px; border: 0; background: rgb(255 255 255 / 15%); color: inherit; white-space: nowrap; }
+@media (max-width: 560px) {
+  /* Op de telefoon over de volle breedte, knop zo nodig op een eigen regel. */
+  .toast { left: 16px; right: 16px; max-width: none; flex-wrap: wrap; justify-content: space-between; transform: none; }
+}
 
 /* ---------- Leeg en laden ---------- */
 
