@@ -10,14 +10,16 @@ Gewone HTML, CSS en JavaScript, zonder framework en zonder bouwstap. De gegevens
 ## Wat kan het
 
 **Voor bezoekers**
-- Alle wensen op één pagina, met favorieten bovenaan.
+- Alle wensen op één pagina, met favorieten als compacte rij bovenaan; op desktop staan de eerste cadeaus direct in beeld.
 - Zoeken, filteren op categorie en prijs, sorteren. De filters staan in de adresbalk, dus je kunt bijv. `…/?cat=boeken` doorsturen.
 - ‘Ik geef dit’ met bevestiging. Iedereen ziet het direct (live), en wie het koos kan het binnen 24 uur op hetzelfde apparaat terugdraaien.
-- Werkt op telefoon (twee kolommen), tablet en computer, en in licht en donker thema.
+- Werkt op telefoon (twee kolommen, extra filters achter de knop ‘Filters’), tablet en computer, en in licht en donker thema.
 
 **Voor mij (beheer, inloggen met Google)**
 - Toevoegen: link plakken, ‘Gegevens ophalen’ vult naam, foto en vaak de prijs in. Trackingcodes (utm, gclid, …) worden automatisch uit links gehaald. Dubbele links worden gemeld.
 - Notitie per item (‘maat L, liefst groen’), favorieten, en drie lijsten: openbaar, cadeaus voor anderen, en voor mezelf. Items verwijder je direct (met ‘ongedaan maken’) of zet je in het archief om ze te bewaren.
+- Per item ‘Bewerken’ en een ster voor favoriet; de rest (gegeven, link, archiveren, verwijderen) zit in het ⋯-menu.
+- ‘Namen opschonen’ (Instellingen) stelt nettere namen voor en meldt dubbele namen; jij kiest wat je overneemt.
 - Verrassingsmodus: verbergt op jouw apparaat, in het beheer én op de lijst zelf, wat al gegeven wordt.
 - Bladwijzer ‘Op mijn verlanglijst’: vanuit elke webwinkel met één klik toevoegen (zie Instellingen in het beheer).
 - Links bewaren om later te bekijken.
