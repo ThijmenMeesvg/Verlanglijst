@@ -49,9 +49,28 @@ export function setupFilters(onChange) {
   sort.value = filters.sort;
   hide.checked = filters.hideClaimed;
 
+  // Telefoon: sorteren, prijs en ‘verberg’ zitten achter de knop ‘Filters’; het bolletje telt wat er aanstaat.
+  const toggle = document.getElementById("filter-toggle");
+  const panel = document.getElementById("filter-panel");
+  const badge = document.getElementById("filter-badge");
+  const updateBadge = () => {
+    const active = [filters.band, filters.sort !== DEFAULTS.sort, filters.hideClaimed].filter(Boolean).length;
+    badge.hidden = active === 0;
+    badge.textContent = active;
+    toggle.setAttribute("aria-label", active ? `Filters, ${active} actief` : "Filters");
+  };
+  const setOpen = (open) => {
+    panel.classList.toggle("is-open", open);
+    toggle.setAttribute("aria-expanded", String(open));
+  };
+  toggle.addEventListener("click", () => setOpen(toggle.getAttribute("aria-expanded") !== "true"));
+  // Staat er bij het openen al een filter aan (bijv. via een gedeelde link)? Dan het paneel meteen tonen.
+  setOpen(Boolean(filters.band || filters.hideClaimed || filters.sort !== DEFAULTS.sort));
+
   const changed = () => {
     writeFiltersToUrl(filters);
     syncPressed();
+    updateBadge();
     onChange({ ...filters });
   };
 
@@ -116,5 +135,6 @@ export function setupFilters(onChange) {
   }
 
   syncPressed();
+  updateBadge();
   return { filters, updateCounts: (counts, total) => { updateCounts(counts, total); markOverflow(catChips); }, reset };
 }
