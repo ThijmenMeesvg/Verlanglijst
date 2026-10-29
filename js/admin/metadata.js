@@ -1,7 +1,7 @@
 // Haalt titel, foto en (als de winkel hem meegeeft) prijs op bij een productlink.
 // Browsers mogen winkelpagina's niet zelf uitlezen (CORS), daarom via Microlink:
 // die dienst krijgt alleen de productlink te zien. Het gratis gebruik heeft een daglimiet.
-import { normalizePrice, safeUrl } from "../lib/util.js";
+import { normalizePrice, safeUrl, titleFromUrl } from "../lib/util.js";
 
 const ENDPOINT = "https://api.microlink.io/";
 
@@ -53,18 +53,23 @@ export async function fetchProductInfo(url) {
 
   // Sommige winkels (zoals bol) geven alleen hun eigen naam als titel terug: dan liever de productnaam.
   const genericTitle = !d.title || /^(bol|bol\.com|amazon(\.\w+)?)$/i.test(d.title.trim());
+  // Sommige winkels (bol) geven aan zo'n dienst alleen een productnummer als naam; dan liever de naam uit de link.
+  const usable = (t) => (t && !/^[\d\s-]+$/.test(String(t).trim()) ? String(t) : "");
   return {
-    title: cleanShopTitle(product?.name || (genericTitle ? "" : d.title) || ""),
+    title: cleanShopTitle(usable(product?.name) || (genericTitle ? "" : usable(d.title)) || titleFromUrl(url)),
     image: safeUrl(d.image?.url || (typeof ldImage === "string" ? ldImage : ldImage?.url), { upgrade: true }),
     price
   };
 }
 
 /** Zoekt het Product-blok in de JSON-LD van een pagina (ook als het in een @graph zit). */
-function findProduct(ldScripts) {
+export function findProduct(ldScripts) {
   for (const raw of [].concat(ldScripts || [])) {
-    let parsed;
-    try { parsed = JSON.parse(String(raw).replace(/^<script[^>]*>|<\/script>$/gi, "")); } catch { continue; }
+    // Microlink geeft de blokken meestal al uitgepakt terug, soms nog als tekst.
+    let parsed = raw;
+    if (typeof raw === "string") {
+      try { parsed = JSON.parse(raw.replace(/^<script[^>]*>|<\/script>$/gi, "")); } catch { continue; }
+    }
     const nodes = [].concat(parsed).flatMap((n) => [n, ...[].concat(n?.["@graph"] || [])]);
     const product = nodes.find((n) => [].concat(n?.["@type"] || []).some((t) => /product/i.test(t)));
     if (product) return product;

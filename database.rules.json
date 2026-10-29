@@ -73,27 +73,6 @@
           ".validate": false
         }
       }
-    },
-    "Boeken": {
-      ".read": true
-    },
-    "Spelletjes": {
-      ".read": true
-    },
-    "Muziek": {
-      ".read": true
-    },
-    "Kleding & Accesoires": {
-      ".read": true
-    },
-    "Uitzet": {
-      ".read": true
-    },
-    "Sport & Buiten": {
-      ".read": true
-    },
-    "Overig": {
-      ".read": true
     }
   }
 }
