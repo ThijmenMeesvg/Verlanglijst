@@ -259,3 +259,22 @@ main {
   .toolbar__toggle[aria-expanded="true"] .toolbar__badge { background: var(--birch); color: var(--pine); }
   .toolbar__sort { width: 100%; }
 }
+
+/* ---------- Terug naar de filters (alleen als je ver in de lijst zit) ---------- */
+
+.to-top {
+  position: fixed;
+  right: 16px;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch);
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--pine);
+  color: var(--birch);
+  font: 600 14px/1 var(--font-body);
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 20%);
+}
