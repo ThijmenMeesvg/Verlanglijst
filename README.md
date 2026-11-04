@@ -20,6 +20,8 @@ Gewone HTML, CSS en JavaScript, zonder framework en zonder bouwstap. De gegevens
 - Notitie per item (‘maat L, liefst groen’), favorieten, en drie lijsten: openbaar, cadeaus voor anderen, en voor mezelf. Items verwijder je direct (met ‘ongedaan maken’) of zet je in het archief om ze te bewaren.
 - Per item ‘Bewerken’ en een ster voor favoriet; de rest (gegeven, link, archiveren, verwijderen) zit in het ⋯-menu.
 - ‘Namen opschonen’ (Instellingen) stelt nettere namen voor en meldt dubbele namen; jij kiest wat je overneemt.
+- Alle teksten op de site (titel, welkomsttekst, de drie stappen, kopjes, onderschrift) pas je aan onder Instellingen → Teksten op de site.
+- Op een apparaat waar je ooit als beheerder bent ingelogd staat ‘⚙ Beheer’ bovenin de site; bezoekers zien die knop niet. Onderaan staat altijd een kleine link ‘Beheer’.
 - Verrassingsmodus: verbergt op jouw apparaat, in het beheer én op de lijst zelf, wat al gegeven wordt.
 - Bladwijzer ‘Op mijn verlanglijst’: vanuit elke webwinkel met één klik toevoegen (zie Instellingen in het beheer).
 - Links bewaren om later te bekijken.
