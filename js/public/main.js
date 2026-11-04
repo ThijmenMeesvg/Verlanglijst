@@ -1,16 +1,14 @@
 // Startpunt van de openbare verlanglijst.
 import { isDemo, subscribePublic } from "../lib/store.js";
-import { countByCategory, filterItems, sortItems } from "../lib/util.js";
+import { countByCategory, escapeHtml, filterItems, sortItems } from "../lib/util.js";
 import { installImageFallback, showDemoBanner, showToast } from "../lib/ui.js";
 import { isSurpriseMode, setSurpriseMode } from "../lib/surprise.js";
 import { confettiOncePerVisit } from "../lib/confetti.js";
-import { renderTag } from "./render.js";
+import { renderFavorite, renderTag } from "./render.js";
 import { setupFilters } from "./filters.js";
 import { canUndo, forgetMissing, isMine, startClaim, undoClaim } from "./claims.js";
 
 const els = {
-  title: document.getElementById("title"),
-  intro: document.getElementById("intro"),
   items: document.getElementById("items"),
   count: document.getElementById("count"),
   favorites: document.getElementById("favorites"),
@@ -39,7 +37,7 @@ function render() {
   // Favorieten bovenaan: alleen wat nog niet gegeven wordt.
   const favorites = sortItems(openItems.filter((i) => i.favorite), "nieuw");
   els.favoritesSection.hidden = favorites.length === 0;
-  els.favorites.innerHTML = favorites.map((i) => renderTag(i, { ...tagState(i), withId: false })).join("");
+  els.favorites.innerHTML = favorites.map((i) => renderFavorite(i, tagState(i))).join("");
 
   updateCounts(countByCategory(items), items.length);
 
@@ -50,7 +48,7 @@ function render() {
     (claimedCount ? `, waarvan ${claimedCount} al ${claimedCount === 1 ? "wordt" : "worden"} gegeven` : "");
 
   if (!items.length) {
-    els.items.innerHTML = `<div class="notice"><p>De lijst is nog leeg. Kom later nog eens kijken.</p></div>`;
+    els.items.innerHTML = `<div class="notice"><p>${escapeHtml(state.settings.emptyList)}</p></div>`;
   } else if (!visible.length) {
     els.items.innerHTML = `<div class="notice"><p>Niets gevonden met deze filters.</p><button type="button" class="btn" data-reset>Filters wissen</button></div>`;
   } else {
@@ -82,7 +80,7 @@ document.addEventListener("click", (e) => {
   const undo = e.target.closest("[data-unclaim]");
   if (give) {
     const item = findItem(give.dataset.claim);
-    if (item) startClaim(item, state.mode, () => Boolean(state.claims[item.id]));
+    if (item) startClaim(item, state.mode, () => Boolean(state.claims[item.id]), { fromFavorite: Boolean(give.closest(".fav")) });
   } else if (undo) {
     const item = findItem(undo.dataset.unclaim);
     if (item) undoClaim(item, state.mode, () => Boolean(state.claims[item.id]));
@@ -92,6 +90,19 @@ document.addEventListener("click", (e) => {
 });
 
 installImageFallback();
+
+// ‘↑ Zoeken en filters’ verschijnt zodra de filterbalk ver boven je uit beeld is.
+const toTop = document.getElementById("to-top");
+const toolbar = document.querySelector(".toolbar");
+new IntersectionObserver(([entry]) => {
+  toTop.hidden = entry.isIntersecting || entry.boundingClientRect.top > 0;
+}, { rootMargin: "600px 0px 0px 0px" }).observe(toolbar);
+
+// De beheerpagina zet dit vlaggetje na een geslaagde login; alleen dan verschijnt ‘Beheer’ bovenin.
+// (Het is maar een snelkoppeling: toegang regelt de database, niet deze knop.)
+try {
+  if (isDemo() || localStorage.getItem("verlanglijst-beheerder") === "1") document.getElementById("admin-link").hidden = false;
+} catch { /* geen opslag beschikbaar */ }
 
 if (surprise) {
   const notice = document.getElementById("surprise-notice");
@@ -124,8 +135,10 @@ subscribePublic((data) => {
     return;
   }
   state = data;
-  els.title.textContent = data.settings.title;
-  els.intro.textContent = data.settings.intro;
+  // Teksten uit het beheer; textContent, dus nooit als HTML uitgevoerd.
+  for (const el of document.querySelectorAll("[data-text]")) {
+    el.textContent = data.settings[el.dataset.text] ?? el.textContent;
+  }
   document.title = data.settings.title;
   if (data.mode === "v2") forgetMissing(data.claims);   // in de oude modus komen categorieën los binnen
   render();

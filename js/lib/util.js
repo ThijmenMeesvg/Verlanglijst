@@ -234,3 +234,29 @@ export function newId() {
 export function domId(id) {
   return "item-" + encodeURIComponent(id).replace(/%/g, "_");
 }
+
+// ---------- Namen opschonen ----------
+
+// Voorvoegsels die dubbel zijn met de categorie die er al onder staat ("Spel - …", "Boek- …", "LP - …").
+// Alleen met een spatie ná het streepje, zodat samengestelde woorden ("cd-speler", "Spel-computer") heel blijven.
+const TITLE_PREFIX = /^(?:spel|bordspel|kaartspel|boek|kookboek|lp|cd)\s*[-–—:]\s+/i;
+
+/** Voorstel voor een nettere naam, of dezelfde naam als er niets te verbeteren valt. */
+export function suggestTitle(title) {
+  let t = String(title ?? "").replace(/\s+/g, " ").trim();
+  const withoutPrefix = t.replace(TITLE_PREFIX, "");
+  if (withoutPrefix.length >= 3) t = withoutPrefix;
+  // Merknamen als iPhone en eBook laten we zoals ze zijn.
+  if (/^\p{Ll}\p{Lu}/u.test(t)) return t;
+  return t.charAt(0).toLocaleUpperCase("nl-NL") + t.slice(1);
+}
+
+/** Groepen items met (hoofdletterongevoelig) dezelfde naam, binnen dezelfde lijst. */
+export function findDuplicateTitles(items) {
+  const groups = new Map();
+  for (const item of items) {
+    const key = `${item.listId || ""}|${suggestTitle(item.title).toLocaleLowerCase("nl-NL")}`;
+    groups.set(key, [...(groups.get(key) || []), item]);
+  }
+  return [...groups.values()].filter((g) => g.length > 1);
+}

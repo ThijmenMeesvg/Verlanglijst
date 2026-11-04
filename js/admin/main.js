@@ -31,7 +31,11 @@ document.getElementById("sign-in").addEventListener("click", async () => {
   }
 });
 
+const ADMIN_FLAG = "verlanglijst-beheerder";
+const setAdminFlag = (on) => { try { on ? localStorage.setItem(ADMIN_FLAG, "1") : localStorage.removeItem(ADMIN_FLAG); } catch { /* geen opslag */ } };
+
 document.getElementById("sign-out").addEventListener("click", async () => {
+  setAdminFlag(false);
   await signOut();
   location.reload();
 });
@@ -107,7 +111,8 @@ function startApp() {
   });
   const settings = createSettings(document.getElementById("settings"), {
     onSurpriseChange: () => table.refresh(),
-    existingIds: () => new Set([...table.allItems().map((i) => i.id), ...tempLinks.map((l) => l.id)])
+    existingIds: () => new Set([...table.allItems().map((i) => i.id), ...tempLinks.map((l) => l.id)]),
+    allItems: () => table.allItems()
   });
 
   subscribeAdmin(
@@ -140,6 +145,7 @@ onAuth(({ user, isAdmin }) => {
     document.getElementById("uid").textContent = user.uid;
     return show("gate-setup");
   }
+  if (!isDemo()) setAdminFlag(true);
   startApp();
 }).catch(() => {
   show("gate-signin");

@@ -108,7 +108,7 @@ export function installImageFallback() {
   document.addEventListener(
     "error",
     (e) => {
-      if (e.target instanceof HTMLImageElement && e.target.closest(".tag__media, .row__thumb")) e.target.remove();
+      if (e.target instanceof HTMLImageElement && e.target.closest(".tag__media, .fav__media, .row__thumb")) e.target.remove();
     },
     true
   );

@@ -25,7 +25,11 @@
 
   <header class="topbar">
     <a class="topbar__brand" href="./"><span aria-hidden="true">🎁</span> Verlanglijst</a>
-    <button type="button" class="btn btn--small btn--quiet" id="share">Link delen</button>
+    <div class="topbar__actions">
+      <!-- Alleen zichtbaar op een apparaat waar Thijmen al eens als beheerder heeft ingelogd. -->
+      <a class="btn btn--small btn--quiet" id="admin-link" href="admin.html" hidden>⚙ Beheer</a>
+      <button type="button" class="btn btn--small btn--quiet" id="share">Link delen</button>
+    </div>
   </header>
 
   <p class="surprise-notice" id="surprise-notice" hidden>
@@ -35,24 +39,26 @@
 
   <main>
     <section class="hero" aria-labelledby="title">
-      <h1 id="title">Verlanglijst van Thijmen</h1>
-      <p class="hero__intro" id="intro"></p>
-      <a class="btn hero__jump" href="#lijst">Naar alle wensen</a>
-      <ol class="steps">
-        <li><span>Zoek iets uit dat je wilt geven.</span></li>
-        <li><span>Klik op <strong>Ik geef dit</strong>.</span></li>
-        <li><span>Iedereen ziet dat het geregeld is, dus niets komt dubbel.</span></li>
+      <div class="hero__text">
+        <h1 id="title" data-text="title">Verlanglijst van Thijmen</h1>
+        <p class="hero__intro" id="intro" data-text="intro"></p>
+        <a class="btn hero__jump" href="#lijst">Naar alle wensen</a>
+      </div>
+      <ol class="steps" aria-label="Zo werkt het">
+        <li><span data-text="step1">Zoek iets uit dat je wilt geven.</span></li>
+        <li><span data-text="step2">Klik op ‘Ik geef dit’.</span></li>
+        <li><span data-text="step3">Iedereen ziet dat het geregeld is, dus niets komt dubbel.</span></li>
       </ol>
     </section>
 
     <section class="favorites" id="favorites-section" aria-labelledby="favorites-title" hidden>
-      <h2 id="favorites-title">Wat ik het liefst wil</h2>
+      <h2 id="favorites-title" data-text="favoritesHeading">Wat ik het liefst wil</h2>
       <div class="favorites__row" id="favorites"></div>
     </section>
 
     <section class="wishes" id="lijst" aria-labelledby="wishes-title">
       <div class="wishes__head">
-        <h2 id="wishes-title">Alle wensen</h2>
+        <h2 id="wishes-title" data-text="listHeading">Alle wensen</h2>
         <p class="wishes__count" id="count" aria-live="polite"></p>
       </div>
 
@@ -60,12 +66,16 @@
         <div class="toolbar__row">
           <label class="visually-hidden" for="search">Zoeken</label>
           <input class="input toolbar__search" id="search" type="search" placeholder="Zoek in de lijst" autocomplete="off">
-          <label class="visually-hidden" for="sort">Sorteren</label>
-          <select class="select toolbar__sort" id="sort"></select>
+          <!-- Alleen op de telefoon: de overige filters zitten achter deze knop. -->
+          <button type="button" class="btn toolbar__toggle" id="filter-toggle" aria-expanded="false" aria-controls="filter-panel">
+            Filters <span class="toolbar__badge" id="filter-badge" hidden></span>
+          </button>
         </div>
         <div class="chips" id="category-chips" role="group" aria-label="Categorie"></div>
-        <div class="toolbar__row toolbar__row--wrap">
+        <div class="toolbar__panel" id="filter-panel">
           <div class="chips" id="price-chips" role="group" aria-label="Prijs"></div>
+          <label class="visually-hidden" for="sort">Sorteren</label>
+          <select class="select toolbar__sort" id="sort"></select>
           <label class="check toolbar__hide">
             <input type="checkbox" id="hide-claimed"> Verberg wat al gegeven wordt
           </label>
@@ -78,8 +88,11 @@
     </section>
   </main>
 
+  <!-- Telefoon: lange lijst; terug naar zoeken en filters zonder eindeloos scrollen. -->
+  <a class="to-top" id="to-top" href="#lijst" hidden>↑ Zoeken en filters</a>
+
   <footer class="footer">
-    <p>Gemaakt door Thijmen. <a href="admin.html">Beheer</a></p>
+    <p><span data-text="footer">Gemaakt door Thijmen.</span> <a href="admin.html">Beheer</a></p>
   </footer>
 </body>
 </html>

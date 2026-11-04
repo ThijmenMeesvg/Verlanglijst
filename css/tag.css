@@ -94,7 +94,7 @@
 .tag__title {
   font: 600 16px/1.3 var(--font-body);
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -117,7 +117,19 @@
 
 .tag__actions { padding: var(--space-3) var(--space-4) var(--space-4); }
 .tag__body:last-child { padding-bottom: var(--space-4); }
-.tag__give { width: 100%; }
+/* Rustige knop: pas oranje als je erop gaat staan, zodat de foto's de aandacht krijgen. */
+.tag__give {
+  width: 100%;
+  background: transparent;
+  border: 1.5px solid var(--pine);
+  color: var(--pine);
+}
+.tag__give:hover,
+.tag__give:focus-visible {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--orange-ink);
+}
 .tag__taken,
 .tag__mine { min-height: var(--touch); display: flex; align-items: center; flex-wrap: wrap; gap: 0 6px; font-size: 14px; color: var(--ink-soft); }
 .tag__mine { color: var(--pine); font-weight: 600; }
