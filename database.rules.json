@@ -66,6 +66,27 @@
         "intro": {
           ".validate": "newData.isString() && newData.val().length <= 1000"
         },
+        "step1": {
+          ".validate": "newData.isString() && newData.val().length <= 200"
+        },
+        "step2": {
+          ".validate": "newData.isString() && newData.val().length <= 200"
+        },
+        "step3": {
+          ".validate": "newData.isString() && newData.val().length <= 200"
+        },
+        "favoritesHeading": {
+          ".validate": "newData.isString() && newData.val().length <= 100"
+        },
+        "listHeading": {
+          ".validate": "newData.isString() && newData.val().length <= 100"
+        },
+        "emptyList": {
+          ".validate": "newData.isString() && newData.val().length <= 200"
+        },
+        "footer": {
+          ".validate": "newData.isString() && newData.val().length <= 200"
+        },
         "migratedAt": {
           ".validate": "newData.isNumber()"
         },

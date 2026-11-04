@@ -1,5 +1,5 @@
-// Instellingen: tekst op de site, verrassingsmodus, de bladwijzer en handige links.
-import { FIREBASE_CONSOLE } from "../config.js";
+// Instellingen: alle teksten op de site, verrassingsmodus, de bladwijzer en handige links.
+import { FIREBASE_CONSOLE, TEXT_FIELDS } from "../config.js";
 import { saveSettings } from "../lib/store.js";
 import { showToast } from "../lib/ui.js";
 import { escapeHtml } from "../lib/util.js";
@@ -12,23 +12,37 @@ import { createTitleCleanup } from "./title-cleanup.js";
  * @param {{ onSurpriseChange: () => void, existingIds: () => Set<string>, allItems: () => object[] }} options
  */
 export function createSettings(root, { onSurpriseChange, existingIds, allItems }) {
+  // Velden per groep, opgebouwd uit TEXT_FIELDS in config.js.
+  const groups = () => {
+    const byGroup = new Map();
+    for (const f of TEXT_FIELDS) byGroup.set(f.group, [...(byGroup.get(f.group) || []), f]);
+    return [...byGroup].map(([group, fields]) => `
+      <fieldset class="text-group">
+        <legend>${escapeHtml(group)}</legend>
+        ${fields.map((f) => `
+          <div class="field">
+            <label class="field__label" for="s-${f.key}">${escapeHtml(f.label)}</label>
+            ${f.multiline
+              ? `<textarea class="textarea" id="s-${f.key}" name="${f.key}" maxlength="${f.max}" placeholder="${escapeHtml(f.default)}"></textarea>`
+              : `<input class="input" id="s-${f.key}" name="${f.key}" maxlength="${f.max}" placeholder="${escapeHtml(f.default)}">`}
+          </div>`).join("")}
+      </fieldset>`).join("");
+  };
+
   const adminUrl = new URL("admin.html", location.href).href.replace(/\?.*$/, "");
   // De bladwijzer opent de beheerpagina met de link van de winkelpagina waar je op dat moment bent.
   const bookmarklet = `javascript:location.href=${JSON.stringify(`${adminUrl}?url=`)}+encodeURIComponent(location.href)`;
 
   root.innerHTML = `
-    <section class="settings-block">
-      <h2>Tekst bovenaan de site</h2>
+    <section class="settings-block settings-block--wide">
+      <h2>Teksten op de site</h2>
+      <p>Pas hier elke tekst op de verlanglijst aan. Laat een veld leeg om de standaardtekst (grijs) te gebruiken. Bezoekers zien de nieuwe tekst meteen.</p>
       <form class="item-form" id="text-form">
-        <div class="field">
-          <label class="field__label" for="s-title">Titel</label>
-          <input class="input" id="s-title" name="title" maxlength="100">
+        ${groups()}
+        <div class="item-form__actions">
+          <button type="submit" class="btn btn--primary">Teksten opslaan</button>
+          <a class="btn" href="./" target="_blank" rel="noopener">Bekijk de site</a>
         </div>
-        <div class="field">
-          <label class="field__label" for="s-intro">Welkomsttekst</label>
-          <textarea class="textarea" id="s-intro" name="intro" maxlength="1000"></textarea>
-        </div>
-        <div class="item-form__actions"><button type="submit" class="btn btn--primary">Tekst opslaan</button></div>
       </form>
     </section>
 
@@ -63,8 +77,8 @@ export function createSettings(root, { onSurpriseChange, existingIds, allItems }
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     try {
-      await saveSettings({ title: form.elements.title.value.trim(), intro: form.elements.intro.value.trim() });
-      showToast("Tekst opgeslagen.");
+      await saveSettings(Object.fromEntries(TEXT_FIELDS.map((f) => [f.key, form.elements[f.key].value])));
+      showToast("Teksten opgeslagen.");
     } catch (err) {
       showToast(`Opslaan lukte niet: ${err.message}`, { error: true });
     }
@@ -94,8 +108,10 @@ export function createSettings(root, { onSurpriseChange, existingIds, allItems }
     update({ settings }) {
       // Alleen de eerste keer invullen, zodat een live update je getypte tekst niet overschrijft.
       if (textLoaded) return;
-      form.elements.title.value = settings.title || "";
-      form.elements.intro.value = settings.intro || "";
+      // Alleen eigen teksten invullen; een standaardtekst blijft zichtbaar als grijze voorbeeldtekst.
+      for (const f of TEXT_FIELDS) {
+        form.elements[f.key].value = settings[f.key] && settings[f.key] !== f.default ? settings[f.key] : "";
+      }
       textLoaded = true;
     }
   };

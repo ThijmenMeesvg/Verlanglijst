@@ -49,10 +49,21 @@ export const SORTS = [
   { id: "favoriet", label: "Favorieten eerst" }
 ];
 
-export const DEFAULT_SETTINGS = {
-  title: "Verlanglijst van Thijmen",
-  intro: "Hier houd ik mijn (ellenlange) verlanglijstje bij. Leuk dat je komt kijken!"
-};
+// Alle teksten op de openbare pagina die je in het beheer (Instellingen → Teksten) kunt aanpassen.
+// Leeg laten = deze standaardtekst. `max` staat ook in database.rules.json.
+export const TEXT_FIELDS = [
+  { key: "title",            group: "Bovenaan",       label: "Titel",                    max: 100,  default: "Verlanglijst van Thijmen" },
+  { key: "intro",            group: "Bovenaan",       label: "Welkomsttekst",            max: 1000, multiline: true, default: "Hier houd ik mijn (ellenlange) verlanglijstje bij. Leuk dat je komt kijken!" },
+  { key: "step1",            group: "Zo werkt het",   label: "Stap 1",                   max: 200,  default: "Zoek iets uit dat je wilt geven." },
+  { key: "step2",            group: "Zo werkt het",   label: "Stap 2",                   max: 200,  default: "Klik op ‘Ik geef dit’." },
+  { key: "step3",            group: "Zo werkt het",   label: "Stap 3",                   max: 200,  default: "Iedereen ziet dat het geregeld is, dus niets komt dubbel." },
+  { key: "favoritesHeading", group: "Kopjes",         label: "Kopje boven de favorieten", max: 100, default: "Wat ik het liefst wil" },
+  { key: "listHeading",      group: "Kopjes",         label: "Kopje boven de hele lijst", max: 100, default: "Alle wensen" },
+  { key: "emptyList",        group: "Onderaan",       label: "Tekst als de lijst leeg is", max: 200, default: "De lijst is nog leeg. Kom later nog eens kijken." },
+  { key: "footer",           group: "Onderaan",       label: "Onderschrift",             max: 200,  default: "Gemaakt door Thijmen." }
+];
+
+export const DEFAULT_SETTINGS = Object.fromEntries(TEXT_FIELDS.map((f) => [f.key, f.default]));
 
 // Grenzen die ook in database.rules.json staan; formulier en overstap houden zich hieraan.
 export const LIMITS = { title: 300, link: 2000, image: 2000, note: 500, maxPrice: 99999.99 };

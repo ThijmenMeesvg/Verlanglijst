@@ -6,7 +6,7 @@
 //              de overstap nog niet gedaan is, zodat de site altijd blijft werken.
 //  - "demo":   voorbeelddata in het geheugen (?demo in de adresbalk). Raakt de echte database niet.
 
-import { firebaseConfig, FIREBASE_SDK, CATEGORIES, LISTS, PATHS, DEFAULT_SETTINGS } from "../config.js";
+import { firebaseConfig, FIREBASE_SDK, CATEGORIES, LISTS, PATHS, DEFAULT_SETTINGS, TEXT_FIELDS } from "../config.js";
 import { newId, toTimestamp, normalizePrice } from "./util.js";
 import { LEGACY_NODES } from "./migrate.js";
 
@@ -298,8 +298,9 @@ export async function setClaimAdmin(id, claimed) {
   return applyUpdates({ [`${PATHS.claims}/${id}`]: claimed ? { at: 0 } : null });
 }
 
+/** Slaat de teksten op; een lege tekst wordt verwijderd, dan geldt weer de standaardtekst. */
 export async function saveSettings(settings) {
-  return applyUpdates({ [`${PATHS.settings}/title`]: settings.title || null, [`${PATHS.settings}/intro`]: settings.intro || null });
+  return applyUpdates(Object.fromEntries(TEXT_FIELDS.map((f) => [`${PATHS.settings}/${f.key}`, settings[f.key]?.trim() || null])));
 }
 
 export async function addTempLinks(urls) {
