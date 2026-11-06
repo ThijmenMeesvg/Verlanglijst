@@ -14,6 +14,7 @@
   --orange-dark: #9a3412;
   --gold: #e8b53a;           /* favoriet */
   --moss: #6b7f6e;           /* al gegeven */
+  --claimed-bg: #eceee9;     /* kaart die al gegeven wordt */
   --danger: #b42318;
   --focus: #2563eb;
 
@@ -49,6 +50,7 @@
     --pine: #9fd0b4;
     --pine-soft: #1f3128;
     --moss: #8fa393;
+    --claimed-bg: #141d18;
     --danger: #ff8a80;
     --focus: #8ab4ff;
     --shadow: none;

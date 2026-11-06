@@ -2,7 +2,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
-  escapeHtml, safeUrl, normalizePrice, parsePrice, formatPrice, isValidPriceText, cleanUrl, linkKey, shopName,
+  escapeHtml, safeUrl, normalizePrice, parsePrice, formatPrice, isValidPriceText, cleanUrl, linkKey, shopName, sharedLinkFrom,
   titleFromUrl, toTimestamp, filterItems, sortItems, domId, suggestTitle, findDuplicateTitles
 } from "../js/lib/util.js";
 
@@ -144,4 +144,21 @@ test("findDuplicateTitles", () => {
     { id: "d", title: "Iets anders", listId: "public" }
   ]);
   assert.deepEqual(dups.map((g) => g.map((i) => i.id)), [["a", "b"]]);
+});
+
+test("sharedLinkFrom: bladwijzer, Android-delen en iPhone-opdracht", () => {
+  // Bladwijzer: netjes ge-encodeerd
+  assert.equal(sharedLinkFrom("?url=" + encodeURIComponent("https://www.bol.com/nl/p/x/123/?bltgh=a&b=1")), "https://www.bol.com/nl/p/x/123/?bltgh=a&b=1");
+  // iPhone-opdracht: link onbewerkt achter ?url=, inclusief eigen ? en & en #
+  assert.equal(sharedLinkFrom("?url=https://shop.nl/p?a=1&b=2", "#kleur"), "https://shop.nl/p?a=1&b=2#kleur");
+  // Android: link in de gedeelde tekst
+  assert.equal(sharedLinkFrom("?title=Mooi&text=" + encodeURIComponent("Kijk eens: https://www.coolblue.nl/product/9 via de app")), "https://www.coolblue.nl/product/9");
+  // Lege url, link in text
+  assert.equal(sharedLinkFrom("?url=&text=" + encodeURIComponent("https://a.nl/b")), "https://a.nl/b");
+  // In demo-modus
+  assert.equal(sharedLinkFrom("?demo&url=" + encodeURIComponent("https://a.nl/b")), "https://a.nl/b");
+  // Niets bruikbaars
+  assert.equal(sharedLinkFrom("?text=geen+link"), "");
+  assert.equal(sharedLinkFrom("?url=javascript:alert(1)"), "");
+  assert.equal(sharedLinkFrom(""), "");
 });

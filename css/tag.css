@@ -134,9 +134,20 @@
 .tag__mine { min-height: var(--touch); display: flex; align-items: center; flex-wrap: wrap; gap: 0 6px; font-size: 14px; color: var(--ink-soft); }
 .tag__mine { color: var(--pine); font-weight: 600; }
 
+/* Al gegeven: de hele kaart grijs en zonder schaduw. Tekst blijft goed leesbaar (contrast > 4,5:1). */
+.tag.is-claimed { filter: drop-shadow(0 0 0.6px var(--line)); }
+.tag.is-claimed::before { background: var(--claimed-bg); }
+.tag.is-claimed .tag__media { background: var(--line); }
 .tag.is-claimed .tag__media img,
-.tag.is-claimed .tag__media::before { opacity: .45; filter: grayscale(1); }
+.tag.is-claimed .tag__media::before { opacity: .5; filter: grayscale(1); }
+.tag.is-claimed .tag__title,
+.tag.is-claimed .tag__title a,
 .tag.is-claimed .tag__price { color: var(--ink-soft); }
+.tag.is-claimed .tag__price { font-size: 16px; }
+.tag.is-claimed .tag__note { background: transparent; padding: 0; }
+.tag.is-claimed .tag__fav { background: var(--line); color: var(--ink-soft); }
+/* Jouw eigen keuze blijft herkenbaar, met een groen randje. */
+.tag.is-claimed:has(.tag__mine) { filter: drop-shadow(0 0 1.5px var(--pine)); }
 
 .tag.is-highlighted { filter: drop-shadow(0 0 0 var(--orange)) drop-shadow(0 0 6px var(--orange)); }
 

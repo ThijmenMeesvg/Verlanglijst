@@ -260,3 +260,20 @@ export function findDuplicateTitles(items) {
   }
   return [...groups.values()].filter((g) => g.length > 1);
 }
+
+/**
+ * Zoekt de productlink in het adres. Mogelijke vormen:
+ * - ?url=<link, ge-encodeerd>          (bladwijzer, Android-delen met een url)
+ * - ?url=https://winkel.nl/x?a=1&b=2   (iPhone-opdracht plakt de link er onbewerkt achter)
+ * - ?text=Kijk eens! https://…         (Android: veel apps zetten de link in de tekst)
+ */
+export function sharedLinkFrom(search = "", hash = "") {
+  const raw = search.match(/[?&]url=(https?:\/\/.*)$/i);
+  if (raw) return raw[1] + hash;
+  const params = new URLSearchParams(search);
+  for (const key of ["url", "text", "title"]) {
+    const found = (params.get(key) || "").match(/https?:\/\/[^\s"'<>]+/i);
+    if (found) return found[0];
+  }
+  return "";
+}

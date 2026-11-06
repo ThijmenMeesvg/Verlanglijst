@@ -13,6 +13,8 @@ Gewone HTML, CSS en JavaScript, zonder framework en zonder bouwstap. De gegevens
 - Alle wensen op één pagina, met favorieten als compacte rij bovenaan; op desktop staan de eerste cadeaus direct in beeld.
 - Zoeken, filteren op categorie en prijs, sorteren. De filters staan in de adresbalk, dus je kunt bijv. `…/?cat=boeken` doorsturen.
 - ‘Ik geef dit’ met bevestiging. Iedereen ziet het direct (live), en wie het koos kan het binnen 24 uur op hetzelfde apparaat terugdraaien.
+- Wat al gegeven wordt, zakt naar een grijze groep ‘Wordt al gegeven’ onderaan. Wie zelf iets koos, ziet bovenaan ‘Jij geeft: …’ als herinnering.
+- Naast het aantal wensen staat ‘Bijgewerkt op …’: de laatste keer dat er een wens bij kwam of veranderde.
 - Werkt op telefoon (twee kolommen, extra filters achter de knop ‘Filters’), tablet en computer, en in licht en donker thema.
 
 **Voor mij (beheer, inloggen met Google)**
@@ -21,9 +23,12 @@ Gewone HTML, CSS en JavaScript, zonder framework en zonder bouwstap. De gegevens
 - Per item ‘Bewerken’ en een ster voor favoriet; de rest (gegeven, link, archiveren, verwijderen) zit in het ⋯-menu.
 - ‘Namen opschonen’ (Instellingen) stelt nettere namen voor en meldt dubbele namen; jij kiest wat je overneemt.
 - Alle teksten op de site (titel, welkomsttekst, de drie stappen, kopjes, onderschrift) pas je aan onder Instellingen → Teksten op de site.
-- Op een apparaat waar je ooit als beheerder bent ingelogd staat ‘⚙ Beheer’ bovenin de site; bezoekers zien die knop niet. Onderaan staat altijd een kleine link ‘Beheer’.
+- Bovenin de site staat altijd een tandwiel naar het beheer; op een apparaat waar je ooit als beheerder bent ingelogd staat er ‘⚙ Beheer’.
 - Verrassingsmodus: verbergt op jouw apparaat, in het beheer én op de lijst zelf, wat al gegeven wordt.
-- Bladwijzer ‘Op mijn verlanglijst’: vanuit elke webwinkel met één klik toevoegen (zie Instellingen in het beheer).
+- Toevoegen vanuit elke webwinkel (uitleg onder Instellingen):
+  - Android: installeer het beheer als app, dan staat ‘Verlanglijst’ in het deelmenu (`manifest.webmanifest`, `sw.js`).
+  - iPhone: een opdracht in de app Opdrachten die de link naar `admin.html?url=` stuurt.
+  - Computer: de bladwijzer ‘Op mijn verlanglijst’.
 - Links bewaren om later te bekijken.
 
 ## Mappen

@@ -8,7 +8,9 @@ let toastTimer = null;
  * @param {string} message
  * @param {{ actionLabel?: string, onAction?: () => void, error?: boolean, duration?: number }} [options]
  */
-export function showToast(message, { actionLabel, onAction, error = false, duration = 6000 } = {}) {
+export function showToast(message, { actionLabel, onAction, error = false, duration } = {}) {
+  // Lange (fout)meldingen blijven langer staan, zodat je ze kunt uitlezen.
+  duration ??= Math.max(6000, message.length * 70);
   let toast = document.getElementById("toast");
   if (!toast) {
     toast = document.createElement("div");
@@ -112,4 +114,19 @@ export function installImageFallback() {
     },
     true
   );
+}
+
+/**
+ * Leesbare uitleg bij een mislukte databaseactie, met wat je eraan kunt doen.
+ * PERMISSION_DENIED in het beheer betekent bijna altijd: de regels in Firebase zijn ouder dan de site.
+ */
+export function explainError(err) {
+  const text = String(err?.code || err?.message || err || "");
+  if (/permission[_ ]denied/i.test(text)) {
+    return "de database weigerde het. Waarschijnlijk zijn de databaseregels in Firebase ouder dan de site: plak database.rules.json opnieuw in Firebase (Realtime Database → Rules) en klik op Publish. Of je bent uitgelogd: ververs dan de pagina.";
+  }
+  if (/network|offline|unavailable/i.test(text) || (typeof navigator !== "undefined" && navigator.onLine === false)) {
+    return "geen internetverbinding. Controleer je verbinding en probeer het opnieuw.";
+  }
+  return err?.message || text || "onbekende fout.";
 }

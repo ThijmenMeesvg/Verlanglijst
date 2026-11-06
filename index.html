@@ -15,6 +15,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#1e3b2f">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/tag.css">
   <link rel="stylesheet" href="css/public.css">
@@ -26,8 +27,9 @@
   <header class="topbar">
     <a class="topbar__brand" href="./"><span aria-hidden="true">🎁</span> Verlanglijst</a>
     <div class="topbar__actions">
-      <!-- Alleen zichtbaar op een apparaat waar Thijmen al eens als beheerder heeft ingelogd. -->
-      <a class="btn btn--small btn--quiet" id="admin-link" href="admin.html" hidden>⚙ Beheer</a>
+      <!-- Altijd bovenin, zodat Thijmen niet naar onderen hoeft te scrollen. Voor bezoekers alleen een klein tandwiel;
+           met ‘Beheer’ erbij op een apparaat waar hij al eens als beheerder ingelogd is. Toegang regelt de database. -->
+      <a class="btn btn--small btn--quiet topbar__admin" id="admin-link" href="admin.html" aria-label="Beheer" title="Beheer"><span aria-hidden="true">⚙</span><span class="topbar__admin-label" hidden> Beheer</span></a>
       <button type="button" class="btn btn--small btn--quiet" id="share">Link delen</button>
     </div>
   </header>
@@ -51,6 +53,9 @@
       </ol>
     </section>
 
+    <!-- Voor wie al iets gekozen heeft: dat staat nu onderaan in grijs, dus hier een snelle herinnering. -->
+    <p class="mine-strip" id="mine-strip" hidden></p>
+
     <section class="favorites" id="favorites-section" aria-labelledby="favorites-title" hidden>
       <h2 id="favorites-title" data-text="favoritesHeading">Wat ik het liefst wil</h2>
       <div class="favorites__row" id="favorites"></div>
@@ -59,7 +64,7 @@
     <section class="wishes" id="lijst" aria-labelledby="wishes-title">
       <div class="wishes__head">
         <h2 id="wishes-title" data-text="listHeading">Alle wensen</h2>
-        <p class="wishes__count" id="count" aria-live="polite"></p>
+        <p class="wishes__count"><span id="count" aria-live="polite"></span> <span class="wishes__updated" id="updated" hidden></span></p>
       </div>
 
       <div class="toolbar">
@@ -85,6 +90,15 @@
       <div class="grid" id="items" aria-busy="true">
         <p class="notice">De lijst wordt geladen…</p>
       </div>
+
+      <!-- Wat al gegeven wordt zakt naar onderen, in grijs, zodat de open wensen bovenaan staan. -->
+      <section class="claimed" id="claimed-section" aria-labelledby="claimed-title" hidden>
+        <div class="claimed__head">
+          <h3 id="claimed-title">Wordt al gegeven <span class="claimed__count" id="claimed-count"></span></h3>
+          <p class="claimed__intro">Deze cadeaus heeft iemand al gekozen.</p>
+        </div>
+        <div class="grid grid--claimed" id="claimed-items"></div>
+      </section>
     </section>
   </main>
 
@@ -92,7 +106,7 @@
   <a class="to-top" id="to-top" href="#lijst" hidden>↑ Zoeken en filters</a>
 
   <footer class="footer">
-    <p><span data-text="footer">Gemaakt door Thijmen.</span> <a href="admin.html">Beheer</a></p>
+    <p><span data-text="footer">Gemaakt door Thijmen.</span></p>
   </footer>
 </body>
 </html>

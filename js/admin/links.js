@@ -1,6 +1,6 @@
 // Kladblok voor links die je later nog wilt bekijken of toevoegen. Alleen zichtbaar voor de beheerder.
 import { addTempLinks, deleteTempLinks } from "../lib/store.js";
-import { confirmDialog, showToast } from "../lib/ui.js";
+import { confirmDialog, showToast, explainError } from "../lib/ui.js";
 import { escapeHtml, formatDate, safeUrl, shopName } from "../lib/util.js";
 
 /**
@@ -33,7 +33,7 @@ export function createLinks(root, { onAddAsItem }) {
       input.value = "";
       showToast(`${lines.length} ${lines.length === 1 ? "link" : "links"} bewaard.`);
     } catch (err) {
-      showToast(`Bewaren lukte niet: ${err.message}`, { error: true });
+      showToast(`Bewaren lukte niet: ${explainError(err)}`, { error: true });
     }
   });
 
@@ -42,13 +42,13 @@ export function createLinks(root, { onAddAsItem }) {
     if (!btn) return;
     if (btn.dataset.act === "clear") {
       const ok = await confirmDialog({ title: "Alle links wissen?", body: `${links.length} bewaarde links worden verwijderd.`, confirmLabel: "Alles wissen", danger: true });
-      if (ok) await deleteTempLinks(links.map((l) => l.id)).catch((err) => showToast(err.message, { error: true }));
+      if (ok) await deleteTempLinks(links.map((l) => l.id)).catch((err) => showToast(`Verwijderen lukte niet: ${explainError(err)}`, { error: true }));
       return;
     }
     const link = links.find((l) => l.id === btn.closest("[data-id]")?.dataset.id);
     if (!link) return;
     if (btn.dataset.act === "add") onAddAsItem(link.url);
-    if (btn.dataset.act === "delete") await deleteTempLinks([link.id]).catch((err) => showToast(err.message, { error: true }));
+    if (btn.dataset.act === "delete") await deleteTempLinks([link.id]).catch((err) => showToast(`Verwijderen lukte niet: ${explainError(err)}`, { error: true }));
   });
 
   function render() {

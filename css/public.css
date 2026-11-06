@@ -46,6 +46,16 @@ main {
   text-align: center;
 }
 
+.mine-strip {
+  margin: 0 0 var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-left: 4px solid var(--orange);
+  border-radius: var(--radius-m);
+  background: var(--paper);
+  font-size: 15px;
+}
+.mine-strip a { font-weight: 600; }
+
 .steps {
   display: grid;
   gap: var(--space-2);
@@ -95,6 +105,7 @@ main {
   margin-bottom: var(--space-4);
 }
 .wishes__count { color: var(--ink-soft); }
+.wishes__updated::before { content: "·"; margin-right: 6px; }
 
 /* ---------- Favorieten: compacte kaarten (foto, naam, prijs, knop naast elkaar) ---------- */
 
@@ -194,6 +205,20 @@ main {
 }
 .grid > .notice { grid-column: 1 / -1; }
 
+/* ---------- Wordt al gegeven: onderaan, in grijs ---------- */
+
+.claimed {
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: 1px dashed var(--line);
+}
+.claimed__head { margin-bottom: var(--space-4); }
+.claimed__head h3 { font-size: 20px; color: var(--ink-soft); }
+.claimed__count { font-weight: 500; }
+.claimed__intro { color: var(--ink-soft); font-size: 14px; }
+/* Iets kleinere kaarten: ze doen er nog toe, maar vragen minder aandacht. */
+.grid--claimed { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+
 /* ---------- Voet ---------- */
 
 .footer {
@@ -229,7 +254,8 @@ main {
   .favorites h2,
   .wishes h2 { font-size: 22px; }
 
-  .grid {
+  .grid,
+  .grid--claimed {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-4) var(--space-3);
   }

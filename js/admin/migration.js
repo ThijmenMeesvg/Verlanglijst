@@ -3,7 +3,7 @@
 // dus opnieuw overzetten overschrijft nooit iets wat je daarna hebt aangepast.
 import { LEGACY_NODES, planMigration } from "../lib/migrate.js";
 import { applyUpdates, readLegacy } from "../lib/store.js";
-import { confirmDialog, showToast } from "../lib/ui.js";
+import { confirmDialog, showToast, explainError } from "../lib/ui.js";
 import { escapeHtml } from "../lib/util.js";
 
 /**
@@ -108,7 +108,7 @@ export function createMigration(root, { existingIds }) {
       report.innerHTML = `<p><strong>Opgeruimd.</strong> De database bevat nu alleen nog de nieuwe indeling.</p>`;
       showToast("Oude mappen verwijderd.");
     } catch (err) {
-      showToast(`Opruimen lukte niet: ${err.message}`, { error: true });
+      showToast(`Opruimen lukte niet: ${explainError(err)}`, { error: true });
     }
   }
 }

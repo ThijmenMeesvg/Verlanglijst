@@ -2,7 +2,7 @@
 import { CATEGORIES, LIMITS, LISTS } from "../config.js";
 import { cleanUrl, escapeHtml, isValidPriceText, linkKey, normalizePrice, parsePrice, safeUrl } from "../lib/util.js";
 import { saveItem } from "../lib/store.js";
-import { showToast } from "../lib/ui.js";
+import { showToast, explainError } from "../lib/ui.js";
 import { renderTag } from "../public/render.js";
 import { fetchProductInfo } from "./metadata.js";
 
@@ -209,7 +209,7 @@ export function createItemForm({ mode, item = {}, allItems, onSaved, onCancel })
       if (mode === "add") reset();
       onSaved?.(id, { ...v });
     } catch (err) {
-      errorBox.textContent = `Opslaan lukte niet: ${err.message}`;
+      errorBox.textContent = `Opslaan lukte niet: ${explainError(err)}`;
     } finally {
       submit.disabled = false;
     }
