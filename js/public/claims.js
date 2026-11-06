@@ -54,9 +54,13 @@ function errorMessage(err, fallback) {
 /** Na het opnieuw tekenen van de lijst de focus terugzetten op hetzelfde item (voor toetsenbordgebruikers). */
 function refocus(itemId, selector) {
   requestAnimationFrame(() => {
+    // Het gekozen cadeau zakt naar de grijze groep onderaan: de focus gaat mee, maar de pagina springt niet.
     const card = document.getElementById(domId(itemId));
     const target = card?.querySelector(selector) || card?.querySelector("a, button");
-    target?.focus();
+    if (target) return target.focus({ preventScroll: true });
+    // Kaart verborgen (‘Verberg wat al gegeven wordt’): dan naar het kopje van de lijst.
+    const heading = document.getElementById("wishes-title");
+    if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
   });
 }
 

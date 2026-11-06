@@ -50,7 +50,7 @@
     --pine: #9fd0b4;
     --pine-soft: #1f3128;
     --moss: #8fa393;
-    --claimed-bg: #141d18;
+    --claimed-bg: #1d2421;
     --danger: #ff8a80;
     --focus: #8ab4ff;
     --shadow: none;
@@ -119,6 +119,15 @@ a { color: inherit; }
   text-decoration: none;
 }
 .topbar .btn { color: inherit; }
+/* Nooit midden in een woord afbreken; op een smalle telefoon liever de knoppen iets kleiner. */
+.topbar__brand, .topbar .btn { overflow-wrap: normal; white-space: nowrap; }
+.topbar__admin { min-width: var(--touch); }
+@media (max-width: 380px) {
+  .topbar { gap: var(--space-1); padding-inline: var(--space-3); }
+  .topbar__brand { font-size: 16px; }
+  .topbar .btn { padding: 0 var(--space-2); }
+  .topbar__admin-label { display: none; }
+}
 .topbar__actions { display: flex; align-items: center; gap: var(--space-1); }
 .topbar .btn:hover { background: rgb(255 255 255 / 12%); }
 

@@ -28,7 +28,7 @@ export function createMigration(root, { existingIds }) {
     try {
       legacy = await readLegacy();
     } catch (err) {
-      report.innerHTML = `<p class="item-form__error">Lezen lukte niet: ${escapeHtml(err.message)}</p>`;
+      report.innerHTML = `<p class="item-form__error">Lezen lukte niet: ${escapeHtml(explainError(err))}</p>`;
       return;
     }
     const hasLegacy = LEGACY_NODES.some((name) => legacy[name]);
@@ -85,7 +85,7 @@ export function createMigration(root, { existingIds }) {
       // Even wachten tot de live gegevens binnen zijn, dan opnieuw controleren: dat toont de opruimknop.
       setTimeout(check, 1200);
     } catch (err) {
-      report.insertAdjacentHTML("beforeend", `<p class="item-form__error">Overzetten lukte niet: ${escapeHtml(err.message)}. Er is niets veranderd.</p>`);
+      report.insertAdjacentHTML("beforeend", `<p class="item-form__error">Overzetten lukte niet: ${escapeHtml(explainError(err))}. Er is niets veranderd.</p>`);
     }
   }
 

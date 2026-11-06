@@ -273,7 +273,12 @@ export function sharedLinkFrom(search = "", hash = "") {
   const params = new URLSearchParams(search);
   for (const key of ["url", "text", "title"]) {
     const found = (params.get(key) || "").match(/https?:\/\/[^\s"'<>]+/i);
-    if (found) return found[0];
+    // Leestekens die bij de zin horen, niet bij de link: "(https://x.nl/y)." → https://x.nl/y
+    if (found) {
+      let link = found[0].replace(/[.,;:!?]+$/, "");
+      if (link.endsWith(")") && !link.includes("(")) link = link.slice(0, -1).replace(/[.,;:!?]+$/, "");
+      return link;
+    }
   }
   return "";
 }

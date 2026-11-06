@@ -162,3 +162,9 @@ test("sharedLinkFrom: bladwijzer, Android-delen en iPhone-opdracht", () => {
   assert.equal(sharedLinkFrom("?url=javascript:alert(1)"), "");
   assert.equal(sharedLinkFrom(""), "");
 });
+
+test("sharedLinkFrom: leestekens om de link heen horen er niet bij", () => {
+  assert.equal(sharedLinkFrom("?text=" + encodeURIComponent("Kijk (https://x.nl/y)")), "https://x.nl/y");
+  assert.equal(sharedLinkFrom("?text=" + encodeURIComponent("Deze: https://bol.com/p?bltgh=abc.")), "https://bol.com/p?bltgh=abc");
+  assert.equal(sharedLinkFrom("?text=" + encodeURIComponent("https://nl.wikipedia.org/wiki/Bos_(natuur)")), "https://nl.wikipedia.org/wiki/Bos_(natuur)");
+});

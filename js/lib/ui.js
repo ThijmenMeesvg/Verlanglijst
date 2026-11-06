@@ -125,7 +125,7 @@ export function explainError(err) {
   if (/permission[_ ]denied/i.test(text)) {
     return "de database weigerde het. Waarschijnlijk zijn de databaseregels in Firebase ouder dan de site: plak database.rules.json opnieuw in Firebase (Realtime Database → Rules) en klik op Publish. Of je bent uitgelogd: ververs dan de pagina.";
   }
-  if (/network|offline|unavailable/i.test(text) || (typeof navigator !== "undefined" && navigator.onLine === false)) {
+  if (/network|offline|^unavailable$/i.test(text) || (typeof navigator !== "undefined" && navigator.onLine === false)) {
     return "geen internetverbinding. Controleer je verbinding en probeer het opnieuw.";
   }
   return err?.message || text || "onbekende fout.";

@@ -54,7 +54,7 @@ function render() {
   // ‘Bijgewerkt op …’: de laatste keer dat er een wens bij kwam of veranderde, zodat bezoekers zien dat de lijst actueel is.
   const lastUpdate = Math.max(0, ...items.map((i) => Math.max(i.updatedAt || 0, i.createdAt || 0)));
   els.updated.hidden = !lastUpdate;
-  els.updated.textContent = lastUpdate ? `Bijgewerkt op ${formatUpdate(lastUpdate)}` : "";
+  els.updated.textContent = lastUpdate ? `Bijgewerkt ${formatUpdate(lastUpdate)}` : "";
 
   // Open wensen bovenaan; wat al gegeven wordt zakt naar een eigen, grijze groep onderaan.
   // (In verrassingsmodus is `claims` leeg, dus dan blijft alles gewoon in één lijst.)
@@ -63,6 +63,8 @@ function render() {
 
   if (!items.length) {
     els.items.innerHTML = `<div class="notice"><p>${escapeHtml(state.settings.emptyList)}</p></div>`;
+  } else if (!visible.length && filters.hideClaimed && !openItems.length) {
+    els.items.innerHTML = `<div class="notice"><p>Alles op de lijst wordt al gegeven. Zet ‘Verberg wat al gegeven wordt’ uit om het te zien.</p></div>`;
   } else if (!visible.length) {
     els.items.innerHTML = `<div class="notice"><p>Niets gevonden met deze filters.</p><button type="button" class="btn" data-reset>Filters wissen</button></div>`;
   } else if (!openVisible.length) {
@@ -77,12 +79,14 @@ function render() {
   els.claimedItems.innerHTML = claimedVisible.map((i) => renderTag(i, tagState(i))).join("");
 
   // ‘Jij geeft:’ met een link naar elk eigen cadeau (die nu onderaan in de grijze groep staan).
-  const mineItems = items.filter((i) => claims[i.id] && isMine(i.id));
+  // Met ‘Verberg wat al gegeven wordt’ aan staan die kaarten er niet, dan ook geen links ernaartoe.
+  const mineItems = filters.hideClaimed ? [] : items.filter((i) => claims[i.id] && isMine(i.id));
+  const MAX_IN_STRIP = 3;
+  const shown = mineItems.slice(0, MAX_IN_STRIP).map((i) => `<a href="#${escapeHtml(domId(i.id))}">${escapeHtml(i.title)}</a>`);
+  const more = mineItems.length - shown.length;
   els.mineStrip.hidden = mineItems.length === 0;
   els.mineStrip.innerHTML = mineItems.length
-    ? `<span aria-hidden="true">🎁</span> Jij geeft: ${mineItems
-        .map((i) => `<a href="#${escapeHtml(domId(i.id))}">${escapeHtml(i.title)}</a>`)
-        .join(", ")}. Vergeet het niet te kopen!`
+    ? `<span aria-hidden="true">🎁</span> Jij geeft: ${shown.join(", ")}${more ? ` en <a href="#claimed-title">nog ${more}</a>` : ""}. Vergeet het niet te kopen!`
     : "";
   els.items.setAttribute("aria-busy", "false");
 
@@ -99,7 +103,7 @@ function formatUpdate(ts) {
   const diff = Math.round((day(now) - day(d)) / 86400000);
   if (diff <= 0) return "vandaag";
   if (diff === 1) return "gisteren";
-  return d.toLocaleDateString("nl-NL", { day: "numeric", month: "long", ...(d.getFullYear() !== now.getFullYear() ? { year: "numeric" } : {}) });
+  return "op " + d.toLocaleDateString("nl-NL", { day: "numeric", month: "long", ...(d.getFullYear() !== now.getFullYear() ? { year: "numeric" } : {}) });
 }
 
 function highlightFromHash() {
@@ -109,6 +113,7 @@ function highlightFromHash() {
   for (const el of document.querySelectorAll(".tag.is-highlighted")) el.classList.remove("is-highlighted");
   target.classList.add("is-highlighted");
   target.scrollIntoView({ block: "center" });
+  target.querySelector("a, button")?.focus({ preventScroll: true });
 }
 
 function findItem(id) {
