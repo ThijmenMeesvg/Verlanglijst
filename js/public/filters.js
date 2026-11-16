@@ -1,16 +1,18 @@
 // De zoek- en filterbalk. De gekozen filters staan ook in de adresbalk,
 // zodat je een link als "…/?cat=boeken" kunt doorsturen.
-import { CATEGORIES, PRICE_BANDS, SORTS } from "../config.js";
-import { escapeHtml } from "../lib/util.js";
+import { CATEGORIES, SORTS } from "../config.js";
+import { boundsFromBand, escapeHtml, formatPrice, toBound } from "../lib/util.js";
 
-const DEFAULTS = { q: "", cat: "", band: "", sort: "nieuw", hideClaimed: false };
+const DEFAULTS = { q: "", cat: "", min: null, max: null, sort: "nieuw", hideClaimed: false };
 
 export function readFiltersFromUrl() {
   const p = new URLSearchParams(location.search);
+  const old = boundsFromBand(p.get("prijs"));   // oude links: ?prijs=tot15
   return {
     q: p.get("q") || "",
     cat: CATEGORIES.some((c) => c.id === p.get("cat")) ? p.get("cat") : "",
-    band: PRICE_BANDS.some((b) => b.id === p.get("prijs")) ? p.get("prijs") : "",
+    min: toBound(p.get("van")) ?? old.min,
+    max: toBound(p.get("tot")) ?? old.max,
     sort: SORTS.some((s) => s.id === p.get("sort")) ? p.get("sort") : DEFAULTS.sort,
     hideClaimed: p.get("verberg") === "1"
   };
@@ -21,7 +23,9 @@ function writeFiltersToUrl(f) {
   const set = (key, value, isDefault) => (isDefault ? p.delete(key) : p.set(key, value));
   set("q", f.q, !f.q);
   set("cat", f.cat, !f.cat);
-  set("prijs", f.band, !f.band);
+  p.delete("prijs");
+  set("van", String(f.min), f.min === null);
+  set("tot", String(f.max), f.max === null);
   set("sort", f.sort, f.sort === DEFAULTS.sort);
   set("verberg", "1", !f.hideClaimed);
   const query = p.toString().replace(/(^|&)demo=(&|$)/, "$1demo$2");   // ?demo zonder lelijk "="
@@ -37,13 +41,15 @@ export function setupFilters(onChange) {
   const search = document.getElementById("search");
   const sort = document.getElementById("sort");
   const catChips = document.getElementById("category-chips");
-  const priceChips = document.getElementById("price-chips");
+  const priceMin = document.getElementById("price-min");
+  const priceMax = document.getElementById("price-max");
+  const priceClear = document.getElementById("price-clear");
   const hide = document.getElementById("hide-claimed");
 
   sort.innerHTML = SORTS.map((s) => `<option value="${s.id}">${escapeHtml(s.label)}</option>`).join("");
-  priceChips.innerHTML = PRICE_BANDS.map(
-    (b) => `<button type="button" class="chip" data-band="${b.id}" aria-pressed="false">${escapeHtml(b.label)}</button>`
-  ).join("");
+  const showBound = (n) => (n === null ? "" : formatPrice(n).replace(/^€\s?/, "").replace(/,00$/, ""));
+  priceMin.value = showBound(filters.min);
+  priceMax.value = showBound(filters.max);
 
   search.value = filters.q;
   sort.value = filters.sort;
@@ -54,7 +60,7 @@ export function setupFilters(onChange) {
   const panel = document.getElementById("filter-panel");
   const badge = document.getElementById("filter-badge");
   const updateBadge = () => {
-    const active = [filters.band, filters.sort !== DEFAULTS.sort, filters.hideClaimed].filter(Boolean).length;
+    const active = [filters.min !== null || filters.max !== null, filters.sort !== DEFAULTS.sort, filters.hideClaimed].filter(Boolean).length;
     badge.hidden = active === 0;
     badge.textContent = active;
     toggle.setAttribute("aria-label", active ? `Filters, ${active} actief` : "Filters");
@@ -65,7 +71,7 @@ export function setupFilters(onChange) {
   };
   toggle.addEventListener("click", () => setOpen(toggle.getAttribute("aria-expanded") !== "true"));
   // Staat er bij het openen al een filter aan (bijv. via een gedeelde link)? Dan het paneel meteen tonen.
-  setOpen(Boolean(filters.band || filters.hideClaimed || filters.sort !== DEFAULTS.sort));
+  setOpen(Boolean(filters.min !== null || filters.max !== null || filters.hideClaimed || filters.sort !== DEFAULTS.sort));
 
   const changed = () => {
     writeFiltersToUrl(filters);
@@ -76,7 +82,7 @@ export function setupFilters(onChange) {
 
   const syncPressed = () => {
     for (const chip of catChips.querySelectorAll(".chip")) chip.setAttribute("aria-pressed", String(chip.dataset.cat === filters.cat));
-    for (const chip of priceChips.querySelectorAll(".chip")) chip.setAttribute("aria-pressed", String(chip.dataset.band === filters.band));
+    priceClear.hidden = filters.min === null && filters.max === null;
   };
 
   let typing;
@@ -92,11 +98,27 @@ export function setupFilters(onChange) {
     filters.cat = filters.cat === chip.dataset.cat ? "" : chip.dataset.cat;
     changed();
   });
-  priceChips.addEventListener("click", (e) => {
-    const chip = e.target.closest(".chip");
-    if (!chip) return;
-    filters.band = filters.band === chip.dataset.band ? "" : chip.dataset.band;
+  // Prijs: na een korte pauze in het typen filteren. Onzin (‘abc’) wordt rood gemarkeerd en genegeerd.
+  let typingPrice;
+  const readPrice = () => {
+    for (const [input, key] of [[priceMin, "min"], [priceMax, "max"]]) {
+      const bound = toBound(input.value.trim());
+      input.setAttribute("aria-invalid", String(input.value.trim() !== "" && bound === null));
+      filters[key] = bound;
+    }
     changed();
+  };
+  for (const input of [priceMin, priceMax]) {
+    input.addEventListener("input", () => { clearTimeout(typingPrice); typingPrice = setTimeout(readPrice, 350); });
+    input.addEventListener("change", () => { clearTimeout(typingPrice); readPrice(); });
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); input.blur(); } });
+  }
+  priceClear.addEventListener("click", () => {
+    priceMin.value = priceMax.value = "";
+    for (const input of [priceMin, priceMax]) input.removeAttribute("aria-invalid");
+    filters.min = filters.max = null;
+    changed();
+    priceMin.focus();
   });
 
   /** Categorie-chips met aantallen; categorieën zonder items worden niet getoond. */
@@ -115,6 +137,8 @@ export function setupFilters(onChange) {
   function reset() {
     Object.assign(filters, DEFAULTS);
     search.value = "";
+    priceMin.value = priceMax.value = "";
+    for (const input of [priceMin, priceMax]) input.removeAttribute("aria-invalid");
     sort.value = DEFAULTS.sort;
     hide.checked = false;
     changed();
@@ -129,12 +153,17 @@ export function setupFilters(onChange) {
     else if (right) el.dataset.more = "right";
     else delete el.dataset.more;
   };
-  for (const el of [catChips, priceChips]) {
+  for (const el of [catChips]) {
     el.addEventListener("scroll", () => markOverflow(el), { passive: true });
     new ResizeObserver(() => markOverflow(el)).observe(el);
   }
 
   syncPressed();
   updateBadge();
-  return { filters, updateCounts: (counts, total) => { updateCounts(counts, total); markOverflow(catChips); }, reset };
+  /** Toont als voorbeeld de hoogste prijs op de lijst in het ‘tot’-veld, zodat je weet waar het ophoudt. */
+  function setPriceHint(highest) {
+    priceMax.placeholder = highest ? String(Math.ceil(highest)) : "max";
+  }
+
+  return { filters, updateCounts: (counts, total) => { updateCounts(counts, total); markOverflow(catChips); }, reset, setPriceHint };
 }

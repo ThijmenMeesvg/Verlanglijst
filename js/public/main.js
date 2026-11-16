@@ -1,6 +1,6 @@
 // Startpunt van de openbare verlanglijst.
 import { isDemo, subscribePublic } from "../lib/store.js";
-import { countByCategory, domId, escapeHtml, filterItems, sortItems } from "../lib/util.js";
+import { countByCategory, domId, escapeHtml, filterItems, normalizePrice, sortItems } from "../lib/util.js";
 import { installImageFallback, showDemoBanner, showToast } from "../lib/ui.js";
 import { isSurpriseMode, setSurpriseMode } from "../lib/surprise.js";
 import { confettiOncePerVisit } from "../lib/confetti.js";
@@ -24,7 +24,7 @@ const els = {
 let state = { mode: null, items: [], claims: {}, settings: {} };
 let firstRender = true;
 
-const { filters, updateCounts, reset } = setupFilters(render);
+const { filters, updateCounts, reset, setPriceHint } = setupFilters(render);
 
 const surprise = isSurpriseMode();
 
@@ -45,6 +45,7 @@ function render() {
   els.favorites.innerHTML = favorites.map((i) => renderFavorite(i, tagState(i))).join("");
 
   updateCounts(countByCategory(items), items.length);
+  setPriceHint(Math.max(0, ...items.map((i) => normalizePrice(i.price) ?? 0)));
 
   const visible = sortItems(filterItems(items, filters, claims), filters.sort, claims);
   const claimedCount = items.length - openItems.length;
@@ -68,7 +69,7 @@ function render() {
   } else if (!visible.length) {
     els.items.innerHTML = `<div class="notice"><p>Niets gevonden met deze filters.</p><button type="button" class="btn" data-reset>Filters wissen</button></div>`;
   } else if (!openVisible.length) {
-    els.items.innerHTML = filters.q || filters.cat || filters.band
+    els.items.innerHTML = filters.q || filters.cat || filters.min !== null || filters.max !== null
       ? `<div class="notice"><p>Alles wat hier past, wordt al gegeven. Kijk eens bij een andere categorie of prijs.</p><button type="button" class="btn" data-reset>Filters wissen</button></div>`
       : `<div class="notice"><p>Alles op de lijst wordt al gegeven. Dank je wel!</p></div>`;
   } else {

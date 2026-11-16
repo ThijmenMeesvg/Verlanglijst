@@ -78,7 +78,13 @@
         </div>
         <div class="chips" id="category-chips" role="group" aria-label="Categorie"></div>
         <div class="toolbar__panel" id="filter-panel">
-          <div class="chips" id="price-chips" role="group" aria-label="Prijs"></div>
+          <!-- Prijs: zelf een ‘van’ en/of ‘tot’ invullen. Beide grenzen tellen mee (tot €20 = €20 of minder). -->
+          <fieldset class="price-range">
+            <legend>Prijs</legend>
+            <label class="price-range__field"><span>van €</span> <input class="input" id="price-min" type="text" inputmode="decimal" autocomplete="off" placeholder="0" aria-label="Prijs vanaf, in euro"></label>
+            <label class="price-range__field"><span>tot €</span> <input class="input" id="price-max" type="text" inputmode="decimal" autocomplete="off" placeholder="max" aria-label="Prijs tot en met, in euro"></label>
+            <button type="button" class="price-range__clear" id="price-clear" hidden>Wissen</button>
+          </fieldset>
           <label class="visually-hidden" for="sort">Sorteren</label>
           <select class="select toolbar__sort" id="sort"></select>
           <label class="check toolbar__hide">

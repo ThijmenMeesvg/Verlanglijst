@@ -2,7 +2,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
-  escapeHtml, safeUrl, normalizePrice, parsePrice, formatPrice, isValidPriceText, cleanUrl, linkKey, shopName, sharedLinkFrom,
+  escapeHtml, safeUrl, normalizePrice, parsePrice, formatPrice, isValidPriceText, cleanUrl, linkKey, shopName, sharedLinkFrom, toBound, boundsFromBand,
   titleFromUrl, toTimestamp, filterItems, sortItems, domId, suggestTitle, findDuplicateTitles
 } from "../js/lib/util.js";
 
@@ -90,9 +90,9 @@ const items = [
 
 test("filterItems", () => {
   assert.deepEqual(filterItems(items, { cat: "boeken" }).map((i) => i.id), ["a"]);
-  assert.deepEqual(filterItems(items, { band: "tot15" }).map((i) => i.id), []);
-  assert.deepEqual(filterItems(items, { band: "15-30" }).map((i) => i.id), ["a"]);
-  assert.deepEqual(filterItems(items, { band: "30-50" }).map((i) => i.id), ["d"]);
+  assert.deepEqual(filterItems(items, { max: 15 }).map((i) => i.id), []);
+  assert.deepEqual(filterItems(items, { min: 15, max: 30 }).map((i) => i.id), ["a", "d"]);   // beide grenzen tellen mee
+  assert.deepEqual(filterItems(items, { min: 30, max: 50 }).map((i) => i.id), ["d"]);
   assert.deepEqual(filterItems(items, { q: "creme" }).map((i) => i.id), ["d"]);
   assert.deepEqual(filterItems(items, { q: "bol" }).map((i) => i.id), ["a"]);
   assert.deepEqual(filterItems(items, { hideClaimed: true }, { b: { at: 1 } }).map((i) => i.id), ["a", "c", "d"]);
@@ -167,4 +167,30 @@ test("sharedLinkFrom: leestekens om de link heen horen er niet bij", () => {
   assert.equal(sharedLinkFrom("?text=" + encodeURIComponent("Kijk (https://x.nl/y)")), "https://x.nl/y");
   assert.equal(sharedLinkFrom("?text=" + encodeURIComponent("Deze: https://bol.com/p?bltgh=abc.")), "https://bol.com/p?bltgh=abc");
   assert.equal(sharedLinkFrom("?text=" + encodeURIComponent("https://nl.wikipedia.org/wiki/Bos_(natuur)")), "https://nl.wikipedia.org/wiki/Bos_(natuur)");
+});
+
+test("filterItems: eigen van/tot-prijs", () => {
+  const items = [
+    { id: "a", title: "A", category: "overig", price: 9.99 },
+    { id: "b", title: "B", category: "overig", price: 20 },
+    { id: "c", title: "C", category: "overig", price: 20.5 },
+    { id: "d", title: "D", category: "overig", price: null }
+  ];
+  const ids = (f) => filterItems(items, f).map((i) => i.id);
+  assert.deepEqual(ids({ max: 20 }), ["a", "b"]);              // tot en mét €20
+  assert.deepEqual(ids({ min: 20 }), ["b", "c"]);
+  assert.deepEqual(ids({ min: "10", max: "20,50" }), ["b", "c"]); // tekst uit een invoerveld, met komma
+  assert.deepEqual(ids({ min: 30, max: 10 }), ["b", "c"]);     // omgedraaid = 10–30
+  assert.deepEqual(ids({ min: "", max: null }), ["a", "b", "c", "d"]); // geen grens: ook zonder prijs
+  assert.deepEqual(ids({ max: "abc" }), ["a", "b", "c", "d"]);  // onzin wordt genegeerd
+});
+
+test("toBound en boundsFromBand", () => {
+  assert.equal(toBound("19,95"), 19.95);
+  assert.equal(toBound(" 5 "), 5);
+  assert.equal(toBound(""), null);
+  assert.equal(toBound("-3"), 3);   // het minteken telt niet; een prijs is nooit negatief
+  assert.deepEqual(boundsFromBand("tot15"), { min: null, max: 15 });
+  assert.deepEqual(boundsFromBand("50plus"), { min: 50, max: null });
+  assert.deepEqual(boundsFromBand("bestaatniet"), { min: null, max: null });
 });

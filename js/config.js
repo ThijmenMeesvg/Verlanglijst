@@ -35,6 +35,8 @@ export const LISTS = [
   { id: "archief", label: "Archief",                 short: "Archief",     emoji: "🗄️", isPrivate: true }
 ];
 
+// Prijsfilter: bezoekers kiezen zelf ‘van’ en ‘tot’. Deze vaste stappen zijn er alleen nog om oude
+// gedeelde links (…?prijs=tot15) te blijven begrijpen.
 export const PRICE_BANDS = [
   { id: "tot15", label: "Tot €15", min: 0,  max: 15 },
   { id: "15-30", label: "€15–30",  min: 15, max: 30 },

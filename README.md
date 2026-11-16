@@ -11,7 +11,7 @@ Gewone HTML, CSS en JavaScript, zonder framework en zonder bouwstap. De gegevens
 
 **Voor bezoekers**
 - Alle wensen op één pagina, met favorieten als compacte rij bovenaan; op desktop staan de eerste cadeaus direct in beeld.
-- Zoeken, filteren op categorie en prijs, sorteren. De filters staan in de adresbalk, dus je kunt bijv. `…/?cat=boeken` doorsturen.
+- Zoeken, filteren op categorie en op prijs (zelf ‘van’ en ‘tot’ invullen; beide grenzen tellen mee), sorteren. De filters staan in de adresbalk, dus je kunt bijv. `…/?cat=boeken&tot=20` doorsturen. Oude links met `?prijs=tot15` blijven werken.
 - ‘Ik geef dit’ met bevestiging. Iedereen ziet het direct (live), en wie het koos kan het binnen 24 uur op hetzelfde apparaat terugdraaien.
 - Wat al gegeven wordt, zakt naar een grijze groep ‘Wordt al gegeven’ onderaan. Wie zelf iets koos, ziet bovenaan ‘Jij geeft: …’ als herinnering.
 - Naast het aantal wensen staat ‘Bijgewerkt op …’: de laatste keer dat er een wens bij kwam of veranderde.
@@ -40,7 +40,7 @@ Gewone HTML, CSS en JavaScript, zonder framework en zonder bouwstap. De gegevens
 | `404.html` | Pagina voor adressen die niet bestaan |
 | `alle-items.html`, `backend.html`, `prive.html` | Doorverwijzingen, zodat oude links blijven werken |
 | `css/` | `base.css` (kleuren, letters, knoppen, gedeelde onderdelen), `tag.css` (de kaart van één wens), `public.css`, `admin.css` |
-| `js/config.js` | Firebase-instellingen, categorieën, lijsten en prijsfilters: hier pas je dingen aan |
+| `js/config.js` | Firebase-instellingen, categorieën en lijsten: hier pas je dingen aan |
 | `js/lib/` | Gedeelde code: `store.js` (alle database- en inlogtoegang), `util.js` (escapen, prijzen, links, filteren), `migrate.js` (oude → nieuwe indeling), `ui.js` (meldingen, vensters), `confetti.js`, `demo-data.js` (verzonnen voorbeelddata) |
 | `js/public/` | De verlanglijst: kaarten tekenen, filters, ‘Ik geef dit’ |
 | `js/admin/` | Het beheer, per onderdeel: formulier, itemlijst, links, instellingen, overstap, gegevens ophalen |
