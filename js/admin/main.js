@@ -1,7 +1,7 @@
 // Startpunt van de beheerpagina: inloggen, tabbladen en live gegevens doorgeven aan de onderdelen.
 import { FIREBASE_CONSOLE } from "../config.js";
 import { deleteTempLinks, isDemo, onAuth, signIn, signOut, subscribeAdmin } from "../lib/store.js";
-import { linkKey } from "../lib/util.js";
+import { linkKey, sharedLinkFrom } from "../lib/util.js";
 import { installImageFallback, showDemoBanner, showToast } from "../lib/ui.js";
 import { createItemForm } from "./item-form.js";
 import { createItemTable } from "./item-table.js";
@@ -79,6 +79,19 @@ tabs.forEach((tab, i) => {
 });
 selectTab(tabs[0]);
 
+// ---------- Delen vanaf de telefoon ----------
+
+// Installeerbaar als app (voor ‘Delen’ op Android). Het bericht komt vaak al vóór het inloggen binnen,
+// dus bewaren tot Instellingen het nodig heeft.
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  window.__installPrompt = e;
+  window.dispatchEvent(new CustomEvent("verlanglijst-installable", { detail: e }));
+});
+if ("serviceWorker" in navigator && !isDemo()) {
+  navigator.serviceWorker.register("sw.js").catch(() => { /* zonder service worker werkt alles, alleen niet installeerbaar */ });
+}
+
 // ---------- Beheer starten ----------
 
 let started = false;
@@ -128,10 +141,14 @@ function startApp() {
     () => showToast("De gegevens konden niet geladen worden. Kloppen de databaseregels?", { error: true, duration: 15000 })
   );
 
-  // Geopend via de bladwijzer: …/admin.html?url=<productlink>
-  const sharedUrl = new URLSearchParams(location.search).get("url");
+  // Geopend via ‘Delen’ (Android), de iPhone-opdracht of de bladwijzer: link invullen en gegevens ophalen.
+  const sharedUrl = sharedLinkFrom(location.search, location.hash);
   if (sharedUrl) {
+    goTo("tab-add");
     addForm.prefill(sharedUrl);
+    showToast("Link ontvangen. Kies een categorie en klik op Toevoegen.");
+  }
+  if (sharedUrl || /[?&](url|text|title)=/.test(location.search)) {
     history.replaceState(null, "", location.pathname + (isDemo() ? "?demo" : ""));
   }
 }

@@ -2,7 +2,7 @@
 // en meldt dubbele namen. Er verandert pas iets als je zelf op ‘Toepassen’ klikt.
 import { LISTS, PATHS } from "../config.js";
 import { applyUpdates } from "../lib/store.js";
-import { showToast } from "../lib/ui.js";
+import { showToast, explainError } from "../lib/ui.js";
 import { escapeHtml, findDuplicateTitles, suggestTitle } from "../lib/util.js";
 
 const itemPath = (listId, id) => (listId === "public" ? `${PATHS.items}/${id}` : `${PATHS.privateList(listId)}/${id}`);
@@ -68,7 +68,7 @@ export function createTitleCleanup(root, { allItems }) {
         // Focus terug in dit blok in plaats van bovenaan de pagina.
         (result.querySelector("input, button") || root.querySelector("#tc-check")).focus();
       } catch (err) {
-        showToast(`Aanpassen lukte niet: ${err.message}`, { error: true });
+        showToast(`Aanpassen lukte niet: ${explainError(err)}`, { error: true });
       }
     });
   }

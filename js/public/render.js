@@ -11,7 +11,8 @@ function renderAction(item, { claimed, mine, canUndo, surprise }) {
       canUndo ? ` <button type="button" class="link-button" data-unclaim="${id}" aria-label="Ongedaan maken: ${title}">Ongedaan maken</button>` : ""
     }</p>`;
   }
-  if (claimed) return `<p class="tag__taken">Iemand anders geeft dit al.</p>`;
+  // Al gegeven door een ander: de grijze groep ‘Wordt al gegeven’ en het stempel zeggen het al.
+  if (claimed) return "";
   return `<button type="button" class="btn tag__give" data-claim="${id}" aria-label="Ik geef dit: ${title}">Ik geef dit</button>`;
 }
 

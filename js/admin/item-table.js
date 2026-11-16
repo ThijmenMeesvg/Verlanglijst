@@ -2,7 +2,7 @@
 import { CATEGORIES, LISTS, PATHS } from "../config.js";
 import { categoryById, domId, escapeHtml, filterItems, formatPrice, safeUrl, shopName, sortItems } from "../lib/util.js";
 import { applyUpdates, archiveItems, deleteItems, saveItem, setClaimAdmin, setFields } from "../lib/store.js";
-import { confirmDialog, showToast } from "../lib/ui.js";
+import { confirmDialog, showToast, explainError } from "../lib/ui.js";
 import { createItemForm } from "./item-form.js";
 import { isSurpriseMode } from "../lib/surprise.js";
 
@@ -314,7 +314,7 @@ export function createItemTable(root, { onGotoMigration }) {
       await action();
       if (message) showToast(message, toastOptions);
     } catch (err) {
-      showToast(`Dat lukte niet: ${err.message}`, { error: true });
+      showToast(`Dat lukte niet: ${explainError(err)}`, { error: true });
     }
   }
 

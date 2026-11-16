@@ -173,17 +173,19 @@ function normalizeText(s) {
 
 /**
  * Filtert items. `claims` is een object { itemId: {...} } met wat al gegeven wordt.
- * Opties: q (zoektekst), cat (categorie-id), band (prijsband-id), hideClaimed (bool).
+ * Opties: q (zoektekst), cat (categorie-id), min en max (prijs in euro's, beide grenzen tellen mee; null of "" = geen grens),
+ * hideClaimed (bool). Staat er een prijsgrens aan, dan vallen items zonder prijs weg.
  */
-export function filterItems(items, { q = "", cat = "", band = "", hideClaimed = false } = {}, claims = {}) {
+export function filterItems(items, { q = "", cat = "", min = null, max = null, hideClaimed = false } = {}, claims = {}) {
   const words = normalizeText(q).split(/\s+/).filter(Boolean);
-  const priceBand = PRICE_BANDS.find((b) => b.id === band);
+  let lo = toBound(min), hi = toBound(max);
+  if (lo !== null && hi !== null && lo > hi) [lo, hi] = [hi, lo];   // ‘van 30 tot 10’ betekent hetzelfde als 10–30
   return items.filter((item) => {
     if (cat && item.category !== cat) return false;
     if (hideClaimed && claims[item.id]) return false;
-    if (priceBand) {
+    if (lo !== null || hi !== null) {
       const p = normalizePrice(item.price);
-      if (p === null || p < priceBand.min || p >= priceBand.max) return false;
+      if (p === null || (lo !== null && p < lo) || (hi !== null && p > hi)) return false;
     }
     if (words.length) {
       const haystack = normalizeText(`${item.title} ${item.note || ""} ${shopName(item.link)} ${categoryById(item.category).label}`);
@@ -191,6 +193,20 @@ export function filterItems(items, { q = "", cat = "", band = "", hideClaimed = 
     }
     return true;
   });
+}
+
+/** Een prijsgrens uit een invoerveld of de adresbalk: "20", "19,95", " 5 " → getal; leeg of onzin → null. */
+export function toBound(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const n = typeof value === "number" ? value : parsePrice(String(value));
+  return Number.isFinite(n) && n >= 0 ? n : null;
+}
+
+/** Oude gedeelde links gebruikten vaste stappen (?prijs=tot15); zet die om naar van/tot. */
+export function boundsFromBand(bandId) {
+  const b = PRICE_BANDS.find((x) => x.id === bandId);
+  if (!b) return { min: null, max: null };
+  return { min: b.min || null, max: Number.isFinite(b.max) ? b.max : null };
 }
 
 /** Sorteert: openstaande items altijd boven al-gegeven items, daarbinnen volgens `sort`. */
@@ -259,4 +275,26 @@ export function findDuplicateTitles(items) {
     groups.set(key, [...(groups.get(key) || []), item]);
   }
   return [...groups.values()].filter((g) => g.length > 1);
+}
+
+/**
+ * Zoekt de productlink in het adres. Mogelijke vormen:
+ * - ?url=<link, ge-encodeerd>          (bladwijzer, Android-delen met een url)
+ * - ?url=https://winkel.nl/x?a=1&b=2   (iPhone-opdracht plakt de link er onbewerkt achter)
+ * - ?text=Kijk eens! https://…         (Android: veel apps zetten de link in de tekst)
+ */
+export function sharedLinkFrom(search = "", hash = "") {
+  const raw = search.match(/[?&]url=(https?:\/\/.*)$/i);
+  if (raw) return raw[1] + hash;
+  const params = new URLSearchParams(search);
+  for (const key of ["url", "text", "title"]) {
+    const found = (params.get(key) || "").match(/https?:\/\/[^\s"'<>]+/i);
+    // Leestekens die bij de zin horen, niet bij de link: "(https://x.nl/y)." → https://x.nl/y
+    if (found) {
+      let link = found[0].replace(/[.,;:!?]+$/, "");
+      if (link.endsWith(")") && !link.includes("(")) link = link.slice(0, -1).replace(/[.,;:!?]+$/, "");
+      return link;
+    }
+  }
+  return "";
 }

@@ -1,6 +1,6 @@
 // Startpunt van de openbare verlanglijst.
 import { isDemo, subscribePublic } from "../lib/store.js";
-import { countByCategory, escapeHtml, filterItems, sortItems } from "../lib/util.js";
+import { countByCategory, domId, escapeHtml, filterItems, normalizePrice, sortItems } from "../lib/util.js";
 import { installImageFallback, showDemoBanner, showToast } from "../lib/ui.js";
 import { isSurpriseMode, setSurpriseMode } from "../lib/surprise.js";
 import { confettiOncePerVisit } from "../lib/confetti.js";
@@ -13,13 +13,18 @@ const els = {
   count: document.getElementById("count"),
   favorites: document.getElementById("favorites"),
   favoritesSection: document.getElementById("favorites-section"),
+  claimedSection: document.getElementById("claimed-section"),
+  claimedItems: document.getElementById("claimed-items"),
+  claimedCount: document.getElementById("claimed-count"),
+  mineStrip: document.getElementById("mine-strip"),
+  updated: document.getElementById("updated"),
   share: document.getElementById("share")
 };
 
 let state = { mode: null, items: [], claims: {}, settings: {} };
 let firstRender = true;
 
-const { filters, updateCounts, reset } = setupFilters(render);
+const { filters, updateCounts, reset, setPriceHint } = setupFilters(render);
 
 const surprise = isSurpriseMode();
 
@@ -40,20 +45,50 @@ function render() {
   els.favorites.innerHTML = favorites.map((i) => renderFavorite(i, tagState(i))).join("");
 
   updateCounts(countByCategory(items), items.length);
+  setPriceHint(Math.max(0, ...items.map((i) => normalizePrice(i.price) ?? 0)));
 
   const visible = sortItems(filterItems(items, filters, claims), filters.sort, claims);
   const claimedCount = items.length - openItems.length;
   els.count.textContent =
     `${items.length} ${items.length === 1 ? "wens" : "wensen"}` +
     (claimedCount ? `, waarvan ${claimedCount} al ${claimedCount === 1 ? "wordt" : "worden"} gegeven` : "");
+  // ‘Bijgewerkt op …’: de laatste keer dat er een wens bij kwam of veranderde, zodat bezoekers zien dat de lijst actueel is.
+  const lastUpdate = Math.max(0, ...items.map((i) => Math.max(i.updatedAt || 0, i.createdAt || 0)));
+  els.updated.hidden = !lastUpdate;
+  els.updated.textContent = lastUpdate ? `Bijgewerkt ${formatUpdate(lastUpdate)}` : "";
+
+  // Open wensen bovenaan; wat al gegeven wordt zakt naar een eigen, grijze groep onderaan.
+  // (In verrassingsmodus is `claims` leeg, dus dan blijft alles gewoon in één lijst.)
+  const openVisible = visible.filter((i) => !claims[i.id]);
+  const claimedVisible = visible.filter((i) => claims[i.id]);
 
   if (!items.length) {
     els.items.innerHTML = `<div class="notice"><p>${escapeHtml(state.settings.emptyList)}</p></div>`;
+  } else if (!visible.length && filters.hideClaimed && !openItems.length) {
+    els.items.innerHTML = `<div class="notice"><p>Alles op de lijst wordt al gegeven. Zet ‘Verberg wat al gegeven wordt’ uit om het te zien.</p></div>`;
   } else if (!visible.length) {
     els.items.innerHTML = `<div class="notice"><p>Niets gevonden met deze filters.</p><button type="button" class="btn" data-reset>Filters wissen</button></div>`;
+  } else if (!openVisible.length) {
+    els.items.innerHTML = filters.q || filters.cat || filters.min !== null || filters.max !== null
+      ? `<div class="notice"><p>Alles wat hier past, wordt al gegeven. Kijk eens bij een andere categorie of prijs.</p><button type="button" class="btn" data-reset>Filters wissen</button></div>`
+      : `<div class="notice"><p>Alles op de lijst wordt al gegeven. Dank je wel!</p></div>`;
   } else {
-    els.items.innerHTML = visible.map((i) => renderTag(i, tagState(i))).join("");
+    els.items.innerHTML = openVisible.map((i) => renderTag(i, tagState(i))).join("");
   }
+  els.claimedSection.hidden = claimedVisible.length === 0;
+  els.claimedCount.textContent = claimedVisible.length ? `(${claimedVisible.length})` : "";
+  els.claimedItems.innerHTML = claimedVisible.map((i) => renderTag(i, tagState(i))).join("");
+
+  // ‘Jij geeft:’ met een link naar elk eigen cadeau (die nu onderaan in de grijze groep staan).
+  // Met ‘Verberg wat al gegeven wordt’ aan staan die kaarten er niet, dan ook geen links ernaartoe.
+  const mineItems = filters.hideClaimed ? [] : items.filter((i) => claims[i.id] && isMine(i.id));
+  const MAX_IN_STRIP = 3;
+  const shown = mineItems.slice(0, MAX_IN_STRIP).map((i) => `<a href="#${escapeHtml(domId(i.id))}">${escapeHtml(i.title)}</a>`);
+  const more = mineItems.length - shown.length;
+  els.mineStrip.hidden = mineItems.length === 0;
+  els.mineStrip.innerHTML = mineItems.length
+    ? `<span aria-hidden="true">🎁</span> Jij geeft: ${shown.join(", ")}${more ? ` en <a href="#claimed-title">nog ${more}</a>` : ""}. Vergeet het niet te kopen!`
+    : "";
   els.items.setAttribute("aria-busy", "false");
 
   if (firstRender && items.length) {
@@ -62,12 +97,24 @@ function render() {
   }
 }
 
+/** ‘vandaag’, ‘gisteren’, of ‘4 november’ (met jaartal als het niet dit jaar was). */
+function formatUpdate(ts) {
+  const d = new Date(ts), now = new Date();
+  const day = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const diff = Math.round((day(now) - day(d)) / 86400000);
+  if (diff <= 0) return "vandaag";
+  if (diff === 1) return "gisteren";
+  return "op " + d.toLocaleDateString("nl-NL", { day: "numeric", month: "long", ...(d.getFullYear() !== now.getFullYear() ? { year: "numeric" } : {}) });
+}
+
 function highlightFromHash() {
   if (!location.hash.startsWith("#item-")) return;
   const target = document.getElementById(location.hash.slice(1));
   if (!target) return;
+  for (const el of document.querySelectorAll(".tag.is-highlighted")) el.classList.remove("is-highlighted");
   target.classList.add("is-highlighted");
   target.scrollIntoView({ block: "center" });
+  target.querySelector("a, button")?.focus({ preventScroll: true });
 }
 
 function findItem(id) {
@@ -90,6 +137,7 @@ document.addEventListener("click", (e) => {
 });
 
 installImageFallback();
+window.addEventListener("hashchange", highlightFromHash);
 
 // ‘↑ Zoeken en filters’ verschijnt zodra de filterbalk ver boven je uit beeld is.
 const toTop = document.getElementById("to-top");
@@ -98,10 +146,10 @@ new IntersectionObserver(([entry]) => {
   toTop.hidden = entry.isIntersecting || entry.boundingClientRect.top > 0;
 }, { rootMargin: "600px 0px 0px 0px" }).observe(toolbar);
 
-// De beheerpagina zet dit vlaggetje na een geslaagde login; alleen dan verschijnt ‘Beheer’ bovenin.
+// De beheerpagina zet dit vlaggetje na een geslaagde login; dan staat er ‘⚙ Beheer’ in plaats van alleen ‘⚙’.
 // (Het is maar een snelkoppeling: toegang regelt de database, niet deze knop.)
 try {
-  if (isDemo() || localStorage.getItem("verlanglijst-beheerder") === "1") document.getElementById("admin-link").hidden = false;
+  if (isDemo() || localStorage.getItem("verlanglijst-beheerder") === "1") document.querySelector(".topbar__admin-label").hidden = false;
 } catch { /* geen opslag beschikbaar */ }
 
 if (surprise) {

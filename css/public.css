@@ -46,6 +46,16 @@ main {
   text-align: center;
 }
 
+.mine-strip {
+  margin: 0 0 var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-left: 4px solid var(--orange);
+  border-radius: var(--radius-m);
+  background: var(--paper);
+  font-size: 15px;
+}
+.mine-strip a { font-weight: 600; }
+
 .steps {
   display: grid;
   gap: var(--space-2);
@@ -95,6 +105,7 @@ main {
   margin-bottom: var(--space-4);
 }
 .wishes__count { color: var(--ink-soft); }
+.wishes__updated::before { content: "·"; margin-right: 6px; }
 
 /* ---------- Favorieten: compacte kaarten (foto, naam, prijs, knop naast elkaar) ---------- */
 
@@ -182,6 +193,32 @@ main {
   gap: var(--space-2) var(--space-4);
 }
 .toolbar__panel .chips { flex: 0 1 auto; }
+
+/* Prijs van/tot */
+.price-range {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.price-range legend { float: left; margin-right: var(--space-1); font-size: 14px; font-weight: 700; color: var(--ink-soft); }
+.price-range__field { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--ink-soft); }
+.price-range .input { width: 5.5em; min-height: var(--touch); text-align: right; }
+.price-range .input[aria-invalid="true"] { border-color: var(--danger, #b42318); box-shadow: 0 0 0 1px var(--danger, #b42318); }
+.price-range__clear {
+  min-height: var(--touch);
+  padding: 0 var(--space-2);
+  border: 0;
+  background: none;
+  color: var(--pine);
+  font: inherit;
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+}
 .toolbar__sort { width: auto; }
 .toolbar__hide { font-size: 14px; color: var(--ink-soft); }
 
@@ -193,6 +230,20 @@ main {
   gap: var(--space-5) var(--space-4);
 }
 .grid > .notice { grid-column: 1 / -1; }
+
+/* ---------- Wordt al gegeven: onderaan, in grijs ---------- */
+
+.claimed {
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: 1px dashed var(--line);
+}
+.claimed__head { margin-bottom: var(--space-4); }
+.claimed__head h3 { font-size: 20px; color: var(--ink-soft); }
+.claimed__count { font-weight: 500; }
+.claimed__intro { color: var(--ink-soft); font-size: 14px; }
+/* Iets kleinere kaarten: ze doen er nog toe, maar vragen minder aandacht. */
+.grid--claimed { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
 
 /* ---------- Voet ---------- */
 
@@ -229,7 +280,8 @@ main {
   .favorites h2,
   .wishes h2 { font-size: 22px; }
 
-  .grid {
+  .grid,
+  .grid--claimed {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-4) var(--space-3);
   }

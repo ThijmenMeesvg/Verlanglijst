@@ -197,6 +197,23 @@ code {
 .migration-report:empty { display: none; }
 .links-form { display: grid; gap: var(--space-2); margin-bottom: var(--space-5); }
 
+/* Uitleg per apparaat (Android, iPhone, computer): uitklapbaar, die van dit apparaat staat open. */
+.howto { border: 1px solid var(--line); border-radius: var(--radius-m); background: var(--paper); }
+.howto summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--touch);
+  padding: 0 var(--space-4);
+  font-weight: 700;
+  cursor: pointer;
+}
+.howto[open] summary { border-bottom: 1px solid var(--line); }
+.howto > :not(summary) { margin: var(--space-3) var(--space-4); }
+.howto ol { display: grid; gap: var(--space-2); padding-left: 1.2em; }
+.howto .btn { vertical-align: middle; }
+.copy-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-2); }
+.copy-row code { padding: 4px 8px; border-radius: var(--radius-s); background: var(--pine-soft); font-size: 13px; overflow-wrap: anywhere; }
+
 /* ---------- Telefoon ---------- */
 
 @media (max-width: 760px) {

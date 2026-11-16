@@ -1,7 +1,7 @@
-// Instellingen: alle teksten op de site, verrassingsmodus, de bladwijzer en handige links.
+// Instellingen: verrassingsmodus, toevoegen vanuit een winkel (delen, opdracht, bladwijzer), teksten en handige links.
 import { FIREBASE_CONSOLE, TEXT_FIELDS } from "../config.js";
 import { saveSettings } from "../lib/store.js";
-import { showToast } from "../lib/ui.js";
+import { showToast, explainError } from "../lib/ui.js";
 import { escapeHtml } from "../lib/util.js";
 import { isSurpriseMode, setSurpriseMode } from "../lib/surprise.js";
 import { createMigration } from "./migration.js";
@@ -34,6 +34,47 @@ export function createSettings(root, { onSurpriseChange, existingIds, allItems }
   const bookmarklet = `javascript:location.href=${JSON.stringify(`${adminUrl}?url=`)}+encodeURIComponent(location.href)`;
 
   root.innerHTML = `
+    <section class="settings-block">
+      <h2>Verrassingsmodus</h2>
+      <p>Zet dit aan als je niet wilt zien wat anderen al voor je kopen. Op dit apparaat zie je dan nergens meer wat al gegeven wordt, ook niet op de openbare lijst. Bezoekers merken er niets van.</p>
+      <label class="check"><input type="checkbox" id="s-surprise"> Verrassingsmodus aan</label>
+    </section>
+
+    <section class="settings-block">
+      <h2>Toevoegen vanuit elke webwinkel</h2>
+      <p>Zie je iets wat je wilt hebben? Stuur de link vanuit de winkel naar je verlanglijst. Het beheer opent dan met de link al ingevuld en haalt naam, foto en prijs op. Jij kiest alleen nog de categorie en klikt op Toevoegen.</p>
+
+      <details class="howto" id="s-howto-android">
+        <summary>Android: via ‘Delen’</summary>
+        <ol>
+          <li>Open deze beheerpagina in Chrome en log in.</li>
+          <li>Installeer de app: <button type="button" class="btn btn--small" id="s-install" hidden>Installeer als app</button><span id="s-install-manual">tik op ⋮ en kies <strong>App installeren</strong> of <strong>Toevoegen aan startscherm</strong>.</span></li>
+          <li>Tik in een webwinkel op <strong>Delen</strong> en kies <strong>Verlanglijst</strong>.</li>
+        </ol>
+      </details>
+
+      <details class="howto" id="s-howto-ios">
+        <summary>iPhone: via een opdracht</summary>
+        <p>Een iPhone laat websites niet in het deelmenu verschijnen. Met de app Opdrachten (Shortcuts) lukt het wel, en dat stel je één keer in:</p>
+        <ol>
+          <li>Open <strong>Opdrachten</strong>, tik op <strong>+</strong> en geef de opdracht de naam <em>Op mijn verlanglijst</em>.</li>
+          <li>Tik op het <strong>ⓘ</strong>-icoon en zet <strong>Toon in deelpaneel</strong> aan. Kies bij de invoer alleen <strong>URL's</strong>.</li>
+          <li>Voeg de actie <strong>Tekst</strong> toe, plak dit adres en zet direct erachter de variabele <strong>Opdrachtinvoer</strong>:
+            <div class="copy-row"><code id="s-ios-url"></code><button type="button" class="btn btn--small" id="s-copy-ios">Kopiëren</button></div>
+          </li>
+          <li>Voeg de actie <strong>Open URL's</strong> toe. Klaar: in Safari staat <em>Op mijn verlanglijst</em> nu onder <strong>Delen</strong>.</li>
+        </ol>
+      </details>
+
+      <details class="howto" id="s-howto-desktop">
+        <summary>Computer: via een bladwijzer</summary>
+        <p>Sleep deze knop naar je bladwijzerbalk. Klik er in een webwinkel op, dan opent deze pagina met de link al ingevuld.</p>
+        <p><a class="btn" id="s-bookmarklet" href="#">＋ Op mijn verlanglijst</a></p>
+        <p class="field__hint">Lukt slepen niet? Kopieer de code, maak een bladwijzer van een willekeurige pagina en zet deze code op de plek van het adres.</p>
+        <button type="button" class="btn btn--small" id="s-copy-bookmarklet">Code kopiëren</button>
+      </details>
+    </section>
+
     <section class="settings-block settings-block--wide">
       <h2>Teksten op de site</h2>
       <p>Pas hier elke tekst op de verlanglijst aan. Laat een veld leeg om de standaardtekst (grijs) te gebruiken. Bezoekers zien de nieuwe tekst meteen.</p>
@@ -44,20 +85,6 @@ export function createSettings(root, { onSurpriseChange, existingIds, allItems }
           <a class="btn" href="./" target="_blank" rel="noopener">Bekijk de site</a>
         </div>
       </form>
-    </section>
-
-    <section class="settings-block">
-      <h2>Verrassingsmodus</h2>
-      <p>Zet dit aan als je niet wilt zien wat anderen al voor je kopen. Op dit apparaat verbergen de beheerpagina en de openbare lijst dan alles over ‘gegeven’. Bezoekers merken er niets van.</p>
-      <label class="check"><input type="checkbox" id="s-surprise"> Verrassingsmodus aan</label>
-    </section>
-
-    <section class="settings-block">
-      <h2>Toevoegen vanuit elke webwinkel</h2>
-      <p>Sleep deze knop naar je bladwijzerbalk. Zie je in een webwinkel iets wat je wilt hebben? Klik dan op de bladwijzer: deze pagina opent met de link al ingevuld en haalt de gegevens op.</p>
-      <p><a class="btn" id="s-bookmarklet" href="#">＋ Op mijn verlanglijst</a></p>
-      <p class="field__hint">Op een telefoon: kopieer de code, maak een bladwijzer van een willekeurige pagina en vervang daarna het adres door deze code.</p>
-      <button type="button" class="btn btn--small" id="s-copy-bookmarklet">Code kopiëren</button>
     </section>
 
     <section class="settings-block" id="s-cleanup"></section>
@@ -80,7 +107,7 @@ export function createSettings(root, { onSurpriseChange, existingIds, allItems }
       await saveSettings(Object.fromEntries(TEXT_FIELDS.map((f) => [f.key, form.elements[f.key].value])));
       showToast("Teksten opgeslagen.");
     } catch (err) {
-      showToast(`Opslaan lukte niet: ${err.message}`, { error: true });
+      showToast(`Opslaan lukte niet: ${explainError(err)}`, { error: true });
     }
   });
 
@@ -99,6 +126,32 @@ export function createSettings(root, { onSurpriseChange, existingIds, allItems }
     try { await navigator.clipboard.writeText(bookmarklet); showToast("Code gekopieerd."); }
     catch { showToast("Kopiëren lukte niet.", { error: true }); }
   });
+
+  // iPhone-opdracht: het beheeradres waar de opdracht de link achter plakt (mag onge-encodeerd, zie main.js).
+  root.querySelector("#s-ios-url").textContent = `${adminUrl}?url=`;
+  root.querySelector("#s-copy-ios").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(`${adminUrl}?url=`); showToast("Adres gekopieerd. Plak het in de actie Tekst."); }
+    catch { showToast("Kopiëren lukte niet. Selecteer het adres en kopieer het zelf.", { error: true }); }
+  });
+
+  // Het uitleg-blok dat bij dit apparaat past, staat alvast open.
+  const ua = navigator.userAgent;
+  const howto = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) ? "ios" : /Android/.test(ua) ? "android" : "desktop";
+  root.querySelector(`#s-howto-${howto}`).open = true;
+
+  // Chrome/Edge: echte installeerknop in plaats van uitleg over het menu.
+  const installBtn = root.querySelector("#s-install");
+  const showInstall = (prompt) => {
+    installBtn.hidden = false;
+    root.querySelector("#s-install-manual").hidden = true;
+    installBtn.onclick = async () => {
+      prompt.prompt();
+      const { outcome } = await prompt.userChoice;
+      if (outcome === "accepted") { installBtn.hidden = true; showToast("Geïnstalleerd. Je vindt Verlanglijst nu bij Delen."); }
+    };
+  };
+  if (window.__installPrompt) showInstall(window.__installPrompt);
+  window.addEventListener("verlanglijst-installable", (e) => showInstall(e.detail));
 
   createTitleCleanup(root.querySelector("#s-cleanup"), { allItems });
   createMigration(root.querySelector("#s-migration"), { existingIds });

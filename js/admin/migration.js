@@ -3,7 +3,7 @@
 // dus opnieuw overzetten overschrijft nooit iets wat je daarna hebt aangepast.
 import { LEGACY_NODES, planMigration } from "../lib/migrate.js";
 import { applyUpdates, readLegacy } from "../lib/store.js";
-import { confirmDialog, showToast } from "../lib/ui.js";
+import { confirmDialog, showToast, explainError } from "../lib/ui.js";
 import { escapeHtml } from "../lib/util.js";
 
 /**
@@ -28,7 +28,7 @@ export function createMigration(root, { existingIds }) {
     try {
       legacy = await readLegacy();
     } catch (err) {
-      report.innerHTML = `<p class="item-form__error">Lezen lukte niet: ${escapeHtml(err.message)}</p>`;
+      report.innerHTML = `<p class="item-form__error">Lezen lukte niet: ${escapeHtml(explainError(err))}</p>`;
       return;
     }
     const hasLegacy = LEGACY_NODES.some((name) => legacy[name]);
@@ -85,7 +85,7 @@ export function createMigration(root, { existingIds }) {
       // Even wachten tot de live gegevens binnen zijn, dan opnieuw controleren: dat toont de opruimknop.
       setTimeout(check, 1200);
     } catch (err) {
-      report.insertAdjacentHTML("beforeend", `<p class="item-form__error">Overzetten lukte niet: ${escapeHtml(err.message)}. Er is niets veranderd.</p>`);
+      report.insertAdjacentHTML("beforeend", `<p class="item-form__error">Overzetten lukte niet: ${escapeHtml(explainError(err))}. Er is niets veranderd.</p>`);
     }
   }
 
@@ -108,7 +108,7 @@ export function createMigration(root, { existingIds }) {
       report.innerHTML = `<p><strong>Opgeruimd.</strong> De database bevat nu alleen nog de nieuwe indeling.</p>`;
       showToast("Oude mappen verwijderd.");
     } catch (err) {
-      showToast(`Opruimen lukte niet: ${err.message}`, { error: true });
+      showToast(`Opruimen lukte niet: ${explainError(err)}`, { error: true });
     }
   }
 }
