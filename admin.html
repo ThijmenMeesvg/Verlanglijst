@@ -63,6 +63,7 @@
       <nav class="tabs" role="tablist" aria-label="Beheer">
         <button type="button" role="tab" class="tab" id="tab-add" aria-controls="panel-add" aria-selected="true">Toevoegen</button>
         <button type="button" role="tab" class="tab" id="tab-items" aria-controls="panel-items" aria-selected="false">Items <span class="tab__count" id="items-count"></span></button>
+        <button type="button" role="tab" class="tab" id="tab-categories" aria-controls="panel-categories" aria-selected="false">Categorieën</button>
         <button type="button" role="tab" class="tab" id="tab-links" aria-controls="panel-links" aria-selected="false">Links <span class="tab__count" id="links-count"></span></button>
         <button type="button" role="tab" class="tab" id="tab-settings" aria-controls="panel-settings" aria-selected="false">Instellingen</button>
       </nav>
@@ -75,6 +76,11 @@
       <div role="tabpanel" class="panel" id="panel-items" aria-labelledby="tab-items" hidden>
         <h1>Items</h1>
         <div id="item-table"></div>
+      </div>
+
+      <div role="tabpanel" class="panel" id="panel-categories" aria-labelledby="tab-categories" hidden>
+        <h1>Categorieën</h1>
+        <div id="categories"></div>
       </div>
 
       <div role="tabpanel" class="panel" id="panel-links" aria-labelledby="tab-links" hidden>

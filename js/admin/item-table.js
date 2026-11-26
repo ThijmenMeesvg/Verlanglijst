@@ -1,5 +1,6 @@
 // Overzicht van alle items in alle lijsten, met filters en acties per item.
-import { CATEGORIES, LISTS, PATHS } from "../config.js";
+import { LISTS, PATHS } from "../config.js";
+import { allCategories, categoryOf } from "../lib/categories.js";
 import { categoryById, domId, escapeHtml, filterItems, formatPrice, safeUrl, shopName, sortItems } from "../lib/util.js";
 import { applyUpdates, archiveItems, deleteItems, saveItem, setClaimAdmin, setFields } from "../lib/store.js";
 import { confirmDialog, showToast, explainError } from "../lib/ui.js";
@@ -26,10 +27,7 @@ export function createItemTable(root, { onGotoMigration }) {
         ${LISTS.map((l) => `<option value="${l.id}">${l.emoji} ${escapeHtml(l.label)}</option>`).join("")}
       </select>
       <label class="visually-hidden" for="t-cat">Categorie</label>
-      <select class="select" id="t-cat">
-        <option value="">Alle categorieën</option>
-        ${CATEGORIES.map((c) => `<option value="${c.id}">${c.emoji} ${escapeHtml(c.label)}</option>`).join("")}
-      </select>
+      <select class="select" id="t-cat"></select>
       <label class="visually-hidden" for="t-status">Status</label>
       <select class="select" id="t-status"></select>
     </div>
@@ -65,6 +63,24 @@ export function createItemTable(root, { onGotoMigration }) {
     $("t-status").innerHTML = options
       .map(([v, label]) => `<option value="${v}"${v === filters.status ? " selected" : ""}>${label}</option>`)
       .join("");
+  }
+
+  /** Keuzelijst met categorieën; opnieuw opgebouwd als er categorieën bijkomen of veranderen. */
+  const categoryOptions = (selected) =>
+    allCategories().map((c) => `<option value="${escapeHtml(c.id)}"${c.id === selected ? " selected" : ""}>${escapeHtml(c.emoji)} ${escapeHtml(c.label)}</option>`).join("");
+
+  function renderCategoryFilter() {
+    // Bestaat de gekozen categorie niet meer? Dan weer alles tonen.
+    if (filters.cat && !allCategories().some((c) => c.id === filters.cat)) filters.cat = "";
+    $("t-cat").innerHTML = `<option value="">Alle categorieën</option>${categoryOptions(filters.cat)}`;
+  }
+
+  /** Vanuit het tabblad Categorieën: toon de items van één categorie. */
+  function showCategory(catId) {
+    filters.cat = catId;
+    filters.list = "active";
+    $("t-list").value = "active";
+    render();
   }
 
   function visibleItems() {
@@ -119,8 +135,12 @@ export function createItemTable(root, { onGotoMigration }) {
         <div class="row__thumb" data-emoji="${escapeHtml(cat.emoji)}">${image ? `<img src="${escapeHtml(image)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : ""}</div>
         <div class="row__main">
           <a class="row__title" href="${escapeHtml(safeUrl(item.link))}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.title)}</a>
-          <p class="row__meta">${escapeHtml(formatPrice(item.price))}, ${escapeHtml(cat.label)}${shopName(item.link) ? `, ${escapeHtml(shopName(item.link))}` : ""}</p>
+          <p class="row__meta">${escapeHtml(formatPrice(item.price))}${shopName(item.link) ? `, ${escapeHtml(shopName(item.link))}` : ""}</p>
           <div class="row__badges">${badges}</div>
+        </div>
+        <div class="row__cat">
+          <label class="visually-hidden" for="cat-${escapeHtml(domId(`${item.listId}-${item.id}`))}">Categorie van ${escapeHtml(item.title)}</label>
+          <select class="select select--small" id="cat-${escapeHtml(domId(`${item.listId}-${item.id}`))}" data-cat-select>${categoryOptions(categoryOf(item))}</select>
         </div>
         <div class="row__actions">${actions}</div>
       </li>`;
@@ -128,6 +148,7 @@ export function createItemTable(root, { onGotoMigration }) {
 
   function render() {
     renderStatusOptions();
+    renderCategoryFilter();
     const items = visibleItems();
     const claimedPublic = (state.lists.public || []).filter((i) => state.claims[i.id]);
     $("t-summary").textContent = `${items.length} ${items.length === 1 ? "item" : "items"}`;
@@ -205,6 +226,18 @@ export function createItemTable(root, { onGotoMigration }) {
   });
   document.addEventListener("click", (e) => {
     if (openMenu && !openMenu.contains(e.target)) closeMenu();
+  });
+
+  // Categorie direct in de lijst wijzigen.
+  root.addEventListener("change", async (e) => {
+    const select = e.target.closest("[data-cat-select]");
+    if (!select) return;
+    const rowEl = select.closest(".row");
+    const item = allItems().find((i) => i.id === rowEl.dataset.id && i.listId === rowEl.dataset.list);
+    if (!item) return;
+    rememberFocus(item, "[data-cat-select]");
+    const label = allCategories().find((c) => c.id === select.value)?.label || "Overig";
+    await run(() => setFields(item.listId, item.id, { category: select.value }), `“${shorten(item.title)}” staat nu onder ${label}.`);
   });
 
   root.addEventListener("click", async (e) => {
@@ -303,6 +336,10 @@ export function createItemTable(root, { onGotoMigration }) {
     }
   }
 
+  function shorten(title) {
+    return title.length > 50 ? `${title.slice(0, 47)}…` : title;
+  }
+
   function restore(item) {
     const target = LISTS.some((l) => l.id === item.fromList && l.id !== "archief") ? item.fromList : "public";
     const { archivedAt, fromList, ...data } = item;
@@ -341,6 +378,7 @@ export function createItemTable(root, { onGotoMigration }) {
       state = next;
       render();
     },
-    refresh: render
+    refresh: render,
+    showCategory
   };
 }

@@ -1,5 +1,6 @@
 // Startpunt van de openbare verlanglijst.
 import { isDemo, subscribePublic } from "../lib/store.js";
+import { setCategories } from "../lib/categories.js";
 import { countByCategory, domId, escapeHtml, filterItems, normalizePrice, sortItems } from "../lib/util.js";
 import { installImageFallback, showDemoBanner, showToast } from "../lib/ui.js";
 import { isSurpriseMode, setSurpriseMode } from "../lib/surprise.js";
@@ -44,7 +45,9 @@ function render() {
   els.favoritesSection.hidden = favorites.length === 0;
   els.favorites.innerHTML = favorites.map((i) => renderFavorite(i, tagState(i))).join("");
 
-  updateCounts(countByCategory(items), items.length);
+  // De aantallen in de chips volgen zoeken, prijs en ‘verberg’; alleen de categorie zelf telt niet mee.
+  const matching = filterItems(items, { ...filters, cat: "" }, claims);
+  updateCounts(countByCategory(matching), matching.length);
   setPriceHint(Math.max(0, ...items.map((i) => normalizePrice(i.price) ?? 0)));
 
   const visible = sortItems(filterItems(items, filters, claims), filters.sort, claims);
@@ -183,6 +186,7 @@ subscribePublic((data) => {
     return;
   }
   state = data;
+  setCategories(data.categories);
   // Teksten uit het beheer; textContent, dus nooit als HTML uitgevoerd.
   for (const el of document.querySelectorAll("[data-text]")) {
     el.textContent = data.settings[el.dataset.text] ?? el.textContent;

@@ -70,6 +70,18 @@
   font: 700 12px/1.4 var(--font-body);
 }
 
+/* Pas toegevoegd: rechtsboven, zodat het naast ‘★ Favoriet’ past. */
+.tag__new {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--orange);
+  color: var(--orange-ink);
+  font: 700 12px/1.4 var(--font-body);
+}
+
 .tag__stamp {
   position: absolute;
   left: 50%;

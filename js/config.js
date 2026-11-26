@@ -1,5 +1,4 @@
 // Centrale instellingen: Firebase-project, categorieën, lijsten en prijsfilters.
-// Categorieën pas je alleen hier aan; de hele site (ook de beheerpagina) leest deze lijst.
 
 export const FIREBASE_SDK = "https://www.gstatic.com/firebasejs/10.12.2";
 
@@ -15,8 +14,23 @@ export const firebaseConfig = {
 
 export const FIREBASE_CONSOLE = "https://console.firebase.google.com/project/verlanglijst-12015";
 
-// Categorieën van de openbare lijst. `legacy` = naam van de categorie in de oude database.
-export const CATEGORIES = [
+// Categorieën. Die maak je zelf aan in het beheer (tab ‘Categorieën’) en staan in de database.
+// Zolang je daar nog niets hebt opgeslagen, gelden deze standaardcategorieën.
+// Alles zonder (bestaande) categorie valt automatisch onder ‘Overig’; die kun je niet verwijderen.
+export const DEFAULT_CATEGORIES = [
+  { id: "boeken",  label: "Boeken",     emoji: "📚" },
+  { id: "spellen", label: "Spelletjes", emoji: "🎲" },
+  { id: "muziek",  label: "Muziek",     emoji: "🎵" }
+];
+
+export const OVERIG = { id: "overig", label: "Overig", emoji: "✨" };
+
+// Grenzen voor zelfgemaakte categorieën (staan ook in database.rules.json).
+export const CATEGORY_LIMITS = { label: 40, emoji: 16 };
+
+// De categorieën van de oude database (vóór de overstap). Alleen nog gebruikt om de oude structuur
+// te lezen en over te zetten; op de site zelf gelden de categorieën hierboven.
+export const LEGACY_CATEGORIES = [
   { id: "boeken",  label: "Boeken",                emoji: "📚", legacy: "Boeken" },
   { id: "spellen", label: "Spelletjes",            emoji: "🎲", legacy: "Spelletjes" },
   { id: "muziek",  label: "Muziek",                emoji: "🎵", legacy: "Muziek" },
@@ -44,7 +58,10 @@ export const PRICE_BANDS = [
   { id: "50plus", label: "€50+",   min: 50, max: Infinity }
 ];
 
+// De eerste is de standaard. ‘Elke dag anders’ husselt de lijst één keer per dag, zodat ook wensen
+// die er al langer op staan bovenaan terechtkomen, terwijl de volgorde tijdens een bezoek gelijk blijft.
 export const SORTS = [
+  { id: "dag",      label: "Elke dag anders" },
   { id: "nieuw",    label: "Nieuwste eerst" },
   { id: "goedkoop", label: "Prijs: laag → hoog" },
   { id: "duur",     label: "Prijs: hoog → laag" },
@@ -67,12 +84,16 @@ export const TEXT_FIELDS = [
 
 export const DEFAULT_SETTINGS = Object.fromEntries(TEXT_FIELDS.map((f) => [f.key, f.default]));
 
+// Zo lang (in dagen) krijgt een nieuwe wens het label ‘Nieuw’.
+export const NEW_DAYS = 14;
+
 // Grenzen die ook in database.rules.json staan; formulier en overstap houden zich hieraan.
 export const LIMITS = { title: 300, link: 2000, image: 2000, note: 500, maxPrice: 99999.99 };
 
 // Paden in de database (nieuwe structuur).
 export const PATHS = {
   items: "wishlist/items",
+  categories: "wishlist/categories",
   claims: "wishlist/claims",
   settings: "wishlist/settings",
   privateList: (listId) => `private/${listId}/items`,
