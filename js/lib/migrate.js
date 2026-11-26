@@ -1,6 +1,6 @@
 // Zet de oude database-indeling (een node per categorie) om naar de nieuwe structuur.
 // Puur rekenwerk zonder Firebase: geeft een lijst met database-updates en een verslag terug.
-import { CATEGORIES, LIMITS, LISTS, PATHS } from "../config.js";
+import { LEGACY_CATEGORIES, LIMITS, LISTS, PATHS } from "../config.js";
 import { cleanUrl, normalizePrice, safeUrl, titleFromUrl, toTimestamp } from "./util.js";
 
 // Nodes in de root die geen oude categorie zijn en dus overgeslagen worden.
@@ -52,7 +52,7 @@ export function convertItem(old, categoryId, now = Date.now()) {
 
 /** Namen van alle oude mappen die na de overstap opgeruimd mogen worden. */
 export const LEGACY_NODES = [
-  ...CATEGORIES.map((c) => c.legacy),
+  ...LEGACY_CATEGORIES.map((c) => c.legacy),
   ...LISTS.filter((l) => l.legacy).map((l) => l.legacy),
   "tempLinks",
   "v2"
@@ -83,7 +83,7 @@ export function planMigration(root, now = Date.now(), existingIds = new Set()) {
   };
   const bump = (key) => (report.perDestination[key] = (report.perDestination[key] || 0) + 1);
 
-  const legacyCategory = Object.fromEntries(CATEGORIES.map((c) => [c.legacy, c]));
+  const legacyCategory = Object.fromEntries(LEGACY_CATEGORIES.map((c) => [c.legacy, c]));
   const legacyList = Object.fromEntries(LISTS.filter((l) => l.legacy).map((l) => [l.legacy, l]));
 
   for (const [nodeName, node] of Object.entries(root || {})) {
@@ -134,7 +134,7 @@ export function planMigration(root, now = Date.now(), existingIds = new Set()) {
           updates[`${PATHS.claims}/${key}`] = { at: 0 };
           report.claims++;
         }
-        bump(`Openbaar · ${CATEGORIES.find((c) => c.id === categoryId).label}`);
+        bump(`Openbaar · ${LEGACY_CATEGORIES.find((c) => c.id === categoryId).label}`);
       }
       report.total++;
     }

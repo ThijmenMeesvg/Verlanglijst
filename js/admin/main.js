@@ -7,6 +7,8 @@ import { createItemForm } from "./item-form.js";
 import { createItemTable } from "./item-table.js";
 import { createLinks } from "./links.js";
 import { createSettings } from "./settings.js";
+import { createCategoryManager } from "./category-manager.js";
+import { setCategories } from "../lib/categories.js";
 
 const gates = ["gate-loading", "gate-signin", "gate-setup", "app"].map((id) => document.getElementById(id));
 const show = (id) => gates.forEach((el) => (el.hidden = el.id !== id));
@@ -102,6 +104,7 @@ function startApp() {
   show("app");
 
   let tempLinks = [];
+  let claims = {};
   const goTo = (tabId) => selectTab(document.getElementById(tabId));
 
   const table = createItemTable(document.getElementById("item-table"), { onGotoMigration: () => goTo("tab-settings") });
@@ -115,6 +118,15 @@ function startApp() {
     }
   });
   document.getElementById("add-form").append(addForm);
+
+  const categories = createCategoryManager(document.getElementById("categories"), {
+    allItems: () => table.allItems(),
+    claims: () => claims,
+    onShowItems: (catId) => {
+      table.showCategory(catId);
+      goTo("tab-items");
+    }
+  });
 
   const links = createLinks(document.getElementById("links"), {
     onAddAsItem: (url) => {
@@ -131,7 +143,10 @@ function startApp() {
   subscribeAdmin(
     (state) => {
       tempLinks = state.tempLinks;
+      claims = state.claims;
+      setCategories(state.categories);
       table.update(state);
+      categories.update();
       links.update(state.tempLinks);
       settings.update(state);
       const active = Object.entries(state.lists).filter(([id]) => id !== "archief").reduce((n, [, l]) => n + l.length, 0);

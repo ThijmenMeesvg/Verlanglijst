@@ -1,5 +1,6 @@
 // Formulier om een item toe te voegen of te bewerken, met voorbeeld zoals bezoekers het zien.
-import { CATEGORIES, LIMITS, LISTS } from "../config.js";
+import { LIMITS, LISTS } from "../config.js";
+import { allCategories, categoryOf } from "../lib/categories.js";
 import { cleanUrl, escapeHtml, isValidPriceText, linkKey, normalizePrice, parsePrice, safeUrl } from "../lib/util.js";
 import { saveItem } from "../lib/store.js";
 import { showToast, explainError } from "../lib/ui.js";
@@ -51,9 +52,7 @@ export function createItemForm({ mode, item = {}, allItems, onSaved, onCancel })
       </div>
       <div class="field">
         <label class="field__label" for="${uid}-category">Categorie</label>
-        <select class="select" id="${uid}-category" name="category">
-          ${CATEGORIES.map((c) => `<option value="${c.id}"${c.id === (item.category || "overig") ? " selected" : ""}>${c.emoji} ${escapeHtml(c.label)}</option>`).join("")}
-        </select>
+        <select class="select" id="${uid}-category" name="category"></select>
       </div>
     </div>
 
@@ -94,6 +93,23 @@ export function createItemForm({ mode, item = {}, allItems, onSaved, onCancel })
     </div>`;
 
   const field = (name) => form.elements.namedItem(name);
+
+  // Categorieën kunnen veranderen terwijl het formulier openstaat (tabblad Categorieën): dan bijwerken,
+  // met behoud van wat er gekozen was.
+  const fillCategories = (selected) => {
+    const valid = allCategories().some((c) => c.id === selected) ? selected : "overig";
+    field("category").innerHTML = allCategories()
+      .map((c) => `<option value="${escapeHtml(c.id)}"${c.id === valid ? " selected" : ""}>${escapeHtml(c.emoji)} ${escapeHtml(c.label)}</option>`)
+      .join("");
+  };
+  fillCategories(categoryOf(item));
+  const onCategories = () => {
+    // Een bewerkvenster dat weer gesloten is, hoeft niet meer bijgewerkt te worden.
+    if (form.isConnected) form.dataset.mounted = "1";
+    else if (form.dataset.mounted) { window.removeEventListener("verlanglijst-categories", onCategories); return; }
+    fillCategories(field("category").value);
+  };
+  window.addEventListener("verlanglijst-categories", onCategories);
   const status = form.querySelector("[data-fetch-status]");
   const errorBox = form.querySelector("[data-error]");
   const preview = form.querySelector("[data-preview]");
@@ -217,6 +233,7 @@ export function createItemForm({ mode, item = {}, allItems, onSaved, onCancel })
 
   function reset() {
     form.reset();
+    fillCategories(categoryOf(item));
     for (const name of ["link", "title", "price", "image", "note"]) field(name).value = "";
     status.textContent = "Plak een link en klik op ‘Gegevens ophalen’ voor titel, foto en prijs.";
     errorBox.textContent = "";

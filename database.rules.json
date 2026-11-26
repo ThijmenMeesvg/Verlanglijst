@@ -59,6 +59,32 @@
           }
         }
       },
+      "categories": {
+        ".validate": "newData.hasChild('initialized')",
+        "initialized": {
+          ".validate": "newData.isBoolean()"
+        },
+        "items": {
+          "$cat": {
+            ".validate": "$cat.length <= 40 && $cat !== 'overig' && newData.hasChildren(['label'])",
+            "label": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 40"
+            },
+            "emoji": {
+              ".validate": "newData.isString() && newData.val().length <= 16"
+            },
+            "order": {
+              ".validate": "newData.isNumber()"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "$other": {
+          ".validate": false
+        }
+      },
       "settings": {
         "title": {
           ".validate": "newData.isString() && newData.val().length <= 100"

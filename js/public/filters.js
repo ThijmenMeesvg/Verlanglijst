@@ -1,16 +1,18 @@
 // De zoek- en filterbalk. De gekozen filters staan ook in de adresbalk,
 // zodat je een link als "…/?cat=boeken" kunt doorsturen.
-import { CATEGORIES, SORTS } from "../config.js";
+import { SORTS } from "../config.js";
+import { allCategories } from "../lib/categories.js";
 import { boundsFromBand, escapeHtml, formatPrice, toBound } from "../lib/util.js";
 
-const DEFAULTS = { q: "", cat: "", min: null, max: null, sort: "nieuw", hideClaimed: false };
+const DEFAULTS = { q: "", cat: "", min: null, max: null, sort: SORTS[0].id, hideClaimed: false };
 
 export function readFiltersFromUrl() {
   const p = new URLSearchParams(location.search);
   const old = boundsFromBand(p.get("prijs"));   // oude links: ?prijs=tot15
   return {
     q: p.get("q") || "",
-    cat: CATEGORIES.some((c) => c.id === p.get("cat")) ? p.get("cat") : "",
+    // Of de categorie bestaat, weten we pas als de lijst geladen is (zie updateCounts).
+    cat: /^[\w-]{1,40}$/.test(p.get("cat") || "") ? p.get("cat") : "",
     min: toBound(p.get("van")) ?? old.min,
     max: toBound(p.get("tot")) ?? old.max,
     sort: SORTS.some((s) => s.id === p.get("sort")) ? p.get("sort") : DEFAULTS.sort,
@@ -121,13 +123,23 @@ export function setupFilters(onChange) {
     priceMin.focus();
   });
 
-  /** Categorie-chips met aantallen; categorieën zonder items worden niet getoond. */
+  /**
+   * Categorie-chips met aantallen (die rekening houden met zoeken en prijs). Categorieën zonder items
+   * worden niet getoond, behalve de gekozen categorie, zodat je die altijd weer uit kunt zetten.
+   * Bestaat de gekozen categorie niet (meer), bijv. uit een oude link? Dan gewoon alles tonen.
+   */
   function updateCounts(counts, total) {
+    if (filters.cat && !allCategories().some((c) => c.id === filters.cat)) {
+      filters.cat = "";
+      writeFiltersToUrl(filters);
+      onChange({ ...filters });
+      return;
+    }
     const chips = [`<button type="button" class="chip" data-cat="" aria-pressed="false">Alles <span class="chip__count">${total}</span></button>`];
-    for (const c of CATEGORIES) {
-      if (!counts[c.id]) continue;
+    for (const c of allCategories()) {
+      if (!counts[c.id] && filters.cat !== c.id) continue;
       chips.push(
-        `<button type="button" class="chip" data-cat="${c.id}" aria-pressed="false"><span aria-hidden="true">${c.emoji}</span> ${escapeHtml(c.label)} <span class="chip__count">${counts[c.id]}</span></button>`
+        `<button type="button" class="chip" data-cat="${c.id}" aria-pressed="false"><span aria-hidden="true">${c.emoji}</span> ${escapeHtml(c.label)} <span class="chip__count">${counts[c.id] || 0}</span></button>`
       );
     }
     catChips.innerHTML = chips.join("");

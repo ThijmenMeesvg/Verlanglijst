@@ -6,9 +6,10 @@
 //              de overstap nog niet gedaan is, zodat de site altijd blijft werken.
 //  - "demo":   voorbeelddata in het geheugen (?demo in de adresbalk). Raakt de echte database niet.
 
-import { firebaseConfig, FIREBASE_SDK, CATEGORIES, LISTS, PATHS, DEFAULT_SETTINGS, TEXT_FIELDS } from "../config.js";
+import { firebaseConfig, FIREBASE_SDK, LEGACY_CATEGORIES, LISTS, PATHS, DEFAULT_SETTINGS, TEXT_FIELDS } from "../config.js";
 import { newId, toTimestamp, normalizePrice } from "./util.js";
 import { LEGACY_NODES } from "./migrate.js";
+import { parseCategories, serializeCategories } from "./categories.js";
 
 export function isDemo() {
   return new URLSearchParams(location.search).has("demo");
@@ -74,6 +75,7 @@ export async function subscribePublic(cb) {
           mode: "v2",
           items: toList(data.items),
           claims: data.claims || {},
+          categories: parseCategories(data.categories),
           settings: { ...DEFAULT_SETTINGS, ...(data.settings || {}) }
         });
       } else if (!stopLegacy) {
@@ -96,7 +98,7 @@ function subscribeLegacy(cb) {
     if (stopped) return;
     const items = [];
     const claims = {};
-    for (const cat of CATEGORIES) {
+    for (const cat of LEGACY_CATEGORIES) {
       for (const [key, v] of Object.entries(perCategory[cat.legacy] || {})) {
         if (!v || typeof v !== "object" || v.private === true || !v.link) continue;
         const id = `${cat.legacy}/${key}`;          // in oude modus bevat het id het pad
@@ -113,11 +115,12 @@ function subscribeLegacy(cb) {
         if (v.done === true) claims[id] = { at: 0 };
       }
     }
-    const allFailed = failed.size === CATEGORIES.length;
+    const allFailed = failed.size === LEGACY_CATEGORIES.length;
     cb({
       mode: "legacy",
       items,
       claims,
+      categories: parseCategories(null),
       settings: { ...DEFAULT_SETTINGS },
       error: allFailed ? "De lijst kon niet geladen worden." : undefined
     });
@@ -125,7 +128,7 @@ function subscribeLegacy(cb) {
 
   firebase().then(({ db, ref, onValue }) => {
     if (stopped) return;
-    for (const cat of CATEGORIES) {
+    for (const cat of LEGACY_CATEGORIES) {
       stops.push(
         onValue(
           ref(db, cat.legacy),
@@ -221,6 +224,7 @@ export async function subscribeAdmin(cb, onError) {
     cb({
       lists,
       claims: state.wishlist.claims || {},
+      categories: parseCategories(state.wishlist.categories),
       settings: { ...DEFAULT_SETTINGS, ...(state.wishlist.settings || {}) },
       tempLinks: toList(state.private.tempLinks).sort((a, b) => (b.at || 0) - (a.at || 0))
     });
@@ -266,6 +270,11 @@ export async function saveItem({ id, fromListId, listId, data }) {
  * @param {Array<{ item: object, claimed?: boolean }>} entries
  */
 export async function archiveItems(entries) {
+  return applyUpdates(archiveUpdates(entries));
+}
+
+/** De wijzigingen voor archiveItems, los, zodat ze met andere wijzigingen in één keer kunnen. */
+export function archiveUpdates(entries) {
   const updates = {};
   const now = Date.now();
   for (const { item, claimed } of entries) {
@@ -274,7 +283,15 @@ export async function archiveItems(entries) {
     updates[itemPath(item.listId, item.id)] = null;
     if (item.listId === "public") updates[`${PATHS.claims}/${item.id}`] = null;
   }
-  return applyUpdates(updates);
+  return updates;
+}
+
+/**
+ * Slaat de hele lijst categorieën op (in deze volgorde), samen met eventuele andere wijzigingen
+ * (bijv. items verplaatsen of archiveren bij het verwijderen van een categorie). Alles of niets.
+ */
+export async function saveCategories(list, extraUpdates = {}) {
+  return applyUpdates({ [PATHS.categories]: serializeCategories(list), ...extraUpdates });
 }
 
 /** Definitief verwijderen (alleen gebruikt vanuit het archief). */
@@ -364,6 +381,7 @@ function makeDemo(DEMO_DATA) {
           mode: "demo",
           items: toList(getPath("wishlist/items")),
           claims: { ...(getPath("wishlist/claims") || {}) },
+          categories: parseCategories(getPath("wishlist/categories")),
           settings: { ...DEFAULT_SETTINGS, ...(getPath("wishlist/settings") || {}) }
         });
       listeners.add(fn);
@@ -377,6 +395,7 @@ function makeDemo(DEMO_DATA) {
         cb({
           lists,
           claims: { ...(getPath("wishlist/claims") || {}) },
+          categories: parseCategories(getPath("wishlist/categories")),
           settings: { ...DEFAULT_SETTINGS, ...(getPath("wishlist/settings") || {}) },
           tempLinks: toList(getPath("private/tempLinks")).sort((a, b) => (b.at || 0) - (a.at || 0))
         });

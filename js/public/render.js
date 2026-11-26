@@ -1,5 +1,5 @@
 // Maakt de HTML voor één wens (een cadeaulabel). Alle tekst gaat door escapeHtml.
-import { categoryById, domId, escapeHtml, formatPrice, safeUrl, shopName } from "../lib/util.js";
+import { categoryById, domId, escapeHtml, formatPrice, isNew, safeUrl, shopName } from "../lib/util.js";
 
 /** De knop of tekst onderaan een wens: ‘Ik geef dit’, ‘Jij geeft dit’ of ‘Iemand anders geeft dit al’. */
 function renderAction(item, { claimed, mine, canUndo, surprise }) {
@@ -62,6 +62,7 @@ export function renderTag(item, { claimed, mine, canUndo, withId = true, surpris
       <div class="tag__media" data-emoji="${escapeHtml(cat.emoji)}">
         ${media}
         ${item.favorite ? `<span class="tag__fav">★ Favoriet</span>` : ""}
+        ${isNew(item) && !claimed ? `<span class="tag__new">Nieuw</span>` : ""}
         ${claimed ? `<span class="tag__stamp" aria-hidden="true">Wordt al gegeven</span>` : ""}
       </div>
       <div class="tag__body">

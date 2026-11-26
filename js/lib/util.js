@@ -1,5 +1,8 @@
 // Kleine hulpfuncties zonder afhankelijkheden (ook te testen met `node --test`).
-import { CATEGORIES, PRICE_BANDS } from "../config.js";
+import { NEW_DAYS, PRICE_BANDS } from "../config.js";
+import { categoryById, categoryOf } from "./categories.js";
+
+export { categoryById };
 
 // ---------- Veilig tonen ----------
 
@@ -156,10 +159,9 @@ export function formatDate(ts) {
   return ts ? dateFmt.format(new Date(ts)) : "";
 }
 
-// ---------- Categorieën ----------
-
-export function categoryById(id) {
-  return CATEGORIES.find((c) => c.id === id) || CATEGORIES.find((c) => c.id === "overig");
+/** Is dit item nog ‘nieuw’ (de laatste NEW_DAYS dagen toegevoegd)? */
+export function isNew(item, now = Date.now()) {
+  return Boolean(item?.createdAt) && now - item.createdAt < NEW_DAYS * 86400000 && item.createdAt <= now + 60000;
 }
 
 // ---------- Filteren en sorteren ----------
@@ -181,7 +183,7 @@ export function filterItems(items, { q = "", cat = "", min = null, max = null, h
   let lo = toBound(min), hi = toBound(max);
   if (lo !== null && hi !== null && lo > hi) [lo, hi] = [hi, lo];   // ‘van 30 tot 10’ betekent hetzelfde als 10–30
   return items.filter((item) => {
-    if (cat && item.category !== cat) return false;
+    if (cat && categoryOf(item) !== cat) return false;
     if (hideClaimed && claims[item.id]) return false;
     if (lo !== null || hi !== null) {
       const p = normalizePrice(item.price);
@@ -209,8 +211,27 @@ export function boundsFromBand(bandId) {
   return { min: b.min || null, max: Number.isFinite(b.max) ? b.max : null };
 }
 
-/** Sorteert: openstaande items altijd boven al-gegeven items, daarbinnen volgens `sort`. */
-export function sortItems(items, sort = "nieuw", claims = {}) {
+/** De datum van vandaag als "2026-11-26" (lokale tijd): de sleutel voor ‘Elke dag anders’. */
+export function dayKey(date = new Date()) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+/** Een vast, maar door elkaar gehusseld getal per item en dag (FNV-1a). Zelfde dag = zelfde volgorde. */
+function shuffleKey(id, seed) {
+  let h = 0x811c9dc5;
+  for (const ch of `${seed}|${id}`) {
+    h ^= ch.codePointAt(0);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h;
+}
+
+/**
+ * Sorteert: openstaande items altijd boven al-gegeven items, daarbinnen volgens `sort`.
+ * `seed` bepaalt de volgorde bij ‘dag’ (standaard: vandaag).
+ */
+export function sortItems(items, sort = "nieuw", claims = {}, { seed = dayKey() } = {}) {
   const priceOrNull = (i) => normalizePrice(i.price);
   const byPrice = (dir) => (a, b) => {
     const pa = priceOrNull(a), pb = priceOrNull(b);
@@ -221,6 +242,7 @@ export function sortItems(items, sort = "nieuw", claims = {}) {
   };
   const newest = (a, b) => (b.createdAt || 0) - (a.createdAt || 0);
   const compare = {
+    dag: (a, b) => shuffleKey(a.id, seed) - shuffleKey(b.id, seed) || newest(a, b),
     nieuw: newest,
     goedkoop: byPrice(1),
     duur: byPrice(-1),
@@ -233,10 +255,13 @@ export function sortItems(items, sort = "nieuw", claims = {}) {
   });
 }
 
-/** Telt per categorie hoeveel (nog open) items er zijn. */
+/** Telt per categorie hoeveel items er zijn (items zonder bestaande categorie tellen als ‘overig’). */
 export function countByCategory(items) {
   const counts = {};
-  for (const item of items) counts[item.category] = (counts[item.category] || 0) + 1;
+  for (const item of items) {
+    const cat = categoryOf(item);
+    counts[cat] = (counts[cat] || 0) + 1;
+  }
   return counts;
 }
 
